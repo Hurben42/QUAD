@@ -4,7 +4,7 @@ import { CREATOR_FEE, ERA_WIDTHS, pct } from '@/lib/curve';
 import { ArtScene } from './CreatorsArt';
 
 /**
- * A creator's position as a card, in the format of an on-chain LP position NFT: the coin's era colour,
+ * A creator's position as a card, in the format of an on-chain LP position NFT: the brand-vertical gradient,
  * text running round the border, the creators scene, the era bar and mono pills. QUAD's own design.
  */
 export type CreatorCardProps = {
@@ -38,7 +38,7 @@ function framePath(x: number, y: number, w: number, h: number, r: number) {
 
 export function CreatorCard({ symbol, pool, era, progress, claimable, earned, sample }: CreatorCardProps) {
   const id = `cc${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
-  const ink = `var(--on-era-${era})`;
+  const ink = `url(#${id}-ink)`;
   const ticker = `$${symbol}`;
   const run = `QUAD • ${ticker}/HYPE • CREATOR ${pct(CREATOR_FEE)} OF EVERY TRADE • PAID IN HYPE • POOL ${short(pool)} • ERA ${era} OF 4 • `;
   const pills = [`Pool: ${short(pool)}`, `Era: ${era} / 4 · ${Math.round(progress * 100)}%`, ...(earned ? [`Earned: ${earned} HYPE`] : []), `Claimable: ${claimable} HYPE`];
@@ -55,6 +55,18 @@ export function CreatorCard({ symbol, pool, era, progress, claimable, earned, sa
           <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch" />
           <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .14 0" />
         </filter>
+        {/* brand-vertical, blue to ember, like the landing's Launch yours block */}
+        <linearGradient id={`${id}-bg`} x1="0" y1="0" x2="0" y2={H} gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="var(--era-1)" />
+          <stop offset=".38" stopColor="var(--era-2)" />
+          <stop offset=".7" stopColor="var(--era-3)" />
+          <stop offset="1" stopColor="var(--era-4)" />
+        </linearGradient>
+        {/* text on brand-vertical: white over the blue half, ink over the ember half (BRAND.md) */}
+        <linearGradient id={`${id}-ink`} x1="0" y1="0" x2="0" y2={H} gradientUnits="userSpaceOnUse">
+          <stop offset=".5" stopColor="var(--on-era-1)" />
+          <stop offset=".62" stopColor="var(--on-era-4)" />
+        </linearGradient>
         <radialGradient id={`${id}-glow`} cx="50%" cy="40%" r="60%">
           <stop offset="0" stopColor="var(--on-era-1)" stopOpacity=".22" />
           <stop offset="1" stopColor="var(--on-era-1)" stopOpacity="0" />
@@ -62,7 +74,7 @@ export function CreatorCard({ symbol, pool, era, progress, claimable, earned, sa
       </defs>
 
       <g clipPath={`url(#${id}-clip)`}>
-        <rect width={W} height={H} fill={`var(--era-${era})`} />
+        <rect width={W} height={H} fill={`url(#${id}-bg)`} />
         <rect className="cc-glow" width={W} height={H} fill={`url(#${id}-glow)`} />
         <rect width={W} height={H} filter={`url(#${id}-grain)`} />
 
