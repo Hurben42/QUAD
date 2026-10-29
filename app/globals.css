@@ -645,18 +645,25 @@ section[id],footer[id]{scroll-margin-top:24px}
 @keyframes rp-coin-in{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:none}}
 @keyframes rp-coin-tip{from{opacity:1;transform:scaleX(1)}to{opacity:1;transform:scaleX(.62)}}
 
-/* 02: three pills converging on the HYPE badge */
-.rp-quote{display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:96px 32px 48px;background:radial-gradient(70% 70% at 75% 50%, color-mix(in srgb, var(--era-2) 30%, transparent), transparent 70%), var(--surface-0)}
-.rp-quote-lines{position:absolute;inset:0;width:100%;height:100%}
-.rp-quote-lines path{fill:none;stroke:var(--era-2-text);stroke-width:1.5;stroke-dasharray:1;stroke-dashoffset:1}
-.reveal.in .rp-quote-lines path{animation:q-ray 1s cubic-bezier(.4,0,.2,1) both;animation-delay:calc(.5s + var(--d,0) * 150ms)}
-.rp-quote-pills{position:relative;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:56px}
-.rp-quote-pills li{display:flex;flex-direction:column;gap:6px;padding:14px 18px;border-radius:var(--radius-md);background:var(--surface-1);border:1px solid var(--line);width:max-content}
-.rp-quote-pills .num{font-size:20px;color:var(--era-2-text)}
-.rp-quote-badge{position:relative;justify-self:end;display:flex;flex-direction:column;align-items:center;gap:12px;padding:28px 30px;border-radius:var(--radius-lg);background:var(--surface-1);border:1px solid var(--era-2)}
-.rp-quote-badge .num{font-size:22px;letter-spacing:.08em}
-.reveal.in .rp-quote-badge{animation:rp-pulse 3.2s ease-in-out 1.4s infinite}
-@keyframes rp-pulse{50%{box-shadow:0 0 0 10px color-mix(in srgb, var(--era-2) 18%, transparent)}}
+/* 02: brand-vertical poster, the HYPE mark as a sun with a burst of rays, pairs floating, a marquee */
+.rp-quote{border:0;background:var(--brand-vertical)}
+.rp-quote-burst{position:absolute;inset:0;width:100%;height:100%;animation:rp-burst 80s linear infinite;transform-box:view-box;transform-origin:300px 250px}
+.rp-quote-burst line{stroke:var(--on-era-1);stroke-opacity:.18;stroke-width:1}
+.rp-quote-burst circle{fill:none;stroke:var(--on-era-1);stroke-opacity:.16;stroke-dasharray:3 6}
+@keyframes rp-burst{to{transform:rotate(360deg)}}
+.rp-quote-mark{position:absolute;left:50%;top:44.6%;width:170px;transform:translate(-50%,-50%)}
+.rp-quote-mark svg{display:block;width:100%;height:auto;filter:drop-shadow(0 20px 34px color-mix(in srgb, var(--on-era-4) 45%, transparent));animation:rp-mark 6s ease-in-out infinite alternate}
+@keyframes rp-mark{from{transform:translateY(-6px) rotate(-4deg)}to{transform:translateY(8px) rotate(3deg)}}
+.rp-pair{position:absolute;display:inline-flex;align-items:baseline;padding:9px 14px;border-radius:var(--radius-pill);background:var(--on-era-4);color:var(--on-era-1);font-size:15px;box-shadow:0 14px 30px -14px color-mix(in srgb, var(--on-era-4) 80%, transparent);opacity:0}
+.rp-pair i{font-style:normal;color:var(--era-4)}
+.reveal.in .rp-pair{animation:rp-pair-in .7s cubic-bezier(.3,1.4,.5,1) both,rp-pair-float 5s ease-in-out infinite alternate;animation-delay:calc(.4s + var(--d,0) * 120ms),calc(1.2s + var(--d,0) * 700ms)}
+@keyframes rp-pair-in{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes rp-pair-float{from{opacity:1;transform:translateY(0)}to{opacity:1;transform:translateY(-10px)}}
+.rp-marquee{position:absolute;left:0;right:0;bottom:0;height:52px;display:flex;align-items:center;overflow:hidden;background:var(--on-era-4)}
+.rp-marquee > div{display:flex;white-space:nowrap;animation:rp-marquee 22s linear infinite}
+.rp-marquee span{font:600 13px/1 var(--font-mono);letter-spacing:.14em;color:var(--on-era-1);padding-right:8px}
+.rp-marquee b{color:var(--era-4);font-weight:600}
+@keyframes rp-marquee{to{transform:translateX(-50%)}}
 
 /* 03: horizon stage with the halving steps and a cursor walking them */
 .rp-eras-sun{position:absolute;inset:0 0 auto 0;height:62%;background:var(--era-horizon)}
@@ -696,15 +703,14 @@ section[id],footer[id]{scroll-margin-top:24px}
   .rp-visual{min-height:420px}
   .rp-text h2{font-size:38px}
   .rp-mint-count .num{font-size:40px}
-  .rp-quote{padding:80px 16px 32px;gap:12px}
-  .rp-quote-pills{gap:36px}
-  .rp-quote-badge{padding:20px}
+  .rp-quote-mark{width:120px}
+  .rp-pair{font-size:13px;padding:7px 11px}
   .rp-px{grid-template-columns:repeat(5,14px);grid-auto-rows:14px;top:64px;right:20px}
   .rp-fees-big{font-size:84px}
   .rp-end{padding:0 16px 80px}
   .rp-end h2{font-size:38px}
 }
-@media (prefers-reduced-motion:reduce){.rp-coin{opacity:1}.rp-glow .stripes,.rp-rays line,.reveal.in .rp-mint .stripes i,.rp-coins-ring,.reveal.in .rp-coin,.reveal.in .rp-quote-lines path,.reveal.in .rp-quote-badge,.reveal.in .rp-steps > div,.reveal.in .rp-cursor,.reveal.in .rp-px b,.rp-live i{animation:none}.rp-quote-lines path{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.rp-coin{opacity:1}.rp-glow .stripes,.rp-rays line,.reveal.in .rp-mint .stripes i,.rp-coins-ring,.reveal.in .rp-coin,.rp-quote-burst,.rp-quote-mark svg,.reveal.in .rp-pair,.rp-marquee > div,.reveal.in .rp-steps > div,.reveal.in .rp-cursor,.reveal.in .rp-px b,.rp-live i{animation:none}.rp-pair{opacity:1}}
 
 /* ---- landing: Get HYPE, as a poster — HYPE rising over the era horizon, white cards on the horizon */
 .gh{position:relative;overflow:hidden;min-height:620px;border-radius:var(--radius-lg);border:1px solid var(--line);background:var(--surface-0);display:grid;grid-template-rows:auto 1fr auto;padding:36px;scroll-margin-top:96px}
@@ -721,11 +727,13 @@ section[id],footer[id]{scroll-margin-top:24px}
 .gh-mark{width:150px;animation:gh-rise 6s ease-in-out infinite alternate}
 .gh-mark svg{display:block;width:100%;height:auto;filter:drop-shadow(0 18px 30px color-mix(in srgb, var(--surface-0) 60%, transparent))}
 @keyframes gh-rise{from{transform:translateY(10px) rotate(-4deg)}to{transform:translateY(-8px) rotate(3deg)}}
-.gh-ca{display:inline-flex;align-items:center;gap:10px;height:34px;padding:0 12px 0 4px;border-radius:var(--radius-pill);border:1px solid color-mix(in srgb, var(--on-era-1) 30%, transparent);background:color-mix(in srgb, var(--surface-0) 70%, transparent);color:var(--on-era-1);cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:border-color .15s ease}
-.gh-ca:hover{border-color:var(--on-era-1)}
-.gh-ca:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.gh-ca-k{display:grid;place-items:center;height:26px;padding:0 10px;border-radius:var(--radius-pill);background:var(--on-era-1);color:var(--on-era-4);font:700 11px/1 var(--font-mono);letter-spacing:.1em}
-.gh-ca .num{font-size:13px}
+.gh-ca{display:flex;align-items:center;gap:14px;height:56px;max-width:100%;padding:0 6px 0 6px;border-radius:var(--radius-pill);border:1px solid color-mix(in srgb, var(--on-era-1) 30%, transparent);background:color-mix(in srgb, var(--surface-0) 72%, transparent);color:var(--on-era-1);cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 18px 40px -20px color-mix(in srgb, var(--surface-0) 90%, transparent);transition:border-color .15s ease,transform .2s ease}
+.gh-ca:hover{border-color:var(--on-era-1);transform:translateY(-2px)}
+.gh-ca:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.gh-ca-k{display:grid;place-items:center;flex:none;height:44px;padding:0 16px;border-radius:var(--radius-pill);background:var(--on-era-1);color:var(--on-era-4);font:800 13px/1 var(--font-mono);letter-spacing:.12em}
+.gh-ca-addr{flex:1;min-width:0;font-size:15px;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gh-ca-copy{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:var(--radius-pill);background:var(--on-era-1);color:var(--on-era-4);transition:transform .2s ease}
+.gh-ca:hover .gh-ca-copy{transform:scale(1.06)}
 
 /* the two ways in, along the foot of the poster: no cards, an editorial row over the horizon */
 .gh-routes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid color-mix(in srgb, var(--on-era-1) 28%, transparent);margin:0 -36px -36px;padding:0 36px}
@@ -746,6 +754,11 @@ section[id],footer[id]{scroll-margin-top:24px}
   .gh-top{flex-direction:column;gap:10px}
   .gh-head h2{font-size:36px}
   .gh-mark{width:110px;margin:12px 0}
+  .gh-center{width:100%}
+  .gh-ca{width:100%;height:50px;gap:10px}
+  .gh-ca-k,.gh-ca-copy{height:38px}
+  .gh-ca-copy{width:38px}
+  .gh-ca-addr{font-size:13px}
   .gh-sun{height:62%}
   .gh-routes{grid-template-columns:minmax(0,1fr);margin:0 -16px -16px;padding:0 16px}
   .gh-route,.gh-route + .gh-route{padding:20px 0;border-left:0}

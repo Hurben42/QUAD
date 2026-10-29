@@ -2,6 +2,7 @@ import { SiteHeader } from '@/components/SiteHeader';
 import { Stripes } from '@/components/Stripes';
 import { Reveal } from '@/components/Reveal';
 import { QuadCoins } from '@/components/QuadCoins';
+import { MARK_PATH } from '@/components/CreatorsArt';
 import { PIXELS } from '@/components/RulePosters';
 import { LinkButton } from '@/components/Button';
 import {
@@ -35,6 +36,8 @@ const RULES = [
 // Rays to the hero's vanishing point (viewBox 1400×900) and to the eras stage's (440×340)
 const RAYS = [-200, 100, 400, 700, 1000, 1300, 1600];
 const STAGE_RAYS = [-100, 40, 150, 290, 400, 540];
+// Sample pairs floating round the HYPE mark in rule 02 (illustration): [ticker, left, top]
+const PAIRS: [string, string, string][] = [['$SDOG', '8%', '22%'], ['$VOLT', '64%', '17%'], ['$SUN', '10%', '62%'], ['$PX', '68%', '58%']];
 
 /** The four rules, one chapter each, after the landing's posters A, B and C. */
 export default function RulesPage() {
@@ -94,18 +97,24 @@ export default function RulesPage() {
 
       {/* 02 QUOTE IN HYPE: price, fees and liquidity converge on HYPE */}
       <Reveal id="quote" className="rp-ch rp-ch--flip">
-        <div className="rp-visual rp-quote">
-          <div className="rp-visual-tags"><span className="label">Rule 02</span><span className="label">Quote</span></div>
-          <svg className="rp-quote-lines" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true">
-            {[92, 200, 308].map((y, i) => <path key={y} d={`M150 ${y} C 230 ${y}, 220 200, 290 200`} pathLength={1} style={d(i)} />)}
+        <div className="rp-visual rp-quote grain">
+          <svg className="rp-quote-burst" viewBox="0 0 600 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            {Array.from({ length: 24 }, (_, i) => {
+              const a = (i / 24) * Math.PI * 2;
+              return <line key={i} x1={300 + 70 * Math.cos(a)} y1={250 + 70 * Math.sin(a)} x2={300 + 700 * Math.cos(a)} y2={250 + 700 * Math.sin(a)} />;
+            })}
+            <circle cx="300" cy="250" r="120" /><circle cx="300" cy="250" r="190" />
           </svg>
-          <ul className="rp-quote-pills">
-            {['Price', 'Fees', 'Liquidity'].map((k, i) => <li key={k} style={d(i)}><span className="label">{k}</span><span className="num">HYPE</span></li>)}
-          </ul>
-          <div className="rp-quote-badge">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/hyperliquid-blob-green.svg" alt="" width={64} height={64} />
-            <span className="num">HYPE</span>
+          <div className="rp-visual-tags"><span className="label on-art">Rule 02</span><span className="label on-art">Quote</span></div>
+          <div className="rp-quote-mark" aria-hidden="true">
+            <svg viewBox="-20 -20 240 240">
+              <path d={MARK_PATH} fill="var(--on-era-1)" stroke="var(--on-era-1)" strokeWidth="24" strokeLinejoin="round" />
+              <image href="/brand/hyperliquid-blob-green.svg" x="0" y="0" width="200" height="200" />
+            </svg>
+          </div>
+          {PAIRS.map(([pair, x, y], i) => <span key={pair} className="rp-pair num" style={{ left: x, top: y, ...d(i) }}>{pair}<i>/HYPE</i></span>)}
+          <div className="rp-marquee" aria-hidden="true">
+            <div>{Array.from({ length: 2 }, (_, k) => <span key={k}>PRICE IN HYPE <b>•</b> FEES IN HYPE <b>•</b> LIQUIDITY IN HYPE <b>•</b> PRICE IN HYPE <b>•</b> FEES IN HYPE <b>•</b> LIQUIDITY IN HYPE <b>•</b> </span>)}</div>
           </div>
         </div>
         <div className="rp-text" style={era(2)}>
