@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>QUAD — Paired to HYPE visual</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--surface-0:#0b0d18;--surface-1:#121a2e;--surface-2:#1f2a46;--line:#2e3a5c;--line-strong:#6b7799;--text:#f3f2f8;--text-muted:#a3a8c2;--era-1:#1b27f5;--era-2:#7136fe;--era-3:#e04d71;--era-4:#f88262;--era-4-text:#f88262;--success:#3edb8b;--era-horizon:radial-gradient(60% 80% at 50% 100%,#f88262 0%,#e04d71 28%,#7136fe 55%,#1b27f5 75%,#0b0d18 100%);--era-sweep:linear-gradient(90deg,#1b27f5 0%,#7136fe 34%,#e04d71 67%,#f88262 100%);--font-sans:"Manrope","Helvetica Neue",Arial,sans-serif;--font-mono:"JetBrains Mono","SF Mono",Menlo,monospace}
+body{margin:0;background:var(--surface-0);color:var(--text);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+.grain::after{content:"";position:absolute;inset:0;background-image:url(../../public/brand/grain.png);background-size:256px 256px;opacity:.07;pointer-events:none;mix-blend-mode:screen}
+.label{font-family:var(--font-mono);font-size:11px;line-height:16px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+.num{font-family:var(--font-mono);font-weight:600;letter-spacing:-0.01em}
+.rays line{stroke:var(--line);stroke-width:1}
+.dash{stroke:var(--line-strong);stroke-width:1.5;stroke-dasharray:4 6;fill:none}
+</style>
+</helmet>
+
+<div class="grain" style="position: relative; overflow: hidden; width: 1200px; height: 760px; background: var(--surface-0); color: var(--text); font-family: var(--font-sans);">
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: var(--era-horizon); opacity: .9;"></div>
+  <svg class="rays" aria-hidden="true" viewBox="0 0 1200 760" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: .55;">
+    <line x1="600" y1="760" x2="-200" y2="0"/><line x1="600" y1="760" x2="0" y2="0"/><line x1="600" y1="760" x2="200" y2="0"/><line x1="600" y1="760" x2="400" y2="0"/><line x1="600" y1="760" x2="600" y2="0"/><line x1="600" y1="760" x2="800" y2="0"/><line x1="600" y1="760" x2="1000" y2="0"/><line x1="600" y1="760" x2="1200" y2="0"/><line x1="600" y1="760" x2="1400" y2="0"/>
+    <line x1="0" y1="640" x2="1200" y2="640"/><line x1="0" y1="520" x2="1200" y2="520"/><line x1="0" y1="400" x2="1200" y2="400"/>
+  </svg>
+
+  <!-- corner labels -->
+  <div style="position: absolute; left: 48px; top: 40px;"><span class="label">06 / Paired to HYPE</span></div>
+  <div style="position: absolute; right: 48px; top: 40px;"><span class="label">Solana · Wormhole NTT</span></div>
+
+  <!-- the pairing: Q  →  four steps  →  HYPE token tile -->
+  <div style="position: absolute; left: 48px; right: 48px; top: 140px; display: flex; align-items: center; justify-content: space-between; gap: 40px;">
+
+    <!-- QUAD mark -->
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 300px;">
+      <svg viewBox="0 0 96 120" width="192" height="240" aria-hidden="true" shape-rendering="crispEdges"><defs><linearGradient id="qv" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="120"><stop offset="0" stop-color="#1b27f5"/><stop offset=".38" stop-color="#7136fe"/><stop offset=".7" stop-color="#e04d71"/><stop offset="1" stop-color="#f88262"/></linearGradient></defs><g fill="url(#qv)"><rect x="24" y="0" width="48" height="24"/><rect x="0" y="24" width="24" height="48"/><rect x="72" y="24" width="24" height="36"/><polygon points="24,72 72,72 96,96 96,120 72,96 24,96"/></g></svg>
+      <span style="font: 800 28px/1 var(--font-sans); letter-spacing: -0.04em;">QUAD</span>
+    </div>
+
+    <!-- the curve as four steps, flowing right -->
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 14px; align-items: stretch;">
+      <div style="display: flex; align-items: flex-end; gap: 4px; height: 160px;">
+        <div style="flex: 8; height: 12.5%; background: var(--era-1); border-radius: 4px 4px 0 0;"></div>
+        <div style="flex: 4; height: 25%; background: var(--era-2); border-radius: 4px 4px 0 0;"></div>
+        <div style="flex: 2; height: 50%; background: var(--era-3); border-radius: 4px 4px 0 0;"></div>
+        <div style="flex: 1; height: 100%; background: var(--era-4); border-radius: 4px 4px 0 0;"></div>
+      </div>
+      <div style="height: 1px; background: var(--line-strong);"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="label">Era 1</span><span class="label">Era 2</span><span class="label">Era 3</span><span class="label">Era 4</span>
+        <span class="num" style="font-size: 18px; color: var(--era-4-text);">→</span>
+      </div>
+    </div>
+
+    <!-- HYPE token tile: drop the official HYPE logo in the slot -->
+    <div style="width: 300px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+      <div style="width: 240px; height: 240px; border-radius: 20px; background: var(--surface-1); border: 1px solid var(--line); box-shadow: 0 1px 0 0 #ffffff14 inset, 0 24px 60px -24px #000000cc; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; position: relative;">
+        <span class="label" style="position: absolute; left: 16px; top: 14px;">Quote</span>
+        <span style="position: absolute; right: 14px; top: 14px; display: inline-flex; align-items: center; gap: 6px; font: 600 11px/1 var(--font-mono); color: var(--success);"><i style="width: 6px; height: 6px; border-radius: 999px; background: var(--success);"></i>Live</span>
+        <div style="width: 120px; height: 120px; border-radius: 999px; background: #011916; display: grid; place-items: center;">
+          <img src="../../public/brand/hyperliquid-blob-green.svg" alt="Hyperliquid" style="width: 84px; height: 84px; display: block;">
+        </div>
+        <span class="num" style="font-size: 32px; line-height: 36px;">HYPE</span>
+      </div>
+      <span class="label">98sM…Mh5g · Solana</span>
+    </div>
+  </div>
+
+  <!-- statement + facts -->
+  <div style="position: absolute; left: 48px; right: 48px; bottom: 48px; display: flex; justify-content: space-between; align-items: flex-end; gap: 48px;">
+    <h1 style="margin: 0; font: 800 44px/1 var(--font-sans); letter-spacing: -0.03em; max-width: 620px;">Every coin on QUAD is quoted in HYPE.<br><span style="color: var(--text-muted); font-weight: 700;">Creators are paid in it, too.</span></h1>
+    <div style="display: grid; grid-template-columns: repeat(3, auto); gap: 32px; padding-top: 16px; border-top: 1px solid var(--line);">
+      <div style="display: flex; flex-direction: column; gap: 6px;"><span class="num" style="font-size: 22px; line-height: 26px;">2.5<span style="color: var(--era-4-text);">%</span></span><span class="label">Creator fee, in HYPE</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><span class="num" style="font-size: 22px; line-height: 26px;">4</span><span class="label">Eras per coin</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><span class="num" style="font-size: 22px; line-height: 26px;">21<span style="color: var(--era-4-text);">M</span></span><span class="label">Coins, minted once</span></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1200,"height":760}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

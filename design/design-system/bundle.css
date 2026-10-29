@@ -1,0 +1,62 @@
+/* QUAD — composants. Charger après tokens.css. Chaque valeur vient d'un token. */
+.q-root{font-family:var(--font-sans);color:var(--text);background:var(--surface-0)}
+
+/* Lockup */
+.q-lockup{display:inline-flex;align-items:center;gap:var(--space-3);color:var(--text);text-decoration:none}
+.q-lockup svg{display:block;height:1em;width:auto}
+.q-lockup .q-word{font-family:var(--font-sans);font-weight:800;letter-spacing:-0.04em;line-height:1}
+.q-lockup--sm{font-size:20px}.q-lockup--sm .q-word{font-size:20px}
+.q-lockup--md{font-size:32px}.q-lockup--md .q-word{font-size:32px}
+.q-lockup--lg{font-size:56px}.q-lockup--lg .q-word{font-size:56px}
+
+/* Button */
+.q-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);height:44px;padding:0 var(--space-6);border-radius:var(--radius-md);border:1.5px solid transparent;font:700 15px/1 var(--font-sans);letter-spacing:-0.01em;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,background .12s ease}
+.q-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.q-btn--sm{height:36px;padding:0 var(--space-4);font-size:13px}
+.q-btn--primary{background:var(--brand);color:var(--on-brand)}
+.q-btn--primary:hover{box-shadow:var(--glow-brand);transform:translateY(-1px)}
+.q-btn--secondary{background:transparent;color:var(--text);border-color:var(--line-strong)}
+.q-btn--secondary:hover{background:var(--surface-2)}
+.q-btn--ghost{background:transparent;color:var(--text-muted)}
+.q-btn--ghost:hover{color:var(--text);background:var(--surface-2)}
+.q-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.q-btn .q-arrow{font-family:var(--font-mono);font-weight:600}
+
+/* Era badge */
+.q-era{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 var(--space-2);border-radius:var(--radius-sm);font:600 11px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}
+.q-era--1{background:var(--era-1);color:var(--on-era-1)}
+.q-era--2{background:var(--era-2);color:var(--on-era-2)}
+.q-era--3{background:var(--era-3);color:var(--on-era-3)}
+.q-era--4{background:var(--era-4);color:var(--on-era-4)}
+
+/* EraProgress : 4 segments proportionnels (8/4/2/1), curseur de progression */
+.q-prog{display:block}
+.q-prog__track{position:relative;display:flex;gap:3px;height:12px;border-radius:var(--radius-pill);overflow:hidden;background:var(--surface-2)}
+.q-prog__seg{height:100%;opacity:.28}
+.q-prog__seg--1{flex:8;background:var(--era-1)}.q-prog__seg--2{flex:4;background:var(--era-2)}
+.q-prog__seg--3{flex:2;background:var(--era-3)}.q-prog__seg--4{flex:1;background:var(--era-4)}
+.q-prog__fill{position:absolute;inset:0 auto 0 0;background:var(--era-sweep);background-size:var(--q-track,100%) 100%;border-radius:var(--radius-pill)}
+.q-prog__cursor{position:absolute;top:-4px;width:3px;height:20px;background:var(--text);border-radius:2px;transform:translateX(-50%)}
+.q-prog__scale{display:flex;gap:3px;margin-top:var(--space-2)}
+.q-prog__scale span{font:600 11px/16px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+.q-prog__scale span:nth-child(1){flex:8}.q-prog__scale span:nth-child(2){flex:4}.q-prog__scale span:nth-child(3){flex:2}.q-prog__scale span:nth-child(4){flex:1;text-align:right}
+.q-prog__meta{display:flex;justify-content:space-between;margin-top:var(--space-3);font:600 15px/20px var(--font-mono)}
+.q-prog__meta small{font:500 13px/18px var(--font-sans);color:var(--text-muted)}
+
+/* StatTile */
+.q-tile{padding:var(--space-6);border-radius:var(--radius-md);background:var(--surface-1);border:1px solid var(--line);box-shadow:var(--card);min-width:160px}
+.q-tile__num{font:600 32px/36px var(--font-mono);letter-spacing:-0.02em;color:var(--text)}
+.q-tile__num em{font-style:normal;color:var(--era-4-text)}
+.q-tile__label{margin-top:var(--space-2);font:600 11px/16px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+.q-tile__pixel{width:8px;height:8px;background:var(--era-4);margin-bottom:var(--space-4)}
+
+/* CoinCard */
+.q-coin{display:grid;grid-template-columns:40px 1fr 110px 150px auto;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-6);border-radius:var(--radius-lg);background:var(--surface-1);border:1px solid var(--line);box-shadow:var(--card);text-decoration:none;color:var(--text)}
+.q-coin--selected{border-color:transparent;background:linear-gradient(var(--surface-1),var(--surface-1)) padding-box,var(--era-sweep) border-box;box-shadow:var(--glow-brand)}
+.q-coin__avatar{width:40px;height:40px;border-radius:var(--radius-sm);display:grid;place-items:center;font:800 16px/1 var(--font-sans);letter-spacing:-0.03em}
+.q-coin__name{font:700 18px/24px var(--font-sans);letter-spacing:-0.01em}
+.q-coin__name small{font:600 13px/18px var(--font-mono);color:var(--text-muted);margin-left:var(--space-2)}
+.q-coin__sub{font:500 13px/18px var(--font-sans);color:var(--text-muted)}
+.q-coin__price{font:600 15px/20px var(--font-mono);text-align:right}
+.q-coin__price small{display:block;font:500 13px/18px var(--font-sans);color:var(--text-muted)}
+.q-coin .q-prog__track{height:8px}

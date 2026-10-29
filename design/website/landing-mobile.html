@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>QUAD — mobile landing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet">
+<style>
+:root{--surface-0:#0b0d18;--surface-1:#121a2e;--surface-2:#1f2a46;--line:#2e3a5c;--line-strong:#6b7799;--text:#f3f2f8;--text-muted:#a3a8c2;--era-1:#1b27f5;--era-2:#7136fe;--era-3:#e04d71;--era-4:#f88262;--on-era-1:#ffffff;--on-era-2:#ffffff;--on-era-3:#0b0d18;--on-era-4:#0b0d18;--era-4-text:#f88262;--brand:#f88262;--on-brand:#0b0d18;--focus:#ffa78f;--success:#3edb8b;--light-0:#f0eff4;--light-1:#ffffff;--ink:#0b0d18;--ink-muted:#5b5f7a;--brand-vertical:linear-gradient(180deg,#1b27f5 0%,#7136fe 38%,#e04d71 70%,#f88262 100%);--era-sweep:linear-gradient(90deg,#1b27f5 0%,#7136fe 34%,#e04d71 67%,#f88262 100%);--era-horizon:radial-gradient(60% 80% at 50% 100%,#f88262 0%,#e04d71 28%,#7136fe 55%,#1b27f5 75%,#0b0d18 100%);--font-sans:"Manrope","Helvetica Neue",Arial,sans-serif;--font-mono:"JetBrains Mono","SF Mono",Menlo,monospace;--radius-sm:6px;--radius-md:12px;--radius-lg:20px}
+body{margin:0;background:var(--surface-0);color:var(--text);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text);text-decoration:none}a:hover{color:var(--era-4-text)}
+*{box-sizing:border-box}
+.grain{position:relative}.grain::after{content:"";position:absolute;inset:0;background-image:url(../../public/brand/grain.png);background-size:256px 256px;opacity:.07;pointer-events:none;mix-blend-mode:screen;border-radius:inherit}
+.label{font-family:var(--font-mono);font-size:11px;line-height:16px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+.num{font-family:var(--font-mono);font-weight:600;letter-spacing:-0.01em}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border-radius:var(--radius-md);border:1.5px solid transparent;font:700 15px/1 var(--font-sans);cursor:pointer}
+.btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.btn-primary{background:var(--brand);color:var(--on-brand)}.btn-primary:hover{color:var(--on-brand)}
+.btn-secondary{background:transparent;color:var(--text);border-color:var(--line-strong)}
+.btn-ink{background:var(--ink);color:#ffffff}.btn-ink:hover{color:#ffffff}
+.field{display:flex;flex-direction:column;gap:8px}
+.field label{font:700 13px/18px var(--font-sans);color:var(--ink)}
+.field input{height:48px;padding:0 14px;border-radius:var(--radius-sm);border:1.5px solid #c9c8d6;background:#ffffff;color:var(--ink);font:600 15px/1 var(--font-mono);width:100%}
+.field input:focus-visible{outline:2px solid #1b27f5;outline-offset:2px}
+.era{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:var(--radius-sm);font:600 11px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}
+.era-1{background:var(--era-1);color:var(--on-era-1)}.era-2{background:var(--era-2);color:var(--on-era-2)}.era-3{background:var(--era-3);color:var(--on-era-3)}.era-4{background:var(--era-4);color:var(--on-era-4)}
+.track{position:relative;display:flex;gap:3px;height:8px;border-radius:999px;overflow:hidden;background:var(--surface-2)}
+.track span{height:100%;opacity:.28}.track .s1{flex:8;background:var(--era-1)}.track .s2{flex:4;background:var(--era-2)}.track .s3{flex:2;background:var(--era-3)}.track .s4{flex:1;background:var(--era-4)}
+.track .fill{position:absolute;inset:0 auto 0 0;background:var(--era-sweep);background-size:var(--w,100%) 100%;border-radius:999px;opacity:1}
+.track-light{background:#e9e8f1}
+.stripes{display:flex;height:100%;width:100%}.stripes i{display:block;height:100%;background-image:var(--brand-vertical);background-size:100% 300%}
+.rays line{stroke:var(--line);stroke-width:1}
+</style>
+</helmet>
+
+<div style="width: 100%; min-height: 100vh; background: var(--surface-0); color: var(--text); font-family: var(--font-sans); display: flex; flex-direction: column;">
+
+<section id="top" class="grain" style="position: relative; overflow: hidden; margin: 0; background: var(--surface-0); display: flex; flex-direction: column;">
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: var(--era-horizon); opacity: .9;"></div>
+  <svg class="rays" aria-hidden="true" viewBox="0 0 390 600" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: .5;"><line x1="195" y1="600" x2="-120" y2="0"></line><line x1="195" y1="600" x2="30" y2="0"></line><line x1="195" y1="600" x2="140" y2="0"></line><line x1="195" y1="600" x2="250" y2="0"></line><line x1="195" y1="600" x2="360" y2="0"></line><line x1="195" y1="600" x2="510" y2="0"></line><line x1="0" y1="480" x2="390" y2="480"></line><line x1="0" y1="340" x2="390" y2="340"></line></svg>
+
+<header style="position: relative; z-index: 1; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;">
+  <a href="#top" aria-label="QUAD home" style="display: inline-flex; align-items: center; gap: 10px;">
+    <svg viewBox="0 0 96 120" width="28" height="35" aria-hidden="true" shape-rendering="crispEdges"><defs><linearGradient id="qm" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="120"><stop offset="0" stop-color="#1b27f5"></stop><stop offset=".38" stop-color="#7136fe"></stop><stop offset=".7" stop-color="#e04d71"></stop><stop offset="1" stop-color="#f88262"></stop></linearGradient></defs><g fill="url(#qm)"><rect x="24" y="0" width="48" height="24"/><rect x="0" y="24" width="24" height="48"/><rect x="72" y="24" width="24" height="36"/><polygon points="24,72 72,72 96,96 96,120 72,96 24,96"/></g></svg>
+    <span style="font: 800 20px/1 var(--font-sans); letter-spacing: -0.04em;">QUAD</span>
+  </a>
+  <div style="display: flex; gap: 8px; align-items: center;">
+    <a class="btn btn-primary" href="#launch" style="height: 40px; padding: 0 16px; font-size: 14px;">Launch</a>
+    <button class="btn btn-secondary" type="button" aria-label="Open menu" style="width: 44px; height: 44px; padding: 0;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"></path></svg></button>
+  </div>
+</header>
+
+<div style="position: relative; padding: 24px 20px 40px; display: flex; flex-direction: column; gap: 20px;">
+  <div style="position: relative; display: flex; justify-content: space-between;"><span class="label">01 / Launchpad</span><span class="label">Quoted in HYPE</span></div>
+  <h1 style="position: relative; margin: 0; font: 800 52px/0.95 var(--font-sans); letter-spacing: -0.035em;">Four eras.<br>Priced in HYPE.</h1>
+  <p style="position: relative; margin: 0; font: 500 16px/24px var(--font-sans); color: var(--on-era-2, #ffffff)">21,000,000 coins, minted once. Each era sells half as many coins as the last, for the same HYPE. Creators earn 2.5% of every trade, in HYPE.</p>
+  <div style="position: relative; display: flex; flex-direction: column; gap: 10px;">
+    <a class="btn btn-primary" href="#launch">Launch coin <span class="num">→</span></a>
+    <a class="btn btn-secondary" href="#rules">See the eras</a>
+  </div>
+  <dl style="position: relative; margin: 8px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;"><dt class="label">Fee</dt><dd class="num" style="margin: 0; font-size: 18px;">3.125%</dd></div>
+    <div style="display: flex; flex-direction: column; gap: 4px;"><dt class="label">Creator</dt><dd class="num" style="margin: 0; font-size: 18px;">2.5%</dd></div>
+    <div style="display: flex; flex-direction: column; gap: 4px;"><dt class="label">Supply</dt><dd class="num" style="margin: 0; font-size: 18px;">21M</dd></div>
+  </dl>
+</div>
+</section>
+
+<form id="launch" style="margin: 16px 12px 0; background: var(--light-1); color: var(--ink); border-radius: var(--radius-lg); padding: 24px 20px; display: flex; flex-direction: column; gap: 16px;" onSubmit="{{ launch }}">
+  <div style="display: flex; justify-content: space-between; align-items: baseline;"><h2 style="margin: 0; font: 800 24px/1.1 var(--font-sans); letter-spacing: -0.02em;">Launch one</h2><span class="label" style="color: var(--ink-muted);">One tx</span></div>
+  <div class="field"><label for="m-name">Name</label><input id="m-name" name="name" type="text" placeholder="Hypedog"></div>
+  <div class="field"><label for="m-ticker">Ticker</label><input id="m-ticker" name="ticker" type="text" placeholder="HDOG" maxlength="8" style="text-transform: uppercase;"></div>
+  <div class="field">
+    <div style="display: flex; justify-content: space-between; align-items: baseline;"><label for="m-curve">HYPE to graduate</label><span class="num" style="font-size: 15px;">{{ threshold }} HYPE</span></div>
+    <input id="m-curve" name="curve" type="range" min="10" max="200" step="5" value="{{ threshold }}" style="height: 24px; padding: 0; border: 0; accent-color: #f88262;" onInput="{{ setThreshold }}">
+    <div class="track track-light" aria-hidden="true"><span class="s1"></span><span class="s2"></span><span class="s3"></span><span class="s4"></span></div>
+  </div>
+  <div class="field"><label for="m-fee">Fee goes to</label><input id="m-fee" name="fee" type="text" placeholder="Your Solana wallet"></div>
+  <button class="btn btn-primary" type="submit" style="height: 52px; font-size: 16px;">Launch coin <span class="num">→</span></button>
+  <p style="margin: 0; font: 500 12px/18px var(--font-sans); color: var(--ink-muted);">Launch fee 0.02 SOL + about 0.021 SOL of rent. Mint authority revoked in the same transaction. No freeze authority.</p>
+</form>
+
+<section id="rules" style="padding: 56px 12px 0; display: flex; flex-direction: column; gap: 16px;">
+  <div style="padding: 0 8px; display: flex; flex-direction: column; gap: 12px;"><span class="label">02 / The four rules</span><h2 style="margin: 0; font: 800 32px/1 var(--font-sans); letter-spacing: -0.03em;">Written into the pool at launch.</h2></div>
+  <article style="position: relative; overflow: hidden; border-radius: var(--radius-lg); background: var(--light-0); color: var(--ink); min-height: 360px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div class="stripes" aria-hidden="true" style="position: absolute; inset: 0;"><i style="width: 12%; background-position: 0 0;"></i><i style="width: 16%; background-position: 0 25%;"></i><i style="width: 8%; background-position: 0 55%;"></i><i style="width: 20%; background-position: 0 90%;"></i><i style="width: 10%; background-position: 0 40%;"></i><i style="width: 14%; background-position: 0 70%;"></i><i style="width: 20%; background-position: 0 100%;"></i></div>
+    <div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(180deg, #f0eff400 30%, #f0eff4 70%);"></div>
+    <div style="position: relative; display: flex; justify-content: space-between; padding: 20px;"><span class="label" style="color: #ffffff;">Rule 1 · 2</span><span class="label" style="color: #ffffff;">Supply · Quote</span></div>
+    <div style="position: relative; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><h3 style="margin: 0; font: 800 34px/1 var(--font-sans); letter-spacing: -0.03em;">Mint once.<br>Quote in HYPE.</h3><p style="margin: 0; font: 500 14px/20px var(--font-sans); color: var(--ink-muted);">21,000,000 coins from the first transaction. Every price is a HYPE price.</p></div>
+  </article>
+  <article class="grain" style="position: relative; overflow: hidden; border-radius: var(--radius-lg); background: var(--surface-0); border: 1px solid var(--line); min-height: 360px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 0; height: 55%; background: var(--era-horizon);"></div>
+    <div style="position: relative; display: flex; justify-content: space-between; padding: 20px;"><span class="label">Rule 3</span><span class="label">Eras</span></div>
+    <div style="position: relative; margin: 0 12px 12px; background: var(--light-1); color: var(--ink); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+      <h3 style="margin: 0; font: 800 20px/1.15 var(--font-sans); letter-spacing: -0.02em;">Every era costs twice.</h3>
+      <p style="margin: 0; font: 500 13px/18px var(--font-sans); color: var(--ink-muted);">Each era sells half as many coins as the last for the same HYPE.</p>
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: var(--radius-sm); background: var(--light-0);">
+        <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font: 700 13px/18px var(--font-sans);">Hypedog · $HDOG</span><span class="era era-2">Era 2</span></div>
+        <div class="track track-light" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="Distance to graduation"><span class="s1"></span><span class="s2"></span><span class="s3"></span><span class="s4"></span><div class="fill" style="width: 62%; --w: 300px;"></div></div>
+        <div style="display: flex; justify-content: space-between;"><span class="num" style="font-size: 12px;">31.0 / 50 HYPE</span><span class="label" style="color: var(--ink-muted);">62%</span></div>
+      </div>
+    </div>
+  </article>
+  <article class="grain" style="position: relative; overflow: hidden; border-radius: var(--radius-lg); background: var(--surface-0); border: 1px solid var(--line); min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
+    <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: var(--era-horizon); opacity: .55;"></div>
+    <div style="position: relative; display: flex; justify-content: space-between;"><span class="label">Rule 4</span><span class="label">Fees</span></div>
+    <div style="position: relative; display: flex; flex-direction: column; gap: 16px;">
+      <span style="display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; height: 28px; padding: 0 12px; border-radius: 999px; font: 600 12px/1 var(--font-mono); background-color: var(--era-4-text, #f88262)"><i style="width: 8px; height: 8px; border-radius: 999px; background: var(--success);"></i>Curve live</span>
+      <h3 style="margin: 0; font: 800 28px/1.05 var(--font-sans); letter-spacing: -0.03em;">Creators earn HYPE, on every trade.</h3>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding-top: 12px; border-top: 1px solid var(--line);">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span class="num" style="font-size: 18px;">2.5%</span><span class="label">Creator</span></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span class="num" style="font-size: 18px;">3.125%</span><span class="label">Per trade</span></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span class="num" style="font-size: 18px;">0 / 0</span><span class="label">Mint · Freeze</span></div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<section id="curve" style="padding: 56px 12px 0; display: flex; flex-direction: column; gap: 12px;">
+  <div style="padding: 0 8px; display: flex; flex-direction: column; gap: 12px;"><span class="label">03 / On the curve</span><h2 style="margin: 0; font: 800 32px/1 var(--font-sans); letter-spacing: -0.03em;">Coins on their steps right now.</h2></div>
+  <sc-for list="{{ coins }}" as="c" hint-placeholder-count="3">
+    <a href="#coin" style="display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: var(--radius-md); background: var(--surface-1); border: 1px solid var(--line);">
+      <span style="display: flex; align-items: center; gap: 12px;">
+        <span class="num" style="width: 40px; height: 40px; border-radius: var(--radius-sm); display: grid; place-items: center; font-size: 14px; background: {{ c.bg }}; color: {{ c.fg }};">{{ c.initials }}</span>
+        <span style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;"><span style="font: 700 16px/20px var(--font-sans);">{{ c.name }} <span class="num" style="font-size: 12px; color: var(--text-muted);">{{ c.ticker }}</span></span><span style="font: 500 12px/16px var(--font-sans); color: var(--text-muted);">{{ c.sub }}</span></span>
+        <span style="text-align: right; display: flex; flex-direction: column; gap: 2px;"><span class="num" style="font-size: 14px;">{{ c.price }}</span><span style="font: 500 12px/16px var(--font-sans); color: var(--text-muted);">{{ c.raised }}</span></span>
+      </span>
+      <span style="display: flex; align-items: center; gap: 12px;"><span class="era {{ c.eraCls }}">{{ c.era }}</span><span class="track" style="flex: 1;" aria-hidden="true"><span class="s1"></span><span class="s2"></span><span class="s3"></span><span class="s4"></span><span class="fill" style="width: {{ c.progress }}; --w: 240px;"></span></span></span>
+    </a>
+  </sc-for>
+</section>
+
+<section id="creators" class="grain" style="margin: 56px 12px 0; position: relative; overflow: hidden; border-radius: var(--radius-lg); background: var(--brand-vertical); padding: 24px 20px; display: flex; flex-direction: column; gap: 20px;">
+  <div style="display: flex; justify-content: space-between;"><span class="label" style="color: #ffffff;">Launch yours</span><span class="label" style="color: #ffffff;">Era 1 → 4</span></div>
+  <svg viewBox="0 0 96 120" width="120" height="150" aria-hidden="true" shape-rendering="crispEdges" style="align-self: center;"><g fill="#ffffff"><rect x="24" y="0" width="48" height="24"/><rect x="0" y="24" width="24" height="48"/><rect x="72" y="24" width="24" height="36"/><polygon points="24,72 72,72 96,96 96,120 72,96 24,96"/></g></svg>
+  <p style="margin: 0; font: 800 24px/1.1 var(--font-sans); letter-spacing: -0.02em; color: var(--ink);">Name it, choose how deep the curve is, press launch.</p>
+  <a class="btn btn-ink" href="#launch">Launch coin <span class="num">→</span></a>
+</section>
+
+<footer style="padding: 56px 20px 32px; display: flex; flex-direction: column; gap: 16px;">
+  <div style="height: 1px; background: var(--line);"></div>
+  <span style="font: 800 20px/1 var(--font-sans); letter-spacing: -0.04em;">QUAD</span>
+  <p style="margin: 0; font: 500 13px/20px var(--font-sans); color: var(--text-muted);">Coins are quoted in HYPE on Solana (Wormhole NTT). QUAD is paired to HYPE; it is not affiliated with Hyperliquid.</p>
+  <nav style="display: flex; gap: 20px; flex-wrap: wrap;" aria-label="Footer"><a href="#launch" style="font: 600 14px/1 var(--font-sans);">Launch</a><a href="#curve" style="font: 600 14px/1 var(--font-sans);">On the curve</a><a href="#docs" style="font: 600 14px/1 var(--font-sans);">Docs</a><a href="https://x.com" target="_blank" rel="noopener" style="font: 600 14px/1 var(--font-sans);">X</a></nav>
+  <span class="label">© 2026 QUAD · Four eras · Priced in HYPE</span>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"threshold":{"editor":"int","default":50,"min":10,"max":200,"step":5,"unit":"HYPE","section":"Launch card"},"$preview":{"width":390,"height":2660}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { threshold: null }; }
+  renderVals() {
+    const coins = [
+      { name: 'Sunrise', ticker: '$SUN', sub: '6 h ago · 1,204 holders', era: 'Era 4', eraCls: 'era-4', bg: 'var(--era-4)', fg: 'var(--on-era-4)', initials: 'SR', progress: '96%', price: '0.02960 HYPE', raised: '19.2 / 20 HYPE' },
+      { name: 'Voltcat', ticker: '$VOLT', sub: '41 min ago · 390 holders', era: 'Era 3', eraCls: 'era-3', bg: 'var(--era-3)', fg: 'var(--on-era-3)', initials: 'VC', progress: '84%', price: '0.01180 HYPE', raised: '84.0 / 100 HYPE' },
+      { name: 'Hypedog', ticker: '$HDOG', sub: '14 min ago · 212 holders', era: 'Era 2', eraCls: 'era-2', bg: 'var(--era-2)', fg: 'var(--on-era-2)', initials: 'HD', progress: '62%', price: '0.00412 HYPE', raised: '31.0 / 50 HYPE' }
+    ];
+    return {
+      threshold: this.state.threshold ?? this.props.threshold ?? 50,
+      coins,
+      setThreshold: (e) => this.setState({ threshold: Number(e.target.value) }),
+      launch: (e) => { e.preventDefault(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+import { describe, it, expect } from 'vitest';
+import { buildQuadCurve, verifyCurve, ERAS } from '../lib/curve';
+
+const SUPPLY = 21_000_000n * 10n ** 6n; // 21M coins, 6 decimals
+const Q = 50n * 10n ** 8n; // 50 HYPE at 8 decimals
+
+describe('quad curve', () => {
+  const c = buildQuadCurve({ totalSupply: SUPPLY, migrationQuote: Q });
+
+  it('has four ascending points', () => {
+    expect(c.points).toHaveLength(ERAS);
+    for (let i = 1; i < c.points.length; i++) expect(c.points[i].sqrtPrice > c.points[i - 1].sqrtPrice).toBe(true);
+    expect(c.points[0].sqrtPrice > c.sqrtStartPrice).toBe(true);
+  });
+
+  it('raises the same HYPE in every era (±0.01%)', () => {
+    const target = Number(Q) / ERAS;
+    for (const e of c.eras) expect(Math.abs(Number(e.quote) - target) / target).toBeLessThan(1e-4);
+  });
+
+  it('sells half the coins of the previous era (±0.1%)', () => {
+    for (let i = 1; i < ERAS; i++) {
+      const ratio = Number(c.eras[i].base) / Number(c.eras[i - 1].base);
+      expect(Math.abs(ratio - 0.5)).toBeLessThan(1e-3);
+    }
+  });
+
+  it('doubles the average price every era (±0.1%)', () => {
+    for (let i = 1; i < ERAS; i++) {
+      const ratio = c.eras[i].avgPrice / c.eras[i - 1].avgPrice;
+      expect(Math.abs(ratio - 2)).toBeLessThan(2e-3);
+    }
+  });
+
+  it('uses the whole supply: curve + migration ≈ 21M, leftover is dust', () => {
+    const total = c.curveBase + c.migrationBase + c.leftover;
+    expect(total).toBe(SUPPLY);
+    expect(Number(c.leftover) / Number(SUPPLY)).toBeLessThan(1e-3);
+    expect(Number(c.curveBase) / Number(SUPPLY)).toBeCloseTo(0.8413, 2);
+  });
+
+  it('verifyCurve recomputes the same totals from the points', () => {
+    const v = verifyCurve(c.sqrtStartPrice, c.points);
+    expect(v.base).toBe(c.curveBase);
+    expect(Math.abs(Number(v.quote) - Number(Q)) / Number(Q)).toBeLessThan(1e-4);
+  });
+});
