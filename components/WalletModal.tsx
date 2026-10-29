@@ -89,7 +89,7 @@ function WalletModal({ onClose }: { onClose: () => void }) {
                 <li key={w.adapter.name}>
                   <button type="button" className="wm-item" onClick={() => choose(w.adapter.name)}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={w.adapter.icon} alt="" width={28} height={28} />
+                    <img src={w.adapter.icon} alt="" width={32} height={32} />
                     <span className="wm-name">{w.adapter.name}</span>
                     <span className="label">Detected</span>
                   </button>
@@ -105,7 +105,7 @@ function WalletModal({ onClose }: { onClose: () => void }) {
                 <li key={w.adapter.name}>
                   <a className="wm-item" href={w.adapter.url} target="_blank" rel="noopener">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={w.adapter.icon} alt="" width={28} height={28} />
+                    <img src={w.adapter.icon} alt="" width={32} height={32} />
                     <span className="wm-name">{w.adapter.name}</span>
                     <span className="label">Install ↗</span>
                   </a>
@@ -117,6 +117,12 @@ function WalletModal({ onClose }: { onClose: () => void }) {
             <a className="q-btn q-btn--primary" href={GET_WALLET} target="_blank" rel="noopener">Get a wallet <span className="num">↗</span></a>
           )}
         </div>
+        {detected.length > 0 && (
+          <footer className="wm-foot">
+            <span className="label">New to Solana?</span>
+            <a href={GET_WALLET} target="_blank" rel="noopener">Get a wallet ↗</a>
+          </footer>
+        )}
       </div>
     </div>
   );
