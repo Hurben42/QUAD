@@ -35,39 +35,57 @@ export function LaunchForm() {
   }
 
   const busyLabel = { upload: 'Uploading metadata…', sign: 'Waiting for wallet…', confirm: 'Confirming…' };
-  const fee = config && config.poolCreationFee > 0n ? `Launch fee ${fromUnits(config.poolCreationFee, 9)} SOL plus` : 'No launch fee, only';
 
   return (
-    <form id="launch" className="card-light card-lift launch-card" data-theme="light" onSubmit={onSubmit}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <h2>Launch one</h2>
-        <span className="label"><span className="hide-m">One transaction</span><span className="show-m-i">One tx</span></span>
+    <form id="launch" className="card-light card-lift launch-card lf" data-theme="light" onSubmit={onSubmit}>
+      <div className="lf-sweep" aria-hidden="true" />
+      <div className="lf-head">
+        <div className="lf-title">
+          <span className="label">01 / Launch</span>
+          <h2>Launch one</h2>
+        </div>
+        <a className="lf-steps" href="/launch">Step by step <span className="num">→</span></a>
       </div>
+
       <div className="launch-pair">
-        <div className="field"><label htmlFor="name">Name</label><input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Hypedog" maxLength={32} required /></div>
-        <div className="field"><label htmlFor="ticker">Ticker</label><input id="ticker" value={ticker} onChange={(e) => setTicker(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} placeholder="HDOG" maxLength={10} required /></div>
+        <div className="field lf-field"><label htmlFor="name">Name</label><input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Hypedog" maxLength={32} required autoComplete="off" /></div>
+        <div className="field lf-field"><label htmlFor="ticker">Ticker</label><div className="lf-affix"><span className="num">$</span><input id="ticker" value={ticker} onChange={(e) => setTicker(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} placeholder="HDOG" maxLength={10} required autoComplete="off" /></div></div>
       </div>
-      <div className="field">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><label htmlFor="curve"><span className="hide-m">Curve · </span>HYPE to graduate</label><span className="num">{threshold ?? '—'} HYPE</span></div>
-        <input id="curve" type="range" min={0} max={threshold ?? 1} value={threshold ?? 0} disabled readOnly style={{ height: 24, padding: 0, border: 0, accentColor: 'var(--brand)' }} />
-        <div className="track show-m" aria-hidden="true"><span className="s1" /><span className="s2" /><span className="s3" /><span className="s4" /></div>
-        <span className="hint">Set by the QUAD config, the same for every coin. Other depths need their own config key.</span>
+
+      <div className="lf-curve" aria-label={`Four eras, graduates at ${threshold ?? '—'} HYPE`}>
+        <div className="lf-curve-steps" aria-hidden="true">
+          {[8, 4, 2, 1].map((w, i) => <i key={i} style={{ flex: w, height: `${100 / 2 ** (3 - i)}%`, background: `var(--era-${i + 1})` }} />)}
+        </div>
+        <div className="lf-curve-meta">
+          <span className="label">The curve · same for every coin</span>
+          <span className="lf-curve-grad"><span className="num">{threshold ?? '—'}</span> HYPE to graduate</span>
+        </div>
       </div>
-      <div className="field">
-        <label htmlFor="firstbuy">First buy · optional</label>
-        <input id="firstbuy" inputMode="decimal" value={firstBuy} onChange={(e) => setFirstBuy(e.target.value)} placeholder="0.00 HYPE" aria-invalid={!validBuy} />
-        <span className="hint">Your own buy in the launch transaction pays {pct(BASE_FEE)}, not the {pct(ANTI_SNIPER_FEE)} anti-sniper fee.</span>
+
+      <div className="field lf-field">
+        <div className="lf-row"><label htmlFor="firstbuy">First buy · optional</label><span className="hint">{pct(BASE_FEE)} fee, not {pct(ANTI_SNIPER_FEE)}</span></div>
+        <div className="lf-affix lf-affix--end"><input id="firstbuy" inputMode="decimal" value={firstBuy} onChange={(e) => setFirstBuy(e.target.value)} placeholder="0.00" aria-invalid={!validBuy} autoComplete="off" /><span className="num">HYPE</span></div>
+        <div className="lf-chips">
+          {['', '1', '5', '10'].map((v) => <button type="button" key={v || 'none'} className={firstBuy === v ? 'on' : ''} onClick={() => setFirstBuy(v)}>{v ? `${v} HYPE` : 'None'}</button>)}
+        </div>
       </div>
-      <Button type="submit" disabled={step !== null || !config || !validBuy} style={{ height: 52, fontSize: 16 }}>
-        {step ? busyLabel[step] : publicKey ? 'Launch coin →' : 'Connect wallet to launch'}
+
+      <Button type="submit" className="lf-go" disabled={step !== null || !config || !validBuy}>
+        {step ? busyLabel[step] : publicKey ? <>Launch coin <span className="num">→</span></> : 'Connect wallet to launch'}
       </Button>
-      {configError && <p role="alert" className="num" style={{ margin: 0, fontSize: 12, color: 'var(--danger)', wordBreak: 'break-all' }}>{configError}</p>}
+
+      {configError && <p role="alert" className="lf-alert"><i />{configError}</p>}
       {result && (
-        <p role="status" className="num" style={{ margin: 0, fontSize: 12, wordBreak: 'break-all', color: result.ok ? 'var(--success)' : 'var(--danger)' }}>
-          {result.ok ? <>Launched · <a href={tradeUrl(result.baseMint)} target="_blank" rel="noopener" style={{ textDecoration: 'underline' }}>pool {result.pool}</a></> : result.message}
+        <p role="status" className={`lf-alert ${result.ok ? 'lf-alert--ok' : ''}`}>
+          <i />{result.ok ? <>Launched · <a href={tradeUrl(result.baseMint)} target="_blank" rel="noopener">pool {result.pool}</a></> : result.message}
         </p>
       )}
-      <p style={{ margin: 0, font: '500 12px/18px var(--font-sans)', color: 'var(--text-muted)' }}>{fee} about {RENT_ESTIMATE_SOL} SOL of rent. Mint authority is revoked in the same transaction. The coin never gets a freeze authority.</p>
+
+      <ul className="lf-facts">
+        <li><span className="num">{config && config.poolCreationFee > 0n ? `${fromUnits(config.poolCreationFee, 9)} SOL` : '0 SOL'}</span><span>launch fee</span></li>
+        <li><span className="num">≈ {RENT_ESTIMATE_SOL} SOL</span><span>rent</span></li>
+        <li><span className="num">0 / 0</span><span>mint · freeze</span></li>
+      </ul>
     </form>
   );
 }
