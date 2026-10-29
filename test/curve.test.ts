@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { baseOutForQuote, buildQuadCurve, verifyCurve, ERAS } from '../lib/curve';
+import { baseOutForQuote, buildQuadCurve, coins, price, verifyCurve, ERAS, BASE_DECIMALS, TOTAL_COINS } from '../lib/curve';
 
-const SUPPLY = 21_000_000n * 10n ** 6n; // 21M coins, 6 decimals
+const SUPPLY = TOTAL_COINS * 10n ** BigInt(BASE_DECIMALS); // 1B coins, 6 decimals
 const Q = 50n * 10n ** 8n; // 50 HYPE at 8 decimals
 
 describe('quad curve', () => {
@@ -32,7 +32,7 @@ describe('quad curve', () => {
     }
   });
 
-  it('uses the whole supply: curve + migration ≈ 21M, leftover is dust', () => {
+  it('uses the whole supply: curve + migration = total supply, leftover is dust', () => {
     const total = c.curveBase + c.migrationBase + c.leftover;
     expect(total).toBe(SUPPLY);
     expect(Number(c.leftover) / Number(SUPPLY)).toBeLessThan(1e-3);
@@ -61,5 +61,19 @@ describe('first buy', () => {
     const out = baseOutForQuote(c.sqrtStartPrice, c.points, Q * 2n);
     expect(out <= c.curveBase).toBe(true);
     expect(c.curveBase - out <= BigInt(ERAS)).toBe(true);
+  });
+});
+
+describe('display', () => {
+  it('formats the supply', () => {
+    expect(coins(TOTAL_COINS)).toBe('1,000,000,000');
+    expect(coins(TOTAL_COINS, true)).toBe('1B');
+    expect(coins(21_000_000n, true)).toBe('21M');
+  });
+  it('prints tiny prices with a zero count, never in e-notation', () => {
+    expect(price(0.0000000197)).toBe('0.0₇197');
+    expect(price(0.000123)).toBe('0.0₃123');
+    expect(price(0.0123)).toBe('0.0123');
+    expect(price(2.5)).toBe('2.5');
   });
 });

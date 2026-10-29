@@ -47,7 +47,7 @@ describe.each([8, 9, 6])('quad config, quote at %i decimals', (quoteDecimals) =>
     segmentAmounts.forEach((a) => expect(big(a)).toBe(q));
   });
 
-  it('fits the fixed 21M supply with the program rounding, no swap buffer needed', () => {
+  it('fits the fixed supply with the program rounding, no swap buffer needed', () => {
     const sMig = getMigrationThresholdPrice(params.migrationQuoteThreshold, params.sqrtStartPrice, params.curve);
     const swap = getBaseTokenForSwap(params.sqrtStartPrice, sMig, params.curve);
     const buffered = getSwapAmountWithBuffer(swap, params.sqrtStartPrice, params.curve);
@@ -58,7 +58,9 @@ describe.each([8, 9, 6])('quad config, quote at %i decimals', (quoteDecimals) =>
     const supply = big(params.tokenSupply!.preMigrationTokenSupply);
     expect(curve.curveBase + curve.migrationBase + curve.leftover).toBe(supply);
     expect(curve.leftover >= 0n).toBe(true);
-    expect(curve.leftover < 10n ** 6n).toBe(true); // under one coin
+    // dust only: one quote lamport is worth ~supply/threshold base lamports, so the rounding
+    // leaves a few coins at most (1.2 coins of 1B at 8 decimals, 12 at 6) — under 1e-7 of supply
+    expect(Number(curve.leftover) / Number(supply)).toBeLessThan(1e-7);
   });
 });
 

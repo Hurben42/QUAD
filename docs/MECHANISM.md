@@ -4,7 +4,7 @@ Every QUAD coin is a Meteora Dynamic Bonding Curve virtual pool created from one
 
 | Rule | DBC parameter |
 |---|---|
-| 21,000,000 coins, minted once | `tokenSupply.preMigrationTokenSupply = postMigrationTokenSupply = 21_000_000 × 10^decimals`; mint authority is revoked by the program at pool creation; no freeze authority |
+| 1,000,000,000 coins, minted once (like HYPE) | `tokenSupply.preMigrationTokenSupply = postMigrationTokenSupply = 1_000_000_000 × 10^decimals`; mint authority is revoked by the program at pool creation; no freeze authority |
 | Quoted in HYPE | `quoteMint = 98sMhvDwXj1RQi5c5Mndm3vPe9cBqPrbLaufMXFNMh5g`, `collectFeeMode = 0` (fees in quote only → creators are paid in HYPE) |
 | Four eras, each selling half the coins of the last for the same HYPE | `curve` = 4 segments `{sqrtPrice, liquidity}` built by `lib/curve.ts` (below) |
 | Creator earns 2.5% of every trade | `baseFee` 3.125% (`cliffFeeNumerator` ends at 31_250_000 / 1e9), `creatorTradingFeePercentage = 100` → protocol 0.625%, creator 2.5%. Platform revenue: set it to 50 and the platform (`feeClaimer`) takes 1.25% |
@@ -26,7 +26,7 @@ Migration: the program moves `Q × (1 − migrationFee)` of HYPE into a DAMM v2 
 
 ### Rounding — what the program checks (corrected after validating against SDK 1.5.13)
 
-The first version of `lib/curve.ts` used `Q' / P_4` for the migration base (the DAMM v1 formula) and rounded segment bases down. The program rounds base **up** per segment and uses the DAMM v2 formula above, so its `swapBase + migrationBase` came out 19,996 base lamports (0.02 coin) over the 21M supply and `createConfig` failed with `Invalid token supply`. `lib/curve.ts` now:
+The first version of `lib/curve.ts` used `Q' / P_4` for the migration base (the DAMM v1 formula) and rounded segment bases down. The program rounds base **up** per segment and uses the DAMM v2 formula above, so its `swapBase + migrationBase` came out 19,996 base lamports (0.02 coin) over the then 21M supply and `createConfig` failed with `Invalid token supply`. `lib/curve.ts` now:
 
 - rounds base and quote **up** per segment (`get_delta_amount_*_unsigned`, `Rounding::Up`), in `buildQuadCurve` and `verifyCurve` alike;
 - computes the migration base with the DAMM v2 full-range formula (`migrationBaseDammV2`);
@@ -34,7 +34,7 @@ The first version of `lib/curve.ts` used `Q' / P_4` for the migration base (the 
 
 `test/config.test.ts` checks every segment, `swapBaseAmount`, the migration price and the migration base against the SDK's helpers, at 6, 8 and 9 quote decimals. `pnpm config:verify` checks them against what the program stored on-chain.
 
-Supply buffer: DBC requires `preMigrationTokenSupply ≥ min(1.25 × swapBase, base the curve can sell up to its last point) + migrationBase`. Because the QUAD curve ends exactly at the migration price, the second term equals `swapBase`, so no extra 25% is needed and the fixed 21M fits.
+Supply buffer: DBC requires `preMigrationTokenSupply ≥ min(1.25 × swapBase, base the curve can sell up to its last point) + migrationBase`. Because the QUAD curve ends exactly at the migration price, the second term equals `swapBase`, so no extra 25% is needed and the fixed supply fits.
 
 Things to verify on devnet before mainnet (the SDK evolves faster than this doc):
 

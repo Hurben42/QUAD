@@ -35,7 +35,7 @@ export type QuadCurve = {
 };
 
 export type QuadCurveInput = {
-  /** total supply in base lamports, e.g. 21_000_000n * 10n ** 6n */
+  /** total supply in base lamports, e.g. 1_000_000_000n * 10n ** 6n */
   totalSupply: bigint;
   /** migration quote threshold in quote lamports (HYPE) */
   migrationQuote: bigint;
@@ -181,7 +181,7 @@ export function eraOf(progress: number): 1 | 2 | 3 | 4 {
 export const ERA_WIDTHS = [8, 4, 2, 1] as const;
 
 // ---- The four rules: one source for the config script and the UI copy ---------
-export const TOTAL_COINS = 21_000_000n;
+export const TOTAL_COINS = 1_000_000_000n; // like HYPE: one billion, minted once
 export const BASE_DECIMALS = 6; // 6–9 allowed by DBC
 export const DEFAULT_THRESHOLD_HYPE = 50; // HYPE to graduate; other depths need their own config key
 export const BASE_FEE = 0.03125; // 3.125% per trade, the fee scheduler's floor
@@ -194,8 +194,27 @@ export const CREATOR_FEE = BASE_FEE * (1 - PROTOCOL_FEE_SHARE) * (CREATOR_TRADIN
 
 /** 0.03125 → "3.125%", 0.5 → "50%". */
 export const pct = (x: number) => `${Number((x * 100).toFixed(3))}%`;
-/** 21_000_000n → "21,000,000"; compact: "21M". */
-export const coins = (n: bigint, compact = false) => (compact ? `${Number(n) / 1e6}M` : n.toLocaleString('en-US'));
+/** 1_000_000_000n → "1,000,000,000"; compact: "1B" (or "21M", "500K"). */
+export const coins = (n: bigint, compact = false) => {
+  if (!compact) return n.toLocaleString('en-US');
+  const x = Number(n);
+  const [d, u] = x >= 1e9 ? [1e9, 'B'] : x >= 1e6 ? [1e6, 'M'] : x >= 1e3 ? [1e3, 'K'] : [1, ''];
+  return `${Number((x / d).toFixed(2))}${u}`;
+};
+
+const SUBSCRIPT = '₀₁₂₃₄₅₆₇₈₉';
+/**
+ * A HYPE price per coin, readable at a billion-coin supply: 0.0₇197 for 0.0000000197
+ * (the subscript counts the zeros after the decimal point), plain digits from 0.001 up.
+ */
+export function price(x: number, digits = 3): string {
+  if (!(x > 0) || !Number.isFinite(x)) return '0';
+  if (x >= 1000) return Math.round(x).toLocaleString('en-US');
+  if (x >= 0.001) return String(Number(x.toPrecision(digits)));
+  const zeros = Math.floor(-Math.log10(x)); // 1.97e-8 → 7 zeros after "0."
+  const sig = Math.round(x * 10 ** (zeros + digits)).toString().slice(0, digits);
+  return `0.0${String(zeros).split('').map((c) => SUBSCRIPT[+c]).join('')}${sig}`;
+}
 
 /** Rent a launch locks (mint, metadata, pool, vaults), roughly; shown as an estimate only. */
 export const RENT_ESTIMATE_SOL = 0.021;

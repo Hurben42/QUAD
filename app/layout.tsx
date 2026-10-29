@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { CREATOR_FEE, TOTAL_COINS, coins, pct } from '@/lib/curve';
 import { Manrope, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
@@ -8,7 +9,7 @@ const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['600'], variable: '--
 
 export const metadata: Metadata = {
   title: 'QUAD — Four eras. Priced in HYPE.',
-  description: 'Launch a coin on Solana: 21,000,000 coins minted once, traded against HYPE on a four-era curve. Creators earn 2.5% of every trade, in HYPE.',
+  description: `Launch a coin on Solana: ${coins(TOTAL_COINS)} coins minted once, traded against HYPE on a four-era curve. Creators earn ${pct(CREATOR_FEE)} of every trade, in HYPE.`,
   icons: { icon: '/brand/quad-app-icon.svg' },
 };
 

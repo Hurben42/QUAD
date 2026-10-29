@@ -13,6 +13,7 @@ import {
   buildQuadCurve,
   coins,
   pct,
+  price,
 } from '@/lib/curve';
 import { useQuadConfig, type QuadConfigView } from '@/lib/useQuadConfig';
 import { useQuoteBalance } from '@/lib/useQuoteBalance';
@@ -151,7 +152,7 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
                     <span role="cell"><i style={{ background: `var(--era-${i + 1})` }} />Era {i + 1}</span>
                     <span role="cell" className="num">{view ? fmt(view.eras[i].coins) : `${[8, 4, 2, 1][i]}/15`}</span>
                     <span role="cell" className="num">{view ? fmt(view.eras[i].hype) : '—'}</span>
-                    <span role="cell" className="num">{view ? view.eras[i].price.toPrecision(3) : '—'}</span>
+                    <span role="cell" className="num">{view ? price(view.eras[i].price) : '—'}</span>
                   </div>
                 ))}
               </div>
@@ -268,7 +269,7 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
         <EraSteps progress={view?.progress ?? 0} height={88} />
         <dl className="lp-stats">
           <div><dt className="label">Supply</dt><dd className="num">{coins(TOTAL_COINS, true)}</dd></div>
-          <div><dt className="label">Start price</dt><dd className="num">{view ? view.startPrice.toPrecision(3) : '—'}</dd></div>
+          <div><dt className="label">Start price</dt><dd className="num">{view ? price(view.startPrice) : '—'}</dd></div>
           <div><dt className="label">Graduates</dt><dd className="num">{view ? `${view.threshold} HYPE` : '—'}</dd></div>
         </dl>
       </aside>

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { EraSteps } from './EraSteps';
 import { CoinCard, CoinRow, CoinTableHeader, type CoinView } from './CoinRow';
 import { QUOTE_MINT } from '@/lib/dbc';
+import { price as fmtPrice } from '@/lib/curve';
 
 type ApiCoin = { pool: string; baseMint: string; name: string; symbol: string; progress: number; era: 1 | 2 | 3 | 4; quoteRaised: string; quoteThreshold: string; spotPrice: number; createdAt: number | null };
 type Api = { quoteDecimals: number; baseDecimals: number | null; coins: ApiCoin[] };
@@ -31,7 +32,7 @@ function toView(c: ApiCoin, api: Api): CoinView {
     sub: ago(c.createdAt),
     era: c.era,
     progress: c.progress,
-    price: `${price.toPrecision(3)} HYPE`,
+    price: `${fmtPrice(price)} HYPE`,
     raised: `${fmt(hype(c.quoteRaised, api.quoteDecimals))} / ${fmt(hype(c.quoteThreshold, api.quoteDecimals))} HYPE`,
     initials: (c.name || symbol).replace(/[^A-Za-z0-9 ]/g, '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() || symbol.slice(0, 2),
   };

@@ -6,7 +6,7 @@ Tu reprends un projet dont le design est fini et dont le backend est à construi
 
 Un launchpad sur Solana. Chaque coin lancé sur QUAD :
 
-1. a une supply fixe de **21 000 000**, mintée en une seule transaction, mint authority révoquée, pas de freeze authority ;
+1. a une supply fixe de **1 000 000 000** (comme HYPE), mintée en une seule transaction, mint authority révoquée, pas de freeze authority ;
 2. est **quoté en HYPE** (le token Hyperliquid bridgé sur Solana via Wormhole NTT, mint `98sMhvDwXj1RQi5c5Mndm3vPe9cBqPrbLaufMXFNMh5g`) ;
 3. se vend sur une bonding curve en **4 eras** : chaque era vend deux fois moins de coins que la précédente pour la même quantité de HYPE, donc le prix moyen double à chaque era (8/15, 4/15, 2/15, 1/15 des coins de la curve) ;
 4. paie son **créateur en HYPE** : 2,5 % de chaque trade (fee totale 3,125 %, dont 20 % pour le protocole Meteora), sur la curve puis après graduation ; fee anti-sniper de 50 % sur le premier buy, sauf pour le buy du créateur dans la tx de lancement.

@@ -137,7 +137,7 @@ export default function Page() {
           <nav className="hide-m" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }} aria-label="Footer">
             {[
               ['Product', [['/launch', 'Launch'], ['#curve', 'On the curve'], ['/creator', 'Creator fees'], [GET_HYPE, 'Get HYPE']]],
-              ['Read', [['#docs', 'Docs'], ['#rules', 'The four rules'], ['#docs', 'Pool config']]],
+              ['Read', [['/docs', 'Docs'], ['#rules', 'The four rules'], ['/docs#config', 'Pool config']]],
               ['Follow', [['https://x.com', 'X'], ['https://github.com', 'GitHub']]],
             ].map(([title, links]) => (
               <div key={title as string} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -147,7 +147,7 @@ export default function Page() {
             ))}
           </nav>
           <nav className="show-m" style={{ gap: 20, flexWrap: 'wrap' }} aria-label="Footer">
-            {[['/launch', 'Launch'], ['#curve', 'On the curve'], ['/creator', 'Creator fees'], ['#docs', 'Docs'], ['https://x.com', 'X']].map(([href, label]) => <a key={label} href={href} style={{ font: '600 14px/1 var(--font-sans)' }}>{label}</a>)}
+            {[['/launch', 'Launch'], ['#curve', 'On the curve'], ['/creator', 'Creator fees'], ['/docs', 'Docs'], ['https://x.com', 'X']].map(([href, label]) => <a key={label} href={href} style={{ font: '600 14px/1 var(--font-sans)' }}>{label}</a>)}
           </nav>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}><span className="label">© 2026 QUAD<span className="show-m-i"> · Four eras · Priced in HYPE</span></span><span className="label hide-m">Four eras · Priced in HYPE</span></div>
