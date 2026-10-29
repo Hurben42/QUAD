@@ -3,13 +3,18 @@
  *
  * Pure functions on bigint. See docs/MECHANISM.md for the derivation.
  * Everything here is in lamports (smallest units) of the base and quote mints.
+ *
+ * Rounding and the migration formula mirror the DBC program (as exposed by the SDK's
+ * getBaseTokenForSwap / getMigrationBaseToken), so the amounts here are the ones the
+ * program checks against tokenSupply — not approximations of them.
  */
 
 export const ERAS = 4;
 export const Q64 = 1n << 64n;
 export const Q128 = 1n << 128n;
 
-/** Max sqrt price accepted by the DBC program (from Meteora docs). */
+/** Sqrt price bounds of the DBC program (Q64), also the DAMM v2 full range. */
+export const MIN_SQRT_PRICE = 4295048016n;
 export const MAX_SQRT_PRICE = 79226673521066979257578248091n;
 
 export type CurvePoint = { sqrtPrice: bigint; liquidity: bigint };
@@ -19,9 +24,9 @@ export type QuadCurve = {
   sqrtStartPrice: bigint;
   /** 4 points, ascending; the last one is the end of era 4 */
   points: CurvePoint[];
-  /** base tokens sold on the curve (sum of the 4 eras) */
+  /** base tokens sold on the curve (sum of the 4 eras, rounded up per segment like the program) */
   curveBase: bigint;
-  /** base tokens the program will migrate with the raised quote */
+  /** base tokens the program will migrate with the raised quote (DAMM v2 full-range position) */
   migrationBase: bigint;
   /** supply − curveBase − migrationBase (dust, goes to leftoverReceiver) */
   leftover: bigint;
@@ -34,7 +39,7 @@ export type QuadCurveInput = {
   totalSupply: bigint;
   /** migration quote threshold in quote lamports (HYPE) */
   migrationQuote: bigint;
-  /** migration fee taken from the threshold, in percent (0–99). 0 unless you set migrationFee in the config */
+  /** migration fee taken from the threshold, in whole percent (0–99). 0 unless you set migrationFee in the config */
   migrationFeePercent?: number;
 };
 
@@ -61,31 +66,34 @@ export function bigSqrt(x: bigint): bigint {
   return r;
 }
 
+const divUp = (a: bigint, b: bigint) => (a + b - 1n) / b;
+
+/** Base out of a constant-product segment, rounded up (program: get_delta_amount_base_unsigned, Rounding::Up). */
+export const segmentBase = (lower: bigint, upper: bigint, liquidity: bigint) => divUp(liquidity * (upper - lower), lower * upper);
+/** Quote into a constant-product segment, rounded up (program: get_delta_amount_quote_unsigned, Rounding::Up). */
+export const segmentQuote = (lower: bigint, upper: bigint, liquidity: bigint) => divUp(liquidity * (upper - lower), Q128);
+
 /**
- * Build the 4-era curve. Base sold on the curve is chosen so that
- * curve + migration ≈ total supply (leftover is rounding dust only).
+ * Base the program deposits next to `quote` when it migrates to DAMM v2: a full-range position
+ * [MIN_SQRT_PRICE, MAX_SQRT_PRICE] opened at sqrtPrice. Slightly more than quote / P because the
+ * range starts at MIN_SQRT_PRICE, not 0.
  */
-export function buildQuadCurve(input: QuadCurveInput): QuadCurve {
-  const { totalSupply, migrationQuote } = input;
-  const feeFactor = 1 - (input.migrationFeePercent ?? 0) / 100;
-  if (totalSupply <= 0n || migrationQuote <= 0n) throw new Error('supply and quote must be > 0');
+export function migrationBaseDammV2(quote: bigint, sqrtPrice: bigint): bigint {
+  const liquidity = (quote << 128n) / (sqrtPrice - MIN_SQRT_PRICE);
+  return segmentBase(sqrtPrice, MAX_SQRT_PRICE, liquidity);
+}
 
-  // B = supply / (1 + k·feeFactor) — migration takes k·feeFactor·B
-  const k = MIGRATION_RATIO * feeFactor;
-  const curveBase = BigInt(Math.floor(Number(totalSupply) / (1 + k)));
-
+/** The curve for a given number of base tokens sold on it. */
+function curveFor(curveBaseTarget: bigint, migrationQuote: bigint, feePercent: bigint, totalSupply: bigint): QuadCurve {
   // P0 = (Q/4) · √2 · 15/16 / B   (quote lamports per base lamport)
   const quotePerEra = migrationQuote / BigInt(ERAS);
-  const p0 = (Number(quotePerEra) * SQRT2 * 15) / 16 / Number(curveBase);
+  const p0 = (Number(quotePerEra) * SQRT2 * 15) / 16 / Number(curveBaseTarget);
   const sqrtP0 = Math.sqrt(p0);
 
   // sqrt prices in Q64: s_i = sqrt(P0) · 2^(i/2) · 2^64
   const sqrtPrices: bigint[] = [];
-  for (let i = 0; i <= ERAS; i++) {
-    const s = sqrtP0 * Math.pow(2, i / 2);
-    // split mantissa/exponent to keep precision when converting to bigint
-    sqrtPrices.push(toQ64(s));
-  }
+  for (let i = 0; i <= ERAS; i++) sqrtPrices.push(toQ64(sqrtP0 * Math.pow(2, i / 2)));
+  if (sqrtPrices[0] < MIN_SQRT_PRICE) throw new Error('curve start below MIN_SQRT_PRICE: raise the threshold or lower the supply');
   if (sqrtPrices[ERAS] >= MAX_SQRT_PRICE) throw new Error('curve end exceeds MAX_SQRT_PRICE: lower the threshold or raise the supply');
 
   const points: CurvePoint[] = [];
@@ -94,22 +102,42 @@ export function buildQuadCurve(input: QuadCurveInput): QuadCurve {
   for (let i = 1; i <= ERAS; i++) {
     const sPrev = sqrtPrices[i - 1];
     const sNext = sqrtPrices[i];
+    // floor: with quote rounded up, each segment still takes exactly quotePerEra to cross
     const liquidity = (quotePerEra * Q128) / (sNext - sPrev);
     points.push({ sqrtPrice: sNext, liquidity });
-    const base = (liquidity * (sNext - sPrev)) / (sPrev * sNext);
-    const quote = (liquidity * (sNext - sPrev)) / Q128;
+    const base = segmentBase(sPrev, sNext, liquidity);
+    const quote = segmentQuote(sPrev, sNext, liquidity);
     soldBase += base;
     eras.push({ base, quote, avgPrice: Number(quote) / Number(base) });
   }
 
-  // migration: the program puts Q·feeFactor quote and Q·feeFactor / P4 base in the pool
-  const sEnd = sqrtPrices[ERAS];
-  const quoteMigrated = BigInt(Math.floor(Number(migrationQuote) * feeFactor));
-  const migrationBase = (quoteMigrated * Q128) / (sEnd * sEnd);
+  // migration: the program moves Q·(100−fee)/100 quote and its DAMM v2 base into the new pool
+  const quoteMigrated = (migrationQuote * (100n - feePercent)) / 100n;
+  const migrationBase = migrationBaseDammV2(quoteMigrated, sqrtPrices[ERAS]);
   const leftover = totalSupply - soldBase - migrationBase;
-  if (leftover < 0n) throw new Error('curve + migration exceed supply — check inputs');
-
   return { sqrtStartPrice: sqrtPrices[0], points, curveBase: soldBase, migrationBase, leftover, eras };
+}
+
+/**
+ * Build the 4-era curve. Base sold on the curve is chosen so that
+ * curve + migration ≤ total supply, with the leftover as small as the rounding allows.
+ */
+export function buildQuadCurve(input: QuadCurveInput): QuadCurve {
+  const { totalSupply, migrationQuote } = input;
+  const feePercent = input.migrationFeePercent ?? 0;
+  if (totalSupply <= 0n || migrationQuote <= 0n) throw new Error('supply and quote must be > 0');
+  if (!Number.isInteger(feePercent) || feePercent < 0 || feePercent > 99) throw new Error('migrationFeePercent must be a whole number 0–99');
+
+  // B = supply / (1 + k·feeFactor) — migration takes k·feeFactor·B. Float first, then step down by
+  // the exact overshoot until the program's own rounding fits in the supply (1–2 rounds in practice).
+  const k = MIGRATION_RATIO * (1 - feePercent / 100);
+  let target = BigInt(Math.floor(Number(totalSupply) / (1 + k)));
+  for (let i = 0; i < 8; i++) {
+    const c = curveFor(target, migrationQuote, BigInt(feePercent), totalSupply);
+    if (c.leftover >= 0n) return c;
+    target -= -c.leftover;
+  }
+  throw new Error('curve + migration exceed supply — check inputs');
 }
 
 /** Number → Q64 bigint without losing the 53-bit mantissa to float overflow. */
@@ -123,7 +151,7 @@ export function toQ64(x: number): bigint {
 }
 
 /**
- * Recompute base/quote per segment from (sqrtStart, points) with the program's formulas.
+ * Recompute base/quote per segment from (sqrtStart, points) with the program's formulas and rounding.
  * Use it to compare against what the SDK reports for a created config.
  */
 export function verifyCurve(sqrtStartPrice: bigint, points: CurvePoint[]) {
@@ -131,8 +159,8 @@ export function verifyCurve(sqrtStartPrice: bigint, points: CurvePoint[]) {
   let base = 0n;
   let quote = 0n;
   const segments = points.map((p) => {
-    const b = (p.liquidity * (p.sqrtPrice - prev)) / (prev * p.sqrtPrice);
-    const q = (p.liquidity * (p.sqrtPrice - prev)) / Q128;
+    const b = segmentBase(prev, p.sqrtPrice, p.liquidity);
+    const q = segmentQuote(prev, p.sqrtPrice, p.liquidity);
     base += b;
     quote += q;
     prev = p.sqrtPrice;

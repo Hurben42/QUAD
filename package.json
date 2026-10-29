@@ -9,7 +9,9 @@
     "start": "next start",
     "test": "vitest run",
     "config:devnet": "CLUSTER=devnet tsx scripts/create-config.ts",
-    "config:mainnet": "CLUSTER=mainnet-beta tsx scripts/create-config.ts"
+    "config:mainnet": "CLUSTER=mainnet-beta tsx scripts/create-config.ts",
+    "mint:devnet": "tsx scripts/create-test-mint.ts",
+    "config:verify": "tsx scripts/verify-config.ts"
   },
   "dependencies": {
     "@meteora-ag/dynamic-bonding-curve-sdk": "^1.3.0",

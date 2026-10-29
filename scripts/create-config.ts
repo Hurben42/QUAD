@@ -7,7 +7,7 @@
  * Prints the config public key to put in NEXT_PUBLIC_DBC_CONFIG.
  * The parameters themselves live in lib/quad-config.ts (values from lib/curve.ts and the constants there).
  */
-import 'dotenv/config';
+import './env';
 import fs from 'node:fs';
 import { Connection, Keypair, PublicKey, sendAndConfirmTransaction } from '@solana/web3.js';
 import { DynamicBondingCurveClient } from '@meteora-ag/dynamic-bonding-curve-sdk';

@@ -22,7 +22,19 @@ Notation: `Q` = migration quote threshold (HYPE lamports), `B` = base tokens sol
 - Liquidity in the program's scaling: `liquidity_i = quote_i × 2^128 / (s_i − s_{i-1})`.
 - Check (the program's own formulas): `quote_i = liquidity_i × (s_i − s_{i-1}) / 2^128`, `base_i = liquidity_i × (s_i − s_{i-1}) / (s_{i-1} × s_i)`.
 
-Migration: the program moves `Q × (1 − migrationFee)` of HYPE plus `migrationBase = Q × (1 − migrationFee) / P_4` base tokens into the DAMM v2 pool. With `P_4 = 16 P_0` that is `k × B` with `k = 4 / (15 √2) ≈ 0.1886`. To use the whole supply with no leftover, the curve sells `B = supply / (1 + k) ≈ 84.1%` and migration takes ≈ 15.9%. `lib/curve.ts` computes `B` from the supply this way; any rounding dust goes to `leftoverReceiver`.
+Migration: the program moves `Q × (1 − migrationFee)` of HYPE into a DAMM v2 pool as a full-range position `[MIN_SQRT_PRICE, MAX_SQRT_PRICE]` opened at `s_4`, plus the base that position needs: `L = Q' × 2^128 / (s_4 − MIN_SQRT_PRICE)`, `migrationBase = ⌈L × (MAX_SQRT_PRICE − s_4) / (s_4 × MAX_SQRT_PRICE)⌉`. That is `Q' / P_4` to within ~1e-8 (the range starts at `MIN_SQRT_PRICE`, not 0). With `P_4 = 16 P_0`, `migrationBase ≈ k × B` with `k = 4 / (15 √2) ≈ 0.1886`. To use the whole supply with no leftover, the curve sells `B = supply / (1 + k) ≈ 84.1%` and migration takes ≈ 15.9%. Any rounding dust goes to `leftoverReceiver`.
+
+### Rounding — what the program checks (corrected after validating against SDK 1.5.13)
+
+The first version of `lib/curve.ts` used `Q' / P_4` for the migration base (the DAMM v1 formula) and rounded segment bases down. The program rounds base **up** per segment and uses the DAMM v2 formula above, so its `swapBase + migrationBase` came out 19,996 base lamports (0.02 coin) over the 21M supply and `createConfig` failed with `Invalid token supply`. `lib/curve.ts` now:
+
+- rounds base and quote **up** per segment (`get_delta_amount_*_unsigned`, `Rounding::Up`), in `buildQuadCurve` and `verifyCurve` alike;
+- computes the migration base with the DAMM v2 full-range formula (`migrationBaseDammV2`);
+- steps `B` down by the exact overshoot until `B + migrationBase ≤ supply` (one round in practice; the leftover is a few lamports).
+
+`test/config.test.ts` checks every segment, `swapBaseAmount`, the migration price and the migration base against the SDK's helpers, at 6, 8 and 9 quote decimals. `pnpm config:verify` checks them against what the program stored on-chain.
+
+Supply buffer: DBC requires `preMigrationTokenSupply ≥ min(1.25 × swapBase, base the curve can sell up to its last point) + migrationBase`. Because the QUAD curve ends exactly at the migration price, the second term equals `swapBase`, so no extra 25% is needed and the fixed 21M fits.
 
 Things to verify on devnet before mainnet (the SDK evolves faster than this doc):
 
