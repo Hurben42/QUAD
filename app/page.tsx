@@ -66,7 +66,7 @@ export default function Page() {
       {/* THE FOUR RULES */}
       <section id="rules" className="sec" style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
         <div className="rules-head sec-head">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}><span className="label">02 / The four rules</span><h2 className="sec-title">Written into the pool at launch.<br className="hide-m" /><span className="hide-m"> Nobody edits them after.</span></h2></div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}><span className="label">02 / The 4 rules</span><h2 className="sec-title">Written into the pool at launch.<br className="hide-m" /><span className="hide-m"> Nobody edits them after.</span></h2></div>
           <p style={{ margin: 0, font: '500 16px/24px var(--font-sans)', color: 'var(--text-muted)', maxWidth: 400 }}>Every coin starts with the same four. They live in a Meteora pool config and the bonding curve enforces them trade by trade.</p>
         </div>
         <RulePosters />
@@ -141,7 +141,7 @@ export default function Page() {
           <nav className="hide-m" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }} aria-label="Footer">
             {[
               ['Product', [['/launch', 'Launch'], ['#curve', 'On the curve'], ['/creators#claim', 'Creator fees'], ['#get-hype', 'Get HYPE']]],
-              ['Read', [['/docs', 'Docs'], ['#rules', 'The four rules'], ['/docs#config', 'Pool config']]],
+              ['Read', [['/docs', 'Docs'], ['/rules', 'The 4 rules'], ['/docs#config', 'Pool config']]],
               ['Follow', [['https://x.com', 'X'], ['https://github.com', 'GitHub']]],
             ].map(([title, links]) => (
               <div key={title as string} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

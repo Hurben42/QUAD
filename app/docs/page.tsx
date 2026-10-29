@@ -27,7 +27,7 @@ export const metadata = { title: 'Docs — QUAD', description: 'How QUAD works: 
 /** The sections, in order; DocToc reads the same list. */
 const SECTIONS = [
   ['overview', 'Overview'],
-  ['rules', 'The four rules'],
+  ['rules', 'The 4 rules'],
   ['curve', 'The curve'],
   ['fees', 'Fees'],
   ['launch', 'Launching a coin'],
@@ -73,7 +73,7 @@ export default function DocsPage() {
           </section>
 
           <section id="rules">
-            <h2><span className="label">02</span>The four rules</h2>
+            <h2><span className="label">02</span>The 4 rules</h2>
             <ol className="doc-rules">
               <li className="doc-rule" style={era(1)}>
                 <div className="doc-rule-top"><span className="label">Rule 01 · Supply</span><span className="num doc-rule-stat">{coins(TOTAL_COINS, true)}</span></div>

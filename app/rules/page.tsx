@@ -20,7 +20,7 @@ import {
   price,
 } from '@/lib/curve';
 
-export const metadata = { title: 'The four rules — QUAD', description: 'Four rules written into every QUAD pool at launch: mint once, quote in HYPE, four eras, creators earn HYPE.' };
+export const metadata = { title: 'The 4 rules — QUAD', description: 'Four rules written into every QUAD pool at launch: mint once, quote in HYPE, four eras, creators earn HYPE.' };
 
 const d = (n: number) => ({ ['--d' as string]: n }) as React.CSSProperties;
 const era = (i: number) => ({ ['--era' as string]: `var(--era-${i})`, ['--era-t' as string]: `var(--era-${i}-text)` }) as React.CSSProperties;
@@ -57,10 +57,10 @@ export default function RulesPage() {
       <SiteHeader className="rise" style={d(0)} />
 
       <header className="rp-hero">
-        <span className="label rise" style={d(1)}>The four rules</span>
+        <span className="label rise" style={d(1)}>The 4 rules</span>
         <h1 className="rise" style={d(2)}>Written into the pool at launch.<br />Nobody edits them after.</h1>
         <p className="rise" style={d(3)}>Every coin starts with the same four. They live in one Meteora pool config and the bonding curve enforces them trade by trade, for the creator and for QUAD alike.</p>
-        <nav className="rp-index rise" style={d(4)} aria-label="The four rules">
+        <nav className="rp-index rise" style={d(4)} aria-label="The 4 rules">
           {RULES.map(([id, label], i) => (
             <a key={id} href={`#${id}`} style={era(i + 1)}>
               <span className="num">0{i + 1}</span>
