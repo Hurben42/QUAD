@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { EraSteps } from './EraSteps';
-import { CoinRow, CoinTableHeader, type CoinView } from './CoinRow';
+import { CoinCard, CoinRow, CoinTableHeader, type CoinView } from './CoinRow';
 import { QUOTE_MINT } from '@/lib/dbc';
 
 type ApiCoin = { pool: string; baseMint: string; name: string; symbol: string; progress: number; era: 1 | 2 | 3 | 4; quoteRaised: string; quoteThreshold: string; spotPrice: number; createdAt: number | null };
@@ -76,7 +76,8 @@ export function CurveList() {
   const [featured, ...rest] = coins;
   return (
     <>
-      <a className="grain" href={featured.href} target="_blank" rel="noopener" style={{ position: 'relative', overflow: 'hidden', display: 'grid', gridTemplateColumns: 'minmax(0,5fr) minmax(0,4fr) minmax(0,3fr)', gap: 40, alignItems: 'center', padding: '32px 40px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--line)', minHeight: 260 }}>
+      <div className="show-m" style={{ flexDirection: 'column', gap: 12 }}>{coins.map((c) => <CoinCard key={c.pool} c={c} />)}</div>
+      <a className="grain hide-m" href={featured.href} target="_blank" rel="noopener" style={{ position: 'relative', overflow: 'hidden', display: 'grid', gridTemplateColumns: 'minmax(0,5fr) minmax(0,4fr) minmax(0,3fr)', gap: 40, alignItems: 'center', padding: '32px 40px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--line)', minHeight: 260 }}>
         <div aria-hidden="true" style={{ position: 'absolute', right: '-10%', bottom: '-60%', width: '70%', height: '160%', background: 'var(--era-horizon)', opacity: 0.8 }} />
         <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 18 }}>
           <span className="label">Next to graduate</span>
@@ -86,7 +87,7 @@ export function CurveList() {
         <div style={{ position: 'relative' }}><EraSteps progress={featured.progress} /></div>
         <div style={{ position: 'relative', textAlign: 'right' }}><span className="num" style={{ fontSize: 64, lineHeight: 1, letterSpacing: '-0.04em' }}>{Math.round(featured.progress * 100)}%</span><div className="label">To graduation</div></div>
       </a>
-      {rest.length > 0 && <div><CoinTableHeader />{rest.map((c, i) => <CoinRow key={c.pool} c={c} index={i + 1} />)}</div>}
+      {rest.length > 0 && <div className="hide-m"><CoinTableHeader />{rest.map((c, i) => <CoinRow key={c.pool} c={c} index={i + 1} />)}</div>}
     </>
   );
 }

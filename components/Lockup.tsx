@@ -1,7 +1,7 @@
 /** The QUAD mark (owner's original, vectorised) + the word. Never deform the mark; keep the 4:5 ratio. */
 export function QuadMark({ height = 24, fill = 'gradient' as 'gradient' | 'ink' | 'white' }) {
   const id = `q-${fill}`;
-  const f = fill === 'gradient' ? `url(#${id})` : fill === 'ink' ? '#0b0d18' : '#ffffff';
+  const f = fill === 'gradient' ? `url(#${id})` : fill === 'ink' ? 'var(--on-era-4)' : 'var(--on-era-1)';
   return (
     <svg viewBox="0 0 96 120" height={height} width={height * 0.8} aria-hidden="true" shapeRendering="crispEdges">
       {fill === 'gradient' && (

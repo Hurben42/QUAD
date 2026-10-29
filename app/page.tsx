@@ -1,104 +1,189 @@
-import { Lockup, QuadMark } from '@/components/Lockup';
+import { Lockup } from '@/components/Lockup';
 import { LinkButton } from '@/components/Button';
-import { EraSteps } from '@/components/EraSteps';
 import { CurveList } from '@/components/CurveList';
 import { WalletButton } from '@/components/WalletButton';
 import { LaunchForm } from '@/components/LaunchForm';
+import { LaunchFeeStat } from '@/components/LaunchFeeStat';
+import { RulePosters } from '@/components/RulePosters';
+import { BASE_FEE, CREATOR_FEE, PROTOCOL_FEE_SHARE, TOTAL_COINS, coins, pct } from '@/lib/curve';
 
-/** The landing, section by section, after design/website/landing-desktop.html. */
-function Rays({ h = 840 }: { h?: number }) {
+/**
+ * The landing, section by section, after design/website/landing-desktop.html (≥901px)
+ * and landing-mobile.html (≤900px). One DOM; the layout switches in app/globals.css.
+ */
+
+const NAV = [['#launch', 'Launch'], ['#curve', 'On the curve'], ['#rules', 'The four rules'], ['#creators', 'Creators'], ['#docs', 'Docs']];
+const GET_HYPE = 'https://jup.ag';
+
+// Halving steps: share of the curve's coins (width) and average price (height), per era
+const STEPS = [
+  { w: 8, h: '12.5%', label: 'Era 1', x: '1×' },
+  { w: 4, h: '25%', label: 'Era 2', x: '2×' },
+  { w: 2, h: '50%', label: '3', x: '4×' },
+  { w: 1, h: '100%', label: '', x: '8×' },
+];
+
+function Rays({ viewW, viewH, cx, xs, ys, className, opacity }: { viewW: number; viewH: number; cx: number; xs: number[]; ys: number[]; className: string; opacity: number }) {
   return (
-    <svg className="rays" aria-hidden="true" viewBox={`0 0 1400 ${h}`} preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.55 }}>
-      {[-200, 0, 200, 400, 600, 800, 1000, 1200, 1400, 1600].map((x) => <line key={x} x1="700" y1={h} x2={x} y2="0" />)}
-      {[0.86, 0.71, 0.57].map((f) => <line key={f} x1="0" y1={h * f} x2="1400" y2={h * f} />)}
+    <svg className={`rays hero-bg ${className}`} aria-hidden="true" viewBox={`0 0 ${viewW} ${viewH}`} preserveAspectRatio="none" style={{ opacity }}>
+      {xs.map((x) => <line key={x} x1={cx} y1={viewH} x2={x} y2="0" />)}
+      {ys.map((y) => <line key={y} x1="0" y1={y} x2={viewW} y2={y} />)}
     </svg>
   );
 }
 
 export default function Page() {
+  const stats = [['Fee per trade', 'Fee', pct(BASE_FEE)], ['To creator', 'Creator', `${pct(CREATOR_FEE)} HYPE`], ['Supply', 'Supply', coins(TOTAL_COINS, true)]];
   return (
     <main>
-      {/* HERO — full bleed, the nav sits on it */}
-      <section className="grain" style={{ position: 'relative', overflow: 'hidden', background: 'var(--surface-0)', minHeight: 840 }}>
-        <div className="horizon" aria-hidden="true" />
-        <Rays />
-        <header className="container" style={{ position: 'relative', zIndex: 1, padding: '24px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
+      {/* HERO — full bleed, the nav sits on it. On mobile the launch card drops below the artwork. */}
+      <section id="top" className="hero grain">
+        <div className="horizon hero-bg" aria-hidden="true" />
+        <Rays className="hide-m" viewW={1400} viewH={840} cx={700} xs={[-200, 0, 200, 400, 600, 800, 1000, 1200, 1400, 1600]} ys={[722, 596, 479]} opacity={0.55} />
+        <Rays className="show-m" viewW={390} viewH={600} cx={195} xs={[-120, 30, 140, 250, 360, 510]} ys={[480, 340]} opacity={0.5} />
+
+        <header className="hero-head container">
           <Lockup size="sm" />
-          <nav style={{ display: 'flex', gap: 4 }} aria-label="Primary">
-            {[['#launch', 'Launch'], ['#curve', 'On the curve'], ['#rules', 'The four rules'], ['#creators', 'Creators'], ['/docs', 'Docs']].map(([href, label]) => (
-              <a key={href} href={href} style={{ font: '700 14px/1 var(--font-sans)', color: 'var(--text-muted)', padding: '10px 12px', borderRadius: 'var(--radius-sm)' }}>{label}</a>
-            ))}
+          <nav className="hero-nav hide-m" style={{ display: 'flex', gap: 4 }} aria-label="Primary">
+            {NAV.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
           </nav>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <LinkButton variant="secondary" href="https://jup.ag" target="_blank" rel="noopener" style={{ height: 40 }}>Get HYPE</LinkButton>
+          <div className="hide-m" style={{ display: 'flex', gap: 12 }}>
+            <LinkButton variant="secondary" href={GET_HYPE} target="_blank" rel="noopener" style={{ height: 40 }}>Get HYPE</LinkButton>
             <WalletButton style={{ height: 40 }} />
           </div>
+          <div className="show-m" style={{ gap: 8, alignItems: 'center' }}>
+            <LinkButton href="#launch" style={{ height: 40, padding: '0 16px', fontSize: 14 }}>Launch</LinkButton>
+            <details className="menu-m">
+              <summary className="q-btn q-btn--secondary" aria-label="Open menu" style={{ width: 44, height: 44, padding: 0 }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" /></svg>
+              </summary>
+              <nav aria-label="Primary">
+                {NAV.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
+                <a href={GET_HYPE} target="_blank" rel="noopener">Get HYPE</a>
+                <WalletButton style={{ marginTop: 8 }} />
+              </nav>
+            </details>
+          </div>
         </header>
-        <div className="container" style={{ position: 'relative', padding: '48px 56px 72px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 48, alignItems: 'start' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 28, paddingTop: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span className="label">01 / Launchpad · Solana</span><span className="label">Quoted in HYPE</span></div>
-            <h1 style={{ margin: 0, font: '800 88px/0.95 var(--font-sans)', letterSpacing: '-0.035em', maxWidth: 620 }}>Four eras.<br />Priced in HYPE.</h1>
-            <p style={{ margin: 0, font: '500 18px/28px var(--font-sans)', color: 'var(--text-muted)', maxWidth: 520 }}>21,000,000 coins, minted once. Traded against HYPE on a curve that climbs in four eras: each era sells half as many coins as the last, for the same HYPE. The creator earns 2.5% of every trade, in HYPE.</p>
-            <div style={{ display: 'flex', gap: 12 }}><LinkButton href="#launch">Launch coin <span className="num">→</span></LinkButton><LinkButton variant="secondary" href="#rules">See the eras</LinkButton></div>
-            <dl style={{ margin: '24px 0 0', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 24, maxWidth: 520 }}>
-              {[['Fee per trade', '3.125%'], ['To creator', '2.5% HYPE'], ['Supply', '21M']].map(([k, v]) => (
-                <div key={k} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><dt className="label">{k}</dt><dd className="num" style={{ margin: 0, fontSize: 24, lineHeight: '28px' }}>{v}</dd></div>
+
+        <div className="hero-grid container">
+          <div className="hero-copy">
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span className="label">01 / Launchpad<span className="hide-m"> · Solana</span></span><span className="label">Quoted in HYPE</span></div>
+            <h1 className="hero-h1">Four eras.<br />Priced in HYPE.</h1>
+            <p className="hero-lede">
+              {coins(TOTAL_COINS)} coins, minted once.<span className="hide-m"> Traded against HYPE on a curve that climbs in four eras:</span> <span className="hide-m">each</span><span className="show-m-i">Each</span> era sells half as many coins as the last, for the same HYPE. <span className="hide-m">The creator earns</span><span className="show-m-i">Creators earn</span> {pct(CREATOR_FEE)} of every trade, in HYPE.
+            </p>
+            <div className="hero-ctas"><LinkButton href="#launch">Launch coin <span className="num">→</span></LinkButton><LinkButton variant="secondary" href="#rules">See the eras</LinkButton></div>
+            <dl className="hero-stats">
+              {stats.map(([k, km, v]) => (
+                <div key={k}><dt className="label"><span className="hide-m">{k}</span><span className="show-m">{km}</span></dt><dd className="num">{v}</dd></div>
               ))}
             </dl>
           </div>
-          <div style={{ justifySelf: 'end', width: '100%', maxWidth: 520 }}><LaunchForm /></div>
+          <div className="hero-form"><LaunchForm /></div>
         </div>
       </section>
 
-      {/* THE FOUR RULES — three poster blocks (see design/website for the exact markup) */}
-      <section id="rules" className="container" style={{ padding: '96px 40px 0', display: 'flex', flexDirection: 'column', gap: 40 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 24, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}><span className="label">02 / The four rules</span><h2 style={{ margin: 0, font: '800 48px/1 var(--font-sans)', letterSpacing: '-0.03em' }}>Written into the pool at launch.<br />Nobody edits them after.</h2></div>
+      {/* THE FOUR RULES */}
+      <section id="rules" className="sec" style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
+        <div className="rules-head sec-head">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}><span className="label">02 / The four rules</span><h2 className="sec-title">Written into the pool at launch.<br className="hide-m" /><span className="hide-m"> Nobody edits them after.</span></h2></div>
           <p style={{ margin: 0, font: '500 16px/24px var(--font-sans)', color: 'var(--text-muted)', maxWidth: 400 }}>Every coin starts with the same four. They live in a Meteora pool config and the bonding curve enforces them trade by trade.</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 24 }}>
-          {/* TODO: port posters A (stripes), B (horizon + white card), C (pixels + stats) from design/website/landing-desktop.html */}
-          <article className="card-light" style={{ minHeight: 560, padding: 28, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: 16 }}><h3 style={{ margin: 0, font: '800 44px/1 var(--font-sans)', letterSpacing: '-0.03em' }}>Mint once.<br />Quote in HYPE.</h3></article>
-          <article className="grain" style={{ minHeight: 560, borderRadius: 'var(--radius-lg)', border: '1px solid var(--line)', padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}><h3 style={{ margin: 0, font: '800 22px/1.15 var(--font-sans)' }}>Every era costs twice.</h3></article>
-          <article className="grain" style={{ minHeight: 560, borderRadius: 'var(--radius-lg)', border: '1px solid var(--line)', padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}><h3 style={{ margin: 0, font: '800 36px/1.05 var(--font-sans)', letterSpacing: '-0.03em' }}>Creators earn HYPE,<br />on every trade.</h3></article>
-        </div>
+        <RulePosters />
       </section>
 
-      {/* THE HALVING STEPS */}
-      <section className="container" style={{ padding: '96px 40px 0', display: 'grid', gridTemplateColumns: 'minmax(0, 5fr) minmax(0, 7fr)', gap: 48, alignItems: 'end' }}>
+      {/* THE HALVING STEPS — desktop only in the design */}
+      <section className="sec hide-m" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 5fr) minmax(0, 7fr)', gap: 48, alignItems: 'end' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <span className="label">03 / The halving steps</span>
-          <h2 style={{ margin: 0, font: '800 48px/1 var(--font-sans)', letterSpacing: '-0.03em' }}>Half the coins.<br />Twice the price.</h2>
-          <p style={{ margin: 0, font: '500 16px/24px var(--font-sans)', color: 'var(--text-muted)', maxWidth: 440 }}>Of the coins on the curve, era 1 sells 8/15, era 2 sells 4/15, era 3 sells 2/15 and era 4 sells 1/15. Each era raises the same HYPE, so the average price doubles at every step.</p>
+          <h2 className="sec-title">Half the coins.<br />Twice the price.</h2>
+          <p style={{ margin: 0, font: '500 16px/24px var(--font-sans)', color: 'var(--text-muted)', maxWidth: 440 }}>Of the coins on the curve, era 1 sells 8/15, era 2 sells 4/15, era 3 sells 2/15 and era 4 sells 1/15. Each era raises the same HYPE, so the average price doubles at every step. Graduation moves the pool to Meteora with the liquidity locked.</p>
+          <ul style={{ margin: '8px 0 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, font: '500 14px/20px var(--font-sans)', color: 'var(--text-muted)' }}>
+            {STEPS.map((s, i) => (
+              <li key={i} style={{ display: 'flex', gap: 12 }}><span className="num" style={{ color: `var(--era-${i + 1}-text)`, minWidth: 56 }}>Era {i + 1}</span>{s.w}/15 of the coins · {s.x} price</li>
+            ))}
+          </ul>
         </div>
-        <EraSteps progress={1} height={360} />
+        <figure style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }} aria-label="The four eras drawn as steps: widths 8, 4, 2, 1 for the coins sold, heights doubling for the price">
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 360 }}>
+            {STEPS.map((s, i) => (
+              <div key={i} style={{ flex: s.w, height: s.h, background: `var(--era-${i + 1})`, borderRadius: '6px 6px 0 0', display: 'flex', alignItems: 'flex-start', justifyContent: s.label ? 'space-between' : 'center', padding: s.label ? '10px 12px' : '10px 6px', color: `var(--on-era-${i + 1})` }}>
+                {s.label && <span className="label" style={{ color: 'inherit' }}>{s.label}</span>}<span className="num" style={{ fontSize: 12 }}>{s.x}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ height: 1, background: 'var(--line-strong)' }} />
+          <figcaption style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}><span className="label">Width = coins sold per era</span><span className="label">Height = average price in HYPE</span></figcaption>
+        </figure>
       </section>
 
       {/* ON THE CURVE */}
-      <section id="curve" className="container" style={{ padding: '96px 40px 0', display: 'flex', flexDirection: 'column', gap: 32 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}><span className="label">04 / On the curve</span><h2 style={{ margin: 0, font: '800 48px/1 var(--font-sans)', letterSpacing: '-0.03em' }}>Coins on their steps right now.</h2></div>
+      <section id="curve" className="sec" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+        <div className="sec-head" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}><span className="label">0<span className="hide-m">4</span><span className="show-m-i">3</span> / On the curve</span><h2 className="sec-title">Coins on their steps right now.</h2></div>
         <CurveList />
       </section>
 
-      {/* CREATORS */}
-      <section id="creators" className="container" style={{ padding: '96px 40px 0', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 24 }}>
-        <div className="grain" style={{ borderRadius: 'var(--radius-lg)', background: 'var(--surface-1)', border: '1px solid var(--line)', padding: 40, display: 'flex', flexDirection: 'column', gap: 20, minHeight: 480 }}>
-          <span className="label">05 / Creators</span>
-          <h2 style={{ margin: 0, font: '800 48px/1 var(--font-sans)', letterSpacing: '-0.03em' }}>Your coin pays you in HYPE.</h2>
-          <p style={{ margin: 0, font: '500 16px/24px var(--font-sans)', color: 'var(--text-muted)', maxWidth: 480 }}>2.5% of every trade, buy or sell, on the curve and after graduation, goes to the wallet you name at launch.</p>
+      {/* CREATORS — on mobile only the gradient card */}
+      <section id="creators" className="sec creators">
+        <div className="grain hide-m" style={{ position: 'relative', overflow: 'hidden', borderRadius: 'var(--radius-lg)', background: 'var(--surface-1)', border: '1px solid var(--line)', padding: 40, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 32, minHeight: 480 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <span className="label">05 / Creators</span>
+            <h2 className="sec-title">Your coin pays you in HYPE.</h2>
+            <p style={{ margin: 0, font: '500 16px/24px var(--font-sans)', color: 'var(--text-muted)', maxWidth: 480 }}>{pct(CREATOR_FEE)} of every trade, buy or sell, on the curve and after graduation, goes to the wallet you name at launch. The trade pays {pct(BASE_FEE)} in total; Meteora keeps {pct(PROTOCOL_FEE_SHARE)} of the fee.</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16, paddingTop: 24, borderTop: '1px solid var(--line)' }}>
+            {[[pct(CREATOR_FEE), 'Creator, in HYPE'], [pct(BASE_FEE * PROTOCOL_FEE_SHARE), 'Protocol']].map(([v, k]) => (
+              <div key={k} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span className="num" style={{ fontSize: 28, lineHeight: '32px' }}>{v.replace('%', '')}<span style={{ color: 'var(--era-4-text)' }}>%</span></span><span className="label">{k}</span></div>
+            ))}
+            <LaunchFeeStat />
+          </div>
         </div>
-        <div className="grain" style={{ borderRadius: 'var(--radius-lg)', background: 'var(--brand-vertical)', padding: 40, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 480 }}>
-          <span className="label" style={{ color: '#fff' }}>Launch yours</span>
-          <div style={{ alignSelf: 'center' }}><QuadMark height={240} fill="white" /></div>
-          <LinkButton href="#launch" style={{ background: '#0b0d18', color: '#fff', alignSelf: 'flex-start' }}>Launch coin <span className="num">→</span></LinkButton>
+        <div className="creators-cta grain">
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}><span className="label on-art">Launch yours</span><span className="label on-art">Era 1 → 4</span></div>
+          <svg viewBox="0 0 96 120" aria-hidden="true" shapeRendering="crispEdges"><QuadMarkPaths /></svg>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}>
+            <p>Name it, add your first buy, press launch.</p>
+            <a className="q-btn btn-ink" href="#launch">Launch coin <span className="num">→</span></a>
+          </div>
         </div>
       </section>
 
-      <footer className="container" style={{ padding: '96px 40px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <footer id="docs" className="sec footer" style={{ padding: '96px 40px 40px', display: 'flex', flexDirection: 'column', gap: 32 }}>
         <div style={{ height: 1, background: 'var(--line)' }} />
-        <p style={{ margin: 0, font: '500 13px/20px var(--font-sans)', color: 'var(--text-muted)', maxWidth: 480 }}>A launchpad on Solana. Coins are quoted in HYPE on Solana (Wormhole NTT). QUAD is paired to HYPE; it is not affiliated with Hyperliquid.</p>
-        <span className="label">© 2026 QUAD · Four eras · Priced in HYPE</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 32, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 360 }}>
+            <span style={{ font: '800 22px/1 var(--font-sans)', letterSpacing: '-0.04em' }}>QUAD</span>
+            <p style={{ margin: 0, font: '500 13px/20px var(--font-sans)', color: 'var(--text-muted)' }}><span className="hide-m">A launchpad on Solana. </span>Coins are quoted in HYPE on Solana (Wormhole NTT). QUAD is paired to HYPE; it is not affiliated with Hyperliquid.</p>
+          </div>
+          <nav className="hide-m" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }} aria-label="Footer">
+            {[
+              ['Product', [['#launch', 'Launch'], ['#curve', 'On the curve'], [GET_HYPE, 'Get HYPE']]],
+              ['Read', [['#docs', 'Docs'], ['#rules', 'The four rules'], ['#docs', 'Pool config']]],
+              ['Follow', [['https://x.com', 'X'], ['https://github.com', 'GitHub']]],
+            ].map(([title, links]) => (
+              <div key={title as string} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <span className="label">{title as string}</span>
+                {(links as string[][]).map(([href, label]) => <a key={label} href={href} style={{ font: '600 14px/1 var(--font-sans)' }} {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}>{label}</a>)}
+              </div>
+            ))}
+          </nav>
+          <nav className="show-m" style={{ gap: 20, flexWrap: 'wrap' }} aria-label="Footer">
+            {[['#launch', 'Launch'], ['#curve', 'On the curve'], ['#docs', 'Docs'], ['https://x.com', 'X']].map(([href, label]) => <a key={label} href={href} style={{ font: '600 14px/1 var(--font-sans)' }}>{label}</a>)}
+          </nav>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}><span className="label">© 2026 QUAD<span className="show-m-i"> · Four eras · Priced in HYPE</span></span><span className="label hide-m">Four eras · Priced in HYPE</span></div>
       </footer>
     </main>
+  );
+}
+
+/** The QUAD mark's shapes in white, sized by the parent svg (see components/Lockup.tsx for the source). */
+function QuadMarkPaths() {
+  return (
+    <g fill="var(--on-era-1)">
+      <rect x="24" y="0" width="48" height="24" /><rect x="0" y="24" width="24" height="48" /><rect x="72" y="24" width="24" height="36" />
+      <polygon points="24,72 72,72 96,96 96,120 72,96 24,96" />
+    </g>
   );
 }

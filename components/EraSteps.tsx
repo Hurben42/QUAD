@@ -6,12 +6,11 @@ export function EraSteps({ progress, height = 120, labels = true }: { progress: 
   const fills = [0, 1, 2, 3].map((i) => Math.max(0, Math.min(1, (progress - i * 0.25) / 0.25)));
   const widths = [8, 4, 2, 1];
   const heights = ['25%', '50%', '75%', '100%'];
-  const dim = ['#1b27f540', '#7136fe40', '#e04d7140', '#f8826240'];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height }} role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100} aria-label="Distance to graduation">
         {widths.map((w, i) => (
-          <div key={i} style={{ flex: w, height: heights[i], background: dim[i], borderRadius: '4px 4px 0 0', overflow: 'hidden' }}>
+          <div key={i} style={{ flex: w, height: heights[i], background: `color-mix(in srgb, var(--era-${i + 1}) 25%, transparent)`, borderRadius: '4px 4px 0 0', overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${fills[i] * 100}%`, background: `var(--era-${i + 1})` }} />
           </div>
         ))}
