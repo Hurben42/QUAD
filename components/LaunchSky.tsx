@@ -8,13 +8,13 @@ import { CREATOR_FEE, pct } from '@/lib/curve';
 
 const d = (n: number) => ({ ['--d' as string]: n }) as React.CSSProperties;
 
-// Rays from the sun at the bottom centre, like the landing hero (viewBox 1400×900)
+// Rays to the bottom centre, like the landing hero (viewBox 1400×900)
 const RAYS = [-300, -60, 180, 420, 600, 800, 980, 1220, 1460, 1700];
 const HORIZONS = [800, 690, 590];
 
 /**
- * The /launch screen: era light across the top, a sun that rises one era per step behind
- * the wizard, rays converging on it, grain on the sky only (never on the cards).
+ * The /launch screen: era light across the top that brightens one era per step, rays converging
+ * on the bottom centre, grain on the sky only (never on the cards).
  */
 export function LaunchSky() {
   const [sun, setSun] = useState(1);
@@ -22,7 +22,6 @@ export function LaunchSky() {
     <main className="lp" style={{ ['--sun' as string]: sun }}>
       <div className="lp-sky grain" aria-hidden="true">
         <div className="lp-glow"><Stripes /></div>
-        <div className="lp-sun-rise"><div className="lp-sun-step"><div className="lp-sun" /></div></div>
         <svg className="lp-rays" viewBox="0 0 1400 900" preserveAspectRatio="none">
           {RAYS.map((x, i) => <line key={x} x1="700" y1="900" x2={x} y2="0" pathLength={1} style={d(i)} />)}
           {HORIZONS.map((y, i) => <line key={y} x1="0" y1={y} x2="1400" y2={y} pathLength={1} style={d(RAYS.length + i)} />)}
