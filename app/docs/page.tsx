@@ -61,6 +61,8 @@ function example() {
 }
 
 const n = (x: number) => Math.round(x).toLocaleString('en-US');
+/** A rule card's era colour and era text colour. */
+const era = (i: number) => ({ ['--era' as string]: `var(--era-${i})`, ['--era-t' as string]: `var(--era-${i}-text)` }) as React.CSSProperties;
 const share = (x: number) => pct(x / Number(TOTAL_COINS));
 
 export default function DocsPage() {
@@ -94,10 +96,43 @@ export default function DocsPage() {
           <section id="rules">
             <h2><span className="label">02</span>The four rules</h2>
             <ol className="doc-rules">
-              <li><span className="num">1</span><div><h3>Mint once</h3><p>{coins(TOTAL_COINS)} coins per launch, like HYPE&apos;s own supply. They are minted in the launch transaction, the mint authority is revoked in the same transaction and the coin never gets a freeze authority.</p></div></li>
-              <li><span className="num">2</span><div><h3>Quote in HYPE</h3><p>Every price on the curve is a HYPE price and every fee is paid in HYPE. HYPE&apos;s decimals and token program are read on-chain, never assumed.</p></div></li>
-              <li><span className="num">3</span><div><h3>Four eras</h3><p>Each era sells half as many coins as the last, for the same HYPE. The average price doubles from one era to the next.</p></div></li>
-              <li><span className="num">4</span><div><h3>Creators earn HYPE</h3><p>{pct(CREATOR_FEE)} of every trade on the curve goes to the wallet that launched the coin, in HYPE.</p></div></li>
+              <li className="doc-rule" style={era(1)}>
+                <div className="doc-rule-top"><span className="label">Rule 01 · Supply</span><span className="num doc-rule-stat">{coins(TOTAL_COINS, true)}</span></div>
+                <h3>Mint once</h3>
+                <p>{coins(TOTAL_COINS)} coins per launch, like HYPE&apos;s own supply. Minted in the launch transaction, mint authority revoked in the same transaction, never a freeze authority.</p>
+                <div className="doc-rule-viz">
+                  <div className="viz-bar"><i style={{ width: '100%' }} /></div>
+                  <div className="viz-legend"><span className="label">100% at launch</span><span className="label">No mint · No freeze</span></div>
+                </div>
+              </li>
+              <li className="doc-rule" style={era(2)}>
+                <div className="doc-rule-top"><span className="label">Rule 02 · Quote</span><span className="num doc-rule-stat">HYPE</span></div>
+                <h3>Quote in HYPE</h3>
+                <p>Every price on the curve is a HYPE price and every fee is paid in HYPE. HYPE&apos;s decimals and token program are read on-chain, never assumed.</p>
+                <div className="doc-rule-viz viz-chips">
+                  {['Price', 'Fees', 'Liquidity'].map((k) => <span key={k} className="viz-chip"><span className="label">{k}</span><span className="num">HYPE</span></span>)}
+                </div>
+              </li>
+              <li className="doc-rule" style={era(3)}>
+                <div className="doc-rule-top"><span className="label">Rule 03 · Eras</span><span className="num doc-rule-stat">2×</span></div>
+                <h3>Four eras</h3>
+                <p>Each era sells half as many coins as the last, for the same HYPE. The average price doubles from one era to the next.</p>
+                <div className="doc-rule-viz">
+                  <div className="viz-steps" aria-hidden="true">
+                    {ERA_WIDTHS.map((w, i) => <i key={i} style={{ flex: w, height: `${100 / 2 ** (3 - i)}%`, background: `var(--era-${i + 1})` }} />)}
+                  </div>
+                  <div className="viz-legend"><span className="label">Width = coins</span><span className="label">Height = price</span></div>
+                </div>
+              </li>
+              <li className="doc-rule" style={era(4)}>
+                <div className="doc-rule-top"><span className="label">Rule 04 · Fees</span><span className="num doc-rule-stat">{pct(CREATOR_FEE)}</span></div>
+                <h3>Creators earn HYPE</h3>
+                <p>{pct(CREATOR_FEE)} of every trade on the curve goes to the wallet that launched the coin, in HYPE.</p>
+                <div className="doc-rule-viz">
+                  <div className="viz-split" aria-hidden="true"><i style={{ flex: CREATOR_FEE / BASE_FEE, background: 'var(--era-4)' }} /><i style={{ flex: protocolFee / BASE_FEE, background: 'var(--line-strong)' }} /></div>
+                  <div className="viz-legend"><span className="label">Creator {pct(CREATOR_FEE)}</span><span className="label">Meteora {pct(protocolFee)}</span></div>
+                </div>
+              </li>
             </ol>
           </section>
 
