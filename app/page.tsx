@@ -1,9 +1,10 @@
 import { LinkButton } from '@/components/Button';
-import { GET_HYPE, SiteHeader } from '@/components/SiteHeader';
+import { SiteHeader } from '@/components/SiteHeader';
 import { CurveList } from '@/components/CurveList';
 import { LaunchForm } from '@/components/LaunchForm';
 import { LaunchFeeStat } from '@/components/LaunchFeeStat';
 import { RulePosters } from '@/components/RulePosters';
+import { GetHype } from '@/components/GetHype';
 import { BASE_FEE, CREATOR_FEE, PROTOCOL_FEE_SHARE, TOTAL_COINS, coins, pct } from '@/lib/curve';
 
 /**
@@ -102,11 +103,14 @@ export default function Page() {
         <CurveList />
       </section>
 
+      {/* GET HYPE */}
+      <GetHype />
+
       {/* CREATORS — on mobile only the gradient card */}
       <section id="creators" className="sec creators">
         <div className="grain hide-m" style={{ position: 'relative', overflow: 'hidden', borderRadius: 'var(--radius-lg)', background: 'var(--surface-1)', border: '1px solid var(--line)', padding: 40, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 32, minHeight: 480 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <span className="label">05 / Creators</span>
+            <span className="label">06 / Creators</span>
             <h2 className="sec-title">Your coin pays you in HYPE.</h2>
             <p style={{ margin: 0, font: '500 16px/24px var(--font-sans)', color: 'var(--text-muted)', maxWidth: 480 }}>{pct(CREATOR_FEE)} of every trade, buy or sell, on the curve and after graduation, goes to the wallet you name at launch. The trade pays {pct(BASE_FEE)} in total; Meteora keeps {pct(PROTOCOL_FEE_SHARE)} of the fee.</p>
           </div>
@@ -136,7 +140,7 @@ export default function Page() {
           </div>
           <nav className="hide-m" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }} aria-label="Footer">
             {[
-              ['Product', [['/launch', 'Launch'], ['#curve', 'On the curve'], ['/creators#claim', 'Creator fees'], [GET_HYPE, 'Get HYPE']]],
+              ['Product', [['/launch', 'Launch'], ['#curve', 'On the curve'], ['/creators#claim', 'Creator fees'], ['#get-hype', 'Get HYPE']]],
               ['Read', [['/docs', 'Docs'], ['#rules', 'The four rules'], ['/docs#config', 'Pool config']]],
               ['Follow', [['https://x.com', 'X'], ['https://github.com', 'GitHub']]],
             ].map(([title, links]) => (

@@ -5,8 +5,8 @@ import { Button } from './Button';
 
 const short = (s: string) => `${s.slice(0, 4)}…${s.slice(-4)}`;
 
-/** Connect / connected state, styled as the design's primary button. */
-export function WalletButton({ style }: { style?: React.CSSProperties }) {
+/** Connect / connected state: primary by default, secondary next to another primary button (the header's Launch). */
+export function WalletButton({ style, variant = 'primary' }: { style?: React.CSSProperties; variant?: 'primary' | 'secondary' }) {
   const { publicKey, disconnect, connecting } = useWallet();
   const { setVisible } = useWalletModal();
   if (publicKey)
@@ -15,5 +15,5 @@ export function WalletButton({ style }: { style?: React.CSSProperties }) {
         <span className="num">{short(publicKey.toBase58())}</span>
       </Button>
     );
-  return <Button style={style} onClick={() => setVisible(true)} disabled={connecting}>{connecting ? 'Connecting…' : 'Connect wallet'}</Button>;
+  return <Button variant={variant} style={style} onClick={() => setVisible(true)} disabled={connecting}>{connecting ? 'Connecting…' : 'Connect wallet'}</Button>;
 }

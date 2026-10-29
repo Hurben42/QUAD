@@ -6,7 +6,6 @@ import { Lockup } from './Lockup';
 import { LinkButton } from './Button';
 import { Stripes } from './Stripes';
 import { WalletButton } from './WalletButton';
-import { JupiterMark } from './JupiterMark';
 
 type Link = readonly [href: string, label: string];
 
@@ -14,7 +13,7 @@ type Link = readonly [href: string, label: string];
  * Full-screen menu for ≤900px. Rendered in a portal on <body> so no page stacking context
  * (the hero, the /launch layers) can cover it. Era stripes on top, big numbered links.
  */
-export function MobileMenu({ links, getHype }: { links: readonly Link[]; getHype: string }) {
+export function MobileMenu({ links }: { links: readonly Link[] }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
@@ -73,8 +72,9 @@ export function MobileMenu({ links, getHype }: { links: readonly Link[]; getHype
               ))}
             </nav>
             <div className="mm-foot">
-              <WalletButton style={{ width: '100%', height: 52 }} />
-              <LinkButton variant="secondary" href={getHype} target="_blank" rel="noopener" title="Swap for HYPE on Jupiter" style={{ width: '100%', height: 52 }}><JupiterMark size={20} />Get HYPE <span className="num">↗</span></LinkButton>
+              <LinkButton href="/launch" style={{ width: '100%', height: 52 }}>Launch a coin <span className="num">→</span></LinkButton>
+              <WalletButton variant="secondary" style={{ width: '100%', height: 52 }} />
+              <a className="mm-hype" href="/#get-hype" onClick={() => setOpen(false)}>Need HYPE? Get some first →</a>
               <span className="label mm-note">Paired to HYPE · not affiliated with Hyperliquid</span>
             </div>
           </div>,
