@@ -7,7 +7,7 @@ import { BASE_FEE, CREATOR_FEE, DEFAULT_THRESHOLD_HYPE, TOTAL_COINS, coins, pct 
  */
 
 // 5×5 pixel mark of poster C: 0 empty, 1 white wash, 2–4 era colour
-const PIXELS = [1, 0, 4, 0, 0, 0, 3, 4, 1, 0, 1, 3, 1, 2, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 1];
+export const PIXELS = [1, 0, 4, 0, 0, 0, 3, 4, 1, 0, 1, 3, 1, 2, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 1];
 
 // The sample coin drawn in poster B: an illustration, not live data
 const SAMPLE_PROGRESS = 0.62;

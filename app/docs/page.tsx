@@ -14,8 +14,8 @@ import {
   PROTOCOL_FEE_SHARE,
   RENT_ESTIMATE_SOL,
   TOTAL_COINS,
-  buildQuadCurve,
   coins,
+  exampleCurve,
   pct,
   price,
 } from '@/lib/curve';
@@ -37,28 +37,7 @@ const SECTIONS = [
   ['faq', 'FAQ'],
 ] as const;
 
-// Worked numbers at the default threshold. Coin and HYPE amounts do not depend on HYPE's decimals
-// (read on-chain in the app); 8 is only the unit used for this illustration.
-const EXAMPLE_QUOTE_DECIMALS = 8;
 const SLOT_SECONDS = 0.4;
-
-function example() {
-  const qd = EXAMPLE_QUOTE_DECIMALS;
-  const curve = buildQuadCurve({ totalSupply: TOTAL_COINS * 10n ** BigInt(BASE_DECIMALS), migrationQuote: BigInt(DEFAULT_THRESHOLD_HYPE) * 10n ** BigInt(qd) });
-  const scale = 10 ** (BASE_DECIMALS - qd);
-  const toCoins = (b: bigint) => Number(b) / 10 ** BASE_DECIMALS;
-  const s = (x: bigint) => Number(x) / 2 ** 64;
-  const startPrice = s(curve.sqrtStartPrice) ** 2 * scale;
-  const endPrice = s(curve.points[3].sqrtPrice) ** 2 * scale;
-  return {
-    eras: curve.eras.map((e) => ({ coins: toCoins(e.base), hype: Number(e.quote) / 10 ** qd, avg: e.avgPrice * scale })),
-    curveCoins: toCoins(curve.curveBase),
-    migrationCoins: toCoins(curve.migrationBase),
-    startPrice,
-    endPrice,
-    graduationCap: endPrice * Number(TOTAL_COINS),
-  };
-}
 
 const n = (x: number) => Math.round(x).toLocaleString('en-US');
 /** A rule card's era colour and era text colour. */
@@ -66,7 +45,7 @@ const era = (i: number) => ({ ['--era' as string]: `var(--era-${i})`, ['--era-t'
 const share = (x: number) => pct(x / Number(TOTAL_COINS));
 
 export default function DocsPage() {
-  const ex = example();
+  const ex = exampleCurve();
   const protocolFee = BASE_FEE * PROTOCOL_FEE_SHARE;
   const platformFee = BASE_FEE - protocolFee - CREATOR_FEE;
   const config = process.env.NEXT_PUBLIC_DBC_CONFIG ? DBC_CONFIG.toBase58() : null;

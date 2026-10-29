@@ -237,3 +237,24 @@ export function baseOutForQuote(sqrtStartPrice: bigint, points: CurvePoint[], qu
   }
   return out;
 }
+
+/**
+ * Display numbers for the curve at a HYPE threshold, for the docs and the rules page: coins and HYPE
+ * per era, average prices, migration. Amounts in coins and HYPE do not depend on HYPE's decimals
+ * (always read on-chain in the app); 8 is only the unit used to build the illustration.
+ */
+export function exampleCurve(thresholdHype = DEFAULT_THRESHOLD_HYPE, quoteDecimals = 8) {
+  const curve = buildQuadCurve({ totalSupply: TOTAL_COINS * 10n ** BigInt(BASE_DECIMALS), migrationQuote: BigInt(thresholdHype) * 10n ** BigInt(quoteDecimals) });
+  const scale = 10 ** (BASE_DECIMALS - quoteDecimals);
+  const toCoins = (b: bigint) => Number(b) / 10 ** BASE_DECIMALS;
+  const s = (x: bigint) => Number(x) / 2 ** 64;
+  const endPrice = s(curve.points[ERAS - 1].sqrtPrice) ** 2 * scale;
+  return {
+    eras: curve.eras.map((e) => ({ coins: toCoins(e.base), hype: Number(e.quote) / 10 ** quoteDecimals, avg: e.avgPrice * scale })),
+    curveCoins: toCoins(curve.curveBase),
+    migrationCoins: toCoins(curve.migrationBase),
+    startPrice: s(curve.sqrtStartPrice) ** 2 * scale,
+    endPrice,
+    graduationCap: endPrice * Number(TOTAL_COINS),
+  };
+}
