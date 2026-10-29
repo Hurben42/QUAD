@@ -69,7 +69,7 @@ export function CurveList() {
     return (
       <div style={{ padding: '48px 40px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
         <span style={{ font: '700 18px/24px var(--font-sans)' }}>No coin on the curve yet.</span>
-        <a className="q-btn q-btn--primary" href="#launch">Launch the first one <span className="num">→</span></a>
+        <a className="q-btn q-btn--primary" href="/launch">Launch the first one <span className="num">→</span></a>
       </div>
     );
 

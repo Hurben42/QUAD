@@ -71,7 +71,7 @@ export function CreatorDashboard() {
       {pools === null ? (
         <p className="label">Loading your coins…</p>
       ) : pools.length === 0 ? (
-        <p style={{ margin: 0, font: '500 16px/24px var(--font-sans)', color: 'var(--text-muted)' }}>No coin launched from this wallet yet. <a href="/#launch" style={{ textDecoration: 'underline' }}>Launch one</a>.</p>
+        <p style={{ margin: 0, font: '500 16px/24px var(--font-sans)', color: 'var(--text-muted)' }}>No coin launched from this wallet yet. <a href="/launch" style={{ textDecoration: 'underline' }}>Launch one</a>.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {pools.map((p) => {

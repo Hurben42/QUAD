@@ -196,3 +196,25 @@ export const CREATOR_FEE = BASE_FEE * (1 - PROTOCOL_FEE_SHARE) * (CREATOR_TRADIN
 export const pct = (x: number) => `${Number((x * 100).toFixed(3))}%`;
 /** 21_000_000n → "21,000,000"; compact: "21M". */
 export const coins = (n: bigint, compact = false) => (compact ? `${Number(n) / 1e6}M` : n.toLocaleString('en-US'));
+
+/** Rent a launch locks (mint, metadata, pool, vaults), roughly; shown as an estimate only. */
+export const RENT_ESTIMATE_SOL = 0.021;
+
+/**
+ * Base out for `quoteIn` (after fees) bought from the start of the curve, walking the segments
+ * like the program does (constant product per segment: Δs = quote·2^128 / L). Rounded down.
+ */
+export function baseOutForQuote(sqrtStartPrice: bigint, points: CurvePoint[], quoteIn: bigint): bigint {
+  let s = sqrtStartPrice;
+  let left = quoteIn;
+  let out = 0n;
+  for (const p of points) {
+    if (left <= 0n) break;
+    const full = segmentQuote(s, p.sqrtPrice, p.liquidity);
+    const next = left >= full ? p.sqrtPrice : s + (left * Q128) / p.liquidity;
+    out += (p.liquidity * (next - s)) / (s * next);
+    left -= left >= full ? full : left;
+    s = next;
+  }
+  return out;
+}

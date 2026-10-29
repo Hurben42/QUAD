@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildQuadCurve, verifyCurve, ERAS } from '../lib/curve';
+import { baseOutForQuote, buildQuadCurve, verifyCurve, ERAS } from '../lib/curve';
 
 const SUPPLY = 21_000_000n * 10n ** 6n; // 21M coins, 6 decimals
 const Q = 50n * 10n ** 8n; // 50 HYPE at 8 decimals
@@ -43,5 +43,23 @@ describe('quad curve', () => {
     const v = verifyCurve(c.sqrtStartPrice, c.points);
     expect(v.base).toBe(c.curveBase);
     expect(Math.abs(Number(v.quote) - Number(Q)) / Number(Q)).toBeLessThan(1e-4);
+  });
+});
+
+describe('first buy', () => {
+  const c = buildQuadCurve({ totalSupply: SUPPLY, migrationQuote: Q });
+  it('buying exactly era 1 gets era 1 coins (±1 lamport)', () => {
+    const out = baseOutForQuote(c.sqrtStartPrice, c.points, c.eras[0].quote);
+    expect(Number(c.eras[0].base - out)).toBeLessThanOrEqual(1);
+  });
+  it('buying half of era 1 gets more than half its coins (price rises within the era)', () => {
+    const out = baseOutForQuote(c.sqrtStartPrice, c.points, c.eras[0].quote / 2n);
+    expect(out > c.eras[0].base / 2n).toBe(true);
+    expect(out < c.eras[0].base).toBe(true);
+  });
+  it('buying past the threshold caps at the whole curve (rounded down per segment)', () => {
+    const out = baseOutForQuote(c.sqrtStartPrice, c.points, Q * 2n);
+    expect(out <= c.curveBase).toBe(true);
+    expect(c.curveBase - out <= BigInt(ERAS)).toBe(true);
   });
 });

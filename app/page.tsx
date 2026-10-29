@@ -1,7 +1,6 @@
-import { Lockup } from '@/components/Lockup';
 import { LinkButton } from '@/components/Button';
+import { GET_HYPE, SiteHeader } from '@/components/SiteHeader';
 import { CurveList } from '@/components/CurveList';
-import { WalletButton } from '@/components/WalletButton';
 import { LaunchForm } from '@/components/LaunchForm';
 import { LaunchFeeStat } from '@/components/LaunchFeeStat';
 import { RulePosters } from '@/components/RulePosters';
@@ -12,8 +11,6 @@ import { BASE_FEE, CREATOR_FEE, PROTOCOL_FEE_SHARE, TOTAL_COINS, coins, pct } fr
  * and landing-mobile.html (≤900px). One DOM; the layout switches in app/globals.css.
  */
 
-const NAV = [['#launch', 'Launch'], ['#curve', 'On the curve'], ['#rules', 'The four rules'], ['#creators', 'Creators'], ['#docs', 'Docs']];
-const GET_HYPE = 'https://jup.ag';
 
 // Halving steps: share of the curve's coins (width) and average price (height), per era
 const STEPS = [
@@ -45,30 +42,7 @@ export default function Page() {
         <Rays className="hide-m" viewW={1400} viewH={840} cx={700} xs={[-200, 0, 200, 400, 600, 800, 1000, 1200, 1400, 1600]} ys={[722, 596, 479]} opacity={0.55} />
         <Rays className="show-m" viewW={390} viewH={600} cx={195} xs={[-120, 30, 140, 250, 360, 510]} ys={[480, 340]} opacity={0.5} />
 
-        <header className="hero-head container rise" style={stagger(0)}>
-          <Lockup size="sm" />
-          <nav className="hero-nav hide-m" style={{ display: 'flex', gap: 4 }} aria-label="Primary">
-            {NAV.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
-          </nav>
-          <div className="hide-m" style={{ display: 'flex', gap: 12 }}>
-            <LinkButton variant="secondary" href={GET_HYPE} target="_blank" rel="noopener" style={{ height: 40 }}>Get HYPE</LinkButton>
-            <WalletButton style={{ height: 40 }} />
-          </div>
-          <div className="show-m" style={{ gap: 8, alignItems: 'center' }}>
-            <LinkButton href="#launch" style={{ height: 40, padding: '0 16px', fontSize: 14 }}>Launch</LinkButton>
-            <details className="menu-m">
-              <summary className="q-btn q-btn--secondary" aria-label="Open menu" style={{ width: 44, height: 44, padding: 0 }}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" /></svg>
-              </summary>
-              <nav aria-label="Primary">
-                {NAV.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
-                <a href="/creator">Creator fees</a>
-                <a href={GET_HYPE} target="_blank" rel="noopener">Get HYPE</a>
-                <WalletButton style={{ marginTop: 8 }} />
-              </nav>
-            </details>
-          </div>
-        </header>
+        <SiteHeader className="rise" style={stagger(0)} />
 
         <div className="hero-grid container">
           <div className="hero-copy">
@@ -77,7 +51,7 @@ export default function Page() {
             <p className="hero-lede rise" style={stagger(4)}>
               {coins(TOTAL_COINS)} coins, minted once.<span className="hide-m"> Traded against HYPE on a curve that climbs in four eras:</span> <span className="hide-m">each</span><span className="show-m-i">Each</span> era sells half as many coins as the last, for the same HYPE. <span className="hide-m">The creator earns</span><span className="show-m-i">Creators earn</span> {pct(CREATOR_FEE)} of every trade, in HYPE.
             </p>
-            <div className="hero-ctas rise" style={stagger(5)}><LinkButton href="#launch">Launch coin <span className="num">→</span></LinkButton><LinkButton variant="secondary" href="#rules">See the eras</LinkButton></div>
+            <div className="hero-ctas rise" style={stagger(5)}><LinkButton href="/launch">Launch coin <span className="num">→</span></LinkButton><LinkButton variant="secondary" href="#rules">See the eras</LinkButton></div>
             <dl className="hero-stats rise" style={stagger(6)}>
               {stats.map(([k, km, v]) => (
                 <div key={k}><dt className="label"><span className="hide-m">{k}</span><span className="show-m">{km}</span></dt><dd className="num">{v}</dd></div>
@@ -148,7 +122,7 @@ export default function Page() {
           <svg viewBox="0 0 96 120" aria-hidden="true" shapeRendering="crispEdges"><QuadMarkPaths /></svg>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}>
             <p>Name it, add your first buy, press launch.</p>
-            <a className="q-btn btn-ink" href="#launch">Launch coin <span className="num">→</span></a>
+            <a className="q-btn btn-ink" href="/launch">Launch coin <span className="num">→</span></a>
           </div>
         </div>
       </section>
@@ -162,7 +136,7 @@ export default function Page() {
           </div>
           <nav className="hide-m" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }} aria-label="Footer">
             {[
-              ['Product', [['#launch', 'Launch'], ['#curve', 'On the curve'], ['/creator', 'Creator fees'], [GET_HYPE, 'Get HYPE']]],
+              ['Product', [['/launch', 'Launch'], ['#curve', 'On the curve'], ['/creator', 'Creator fees'], [GET_HYPE, 'Get HYPE']]],
               ['Read', [['#docs', 'Docs'], ['#rules', 'The four rules'], ['#docs', 'Pool config']]],
               ['Follow', [['https://x.com', 'X'], ['https://github.com', 'GitHub']]],
             ].map(([title, links]) => (
@@ -173,7 +147,7 @@ export default function Page() {
             ))}
           </nav>
           <nav className="show-m" style={{ gap: 20, flexWrap: 'wrap' }} aria-label="Footer">
-            {[['#launch', 'Launch'], ['#curve', 'On the curve'], ['/creator', 'Creator fees'], ['#docs', 'Docs'], ['https://x.com', 'X']].map(([href, label]) => <a key={label} href={href} style={{ font: '600 14px/1 var(--font-sans)' }}>{label}</a>)}
+            {[['/launch', 'Launch'], ['#curve', 'On the curve'], ['/creator', 'Creator fees'], ['#docs', 'Docs'], ['https://x.com', 'X']].map(([href, label]) => <a key={label} href={href} style={{ font: '600 14px/1 var(--font-sans)' }}>{label}</a>)}
           </nav>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}><span className="label">© 2026 QUAD<span className="show-m-i"> · Four eras · Priced in HYPE</span></span><span className="label hide-m">Four eras · Priced in HYPE</span></div>

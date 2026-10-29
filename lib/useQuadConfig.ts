@@ -7,6 +7,8 @@ import { readQuoteMint } from './hype';
 
 export type QuadConfigView = {
   quoteDecimals: number;
+  /** 0 = SPL Token, 1 = Token-2022, read on-chain */
+  quoteTokenType: 0 | 1;
   /** HYPE lamports to graduate */
   threshold: bigint;
   /** SOL lamports charged per launch by the config (0 = none) */
@@ -22,6 +24,7 @@ function readConfig(connection: Connection): Promise<QuadConfigView> {
       if (!cfg) throw new Error(`QUAD config ${DBC_CONFIG.toBase58()} not found on this cluster`);
       return {
         quoteDecimals: quote.decimals,
+        quoteTokenType: quote.tokenType,
         threshold: BigInt(cfg.migrationQuoteThreshold.toString()),
         poolCreationFee: BigInt(cfg.poolCreationFee.toString()),
       };

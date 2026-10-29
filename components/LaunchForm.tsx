@@ -1,67 +1,36 @@
 'use client';
 import { useState } from 'react';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
-import { buildLaunchTx } from '@/lib/dbc';
-import { ANTI_SNIPER_FEE, BASE_FEE, pct } from '@/lib/curve';
+import { ANTI_SNIPER_FEE, BASE_FEE, RENT_ESTIMATE_SOL, pct } from '@/lib/curve';
 import { useQuadConfig } from '@/lib/useQuadConfig';
+import { fromUnits, isAmount, tradeUrl, useLaunch } from '@/lib/useLaunch';
 import { Button } from './Button';
 
-const toUnits = (amount: string, decimals: number) => {
-  const [int = '0', frac = ''] = amount.trim().split('.');
-  return BigInt(int || '0') * 10n ** BigInt(decimals) + BigInt((frac + '0'.repeat(decimals)).slice(0, decimals) || '0');
-};
-const fromUnits = (x: bigint, decimals: number) => Number(x) / 10 ** decimals;
-
-type Result = { ok: true; pool: string; sig: string } | { ok: false; message: string };
-
 /**
- * The white launch card from the design. One wallet signature: create pool (+ optional first buy).
- * Metadata goes to Irys first through /api/metadata.
+ * The white launch card from the landing design: everything on one card, one wallet signature.
+ * The step-by-step version lives on /launch (LaunchWizard).
  */
 export function LaunchForm() {
-  const { connection } = useConnection();
-  const { publicKey, sendTransaction } = useWallet();
+  const { publicKey } = useWallet();
   const { setVisible } = useWalletModal();
   const { config, error: configError } = useQuadConfig();
+  const { launch, phase: step, result } = useLaunch();
   const [name, setName] = useState('');
   const [ticker, setTicker] = useState('');
   const [firstBuy, setFirstBuy] = useState('');
-  const [step, setStep] = useState<null | 'upload' | 'sign' | 'confirm'>(null);
-  const [result, setResult] = useState<Result | null>(null);
 
   const threshold = config ? fromUnits(config.threshold, config.quoteDecimals) : null;
-  const validBuy = firstBuy === '' || /^\d*\.?\d*$/.test(firstBuy.trim());
+  const validBuy = isAmount(firstBuy);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!publicKey) return setVisible(true);
-    if (!config) return;
-    setResult(null);
-    try {
-      setStep('upload');
-      const res = await fetch('/api/metadata', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name, symbol: ticker }) });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? 'metadata upload failed');
-
-      setStep('sign');
-      const firstBuyQuoteLamports = firstBuy ? toUnits(firstBuy, config.quoteDecimals) : undefined;
-      const { tx, baseMint, pool } = await buildLaunchTx(connection, { name, symbol: ticker, uri: body.uri, creator: publicKey, firstBuyQuoteLamports });
-      const sig = await sendTransaction(tx, connection, { signers: [baseMint] });
-
-      setStep('confirm');
-      const latest = await connection.getLatestBlockhash();
-      const conf = await connection.confirmTransaction({ signature: sig, ...latest }, 'confirmed');
-      if (conf.value.err) throw new Error(`transaction failed: ${JSON.stringify(conf.value.err)}`);
-      setResult({ ok: true, pool: pool.toBase58(), sig });
+    const r = await launch({ name, ticker, firstBuy });
+    if (r.ok) {
       setName('');
       setTicker('');
       setFirstBuy('');
-      window.dispatchEvent(new Event('quad:launched'));
-    } catch (err) {
-      setResult({ ok: false, message: err instanceof Error ? err.message : String(err) });
-    } finally {
-      setStep(null);
     }
   }
 
@@ -95,10 +64,10 @@ export function LaunchForm() {
       {configError && <p role="alert" className="num" style={{ margin: 0, fontSize: 12, color: 'var(--danger)', wordBreak: 'break-all' }}>{configError}</p>}
       {result && (
         <p role="status" className="num" style={{ margin: 0, fontSize: 12, wordBreak: 'break-all', color: result.ok ? 'var(--success)' : 'var(--danger)' }}>
-          {result.ok ? <>Launched · <a href={`/coin/${result.pool}`} style={{ textDecoration: 'underline' }}>pool {result.pool}</a></> : result.message}
+          {result.ok ? <>Launched · <a href={tradeUrl(result.baseMint)} target="_blank" rel="noopener" style={{ textDecoration: 'underline' }}>pool {result.pool}</a></> : result.message}
         </p>
       )}
-      <p style={{ margin: 0, font: '500 12px/18px var(--font-sans)', color: 'var(--text-muted)' }}>{fee} about 0.021 SOL of rent. Mint authority is revoked in the same transaction. The coin never gets a freeze authority.</p>
+      <p style={{ margin: 0, font: '500 12px/18px var(--font-sans)', color: 'var(--text-muted)' }}>{fee} about {RENT_ESTIMATE_SOL} SOL of rent. Mint authority is revoked in the same transaction. The coin never gets a freeze authority.</p>
     </form>
   );
 }
