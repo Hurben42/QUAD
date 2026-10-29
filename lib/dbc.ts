@@ -125,6 +125,9 @@ export type CreatorPool = {
   symbol: string;
   /** unclaimed creator trading fees, quote lamports (HYPE) */
   unclaimedQuoteFee: bigint;
+  /** 0 → 1, quote raised / migration threshold */
+  progress: number;
+  era: 1 | 2 | 3 | 4;
   /** the curve is complete: surplus above the threshold can be withdrawn once */
   curveComplete: boolean;
   surplusWithdrawn: boolean;
@@ -134,7 +137,9 @@ export type CreatorPool = {
 /** Pools created by this wallet from the QUAD config, with what it can claim. */
 export async function listCreatorPools(connection: Connection, creator: PublicKey): Promise<CreatorPool[]> {
   const client = makeClient(connection);
-  const pools = (await client.state.getPoolsByCreator(creator)).filter((p) => p.account.poolState.config.equals(DBC_CONFIG));
+  const [all, config] = await Promise.all([client.state.getPoolsByCreator(creator), client.state.getPoolConfig(DBC_CONFIG)]);
+  const pools = all.filter((p) => p.account.poolState.config.equals(DBC_CONFIG));
+  const threshold = config ? BigInt(config.migrationQuoteThreshold.toString()) : 0n;
   const metas = await connection.getMultipleAccountsInfo(pools.map((p) => deriveMintMetadata(p.account.poolState.baseMint)));
   return pools.map(({ publicKey, account: { poolState: account } }, i) => {
     const meta = metas[i] ? parseTokenMetadata(metas[i]!.data) : { name: '', symbol: '' };
@@ -144,6 +149,10 @@ export async function listCreatorPools(connection: Connection, creator: PublicKe
       name: meta.name,
       symbol: meta.symbol,
       unclaimedQuoteFee: BigInt(account.creatorQuoteFee.toString()),
+      ...(() => {
+        const progress = threshold > 0n ? Math.min(1, Number(BigInt(account.quoteReserve.toString())) / Number(threshold)) : 0;
+        return { progress, era: eraOf(progress) };
+      })(),
       curveComplete: !account.finishCurveTimestamp.isZero(),
       surplusWithdrawn: account.isCreatorWithdrawSurplus !== 0,
       migrated: account.isMigrated !== 0,

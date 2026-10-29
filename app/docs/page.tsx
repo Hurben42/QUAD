@@ -197,7 +197,7 @@ export default function DocsPage() {
 
           <section id="creators">
             <h2><span className="label">06</span>Creator fees</h2>
-            <p>Fees accrue in the pool, in HYPE, and wait for you. On the <a href="/creator">Creator fees</a> page, connect the wallet you launched with: each of your coins shows its unclaimed HYPE and a Claim button. Claim as often as you like; each claim is one transaction.</p>
+            <p>Fees accrue in the pool, in HYPE, and wait for you. On the <a href="/creators#claim">Creator fees</a> page, connect the wallet you launched with: each of your coins shows its unclaimed HYPE and a Claim button. Claim as often as you like; each claim is one transaction.</p>
             <p>Once the curve is complete, the HYPE raised above the threshold by the last trade is surplus. The creator can withdraw its share once, from the same page.</p>
           </section>
 

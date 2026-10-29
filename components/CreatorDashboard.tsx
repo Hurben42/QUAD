@@ -7,6 +7,7 @@ import { CREATOR_FEE, pct } from '@/lib/curve';
 import { useQuadConfig } from '@/lib/useQuadConfig';
 import { Button } from './Button';
 import { WalletButton } from './WalletButton';
+import { CreatorCard } from './CreatorCard';
 
 type Action = { pool: string; kind: 'claim' | 'surplus' };
 
@@ -73,28 +74,25 @@ export function CreatorDashboard() {
       ) : pools.length === 0 ? (
         <p style={{ margin: 0, font: '500 16px/24px var(--font-sans)', color: 'var(--text-muted)' }}>No coin launched from this wallet yet. <a href="/launch" style={{ textDecoration: 'underline' }}>Launch one</a>.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="cr-cards">
           {pools.map((p) => {
             const pool = new PublicKey(p.pool);
             const claiming = busy?.pool === p.pool && busy.kind === 'claim';
             const withdrawing = busy?.pool === p.pool && busy.kind === 'surplus';
             return (
-              <div key={p.pool} className="coin-card" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', padding: '16px 24px' }}>
-                <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-                  <span style={{ font: '700 18px/24px var(--font-sans)' }}>{p.name || p.baseMint.slice(0, 6)} <span className="num" style={{ fontSize: 13, color: 'var(--text-muted)' }}>${p.symbol}</span></span>
-                  <span className="label">{p.migrated ? 'Graduated' : p.curveComplete ? 'Curve complete' : 'On the curve'}</span>
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                  <span className="num">{hype(p.unclaimedQuoteFee)} HYPE</span>
-                  <Button sm disabled={busy !== null || p.unclaimedQuoteFee === 0n} onClick={() => run({ pool: p.pool, kind: 'claim' }, () => buildClaimCreatorFeeTx(connection, publicKey, pool))}>
-                    {claiming ? 'Claiming…' : 'Claim fees'}
+              <div key={p.pool} className="cr-card-item">
+                <div className="cr-card"><CreatorCard symbol={p.symbol || p.baseMint.slice(0, 4)} pool={p.pool} era={p.era} progress={p.progress} claimable={hype(p.unclaimedQuoteFee)} /></div>
+                <span className="label">{p.name || p.baseMint.slice(0, 6)} · {p.migrated ? 'Graduated' : p.curveComplete ? 'Curve complete' : 'On the curve'}</span>
+                <div className="cr-card-actions">
+                  <Button disabled={busy !== null || p.unclaimedQuoteFee === 0n} onClick={() => run({ pool: p.pool, kind: 'claim' }, () => buildClaimCreatorFeeTx(connection, publicKey, pool))}>
+                    {claiming ? 'Claiming…' : `Claim ${hype(p.unclaimedQuoteFee)} HYPE`}
                   </Button>
                   {p.curveComplete && (
-                    <Button sm variant="secondary" disabled={busy !== null || p.surplusWithdrawn} onClick={() => run({ pool: p.pool, kind: 'surplus' }, () => buildWithdrawSurplusTx(connection, publicKey, pool))}>
+                    <Button variant="secondary" disabled={busy !== null || p.surplusWithdrawn} onClick={() => run({ pool: p.pool, kind: 'surplus' }, () => buildWithdrawSurplusTx(connection, publicKey, pool))}>
                       {p.surplusWithdrawn ? 'Surplus withdrawn' : withdrawing ? 'Withdrawing…' : 'Withdraw surplus'}
                     </Button>
                   )}
-                </span>
+                </div>
               </div>
             );
           })}

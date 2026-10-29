@@ -227,7 +227,7 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
               </dl>
               <div className="wz-actions-inline">
                 <LinkButton href={tradeUrl(result.baseMint)} target="_blank" rel="noopener">Trade <span className="num">↗</span></LinkButton>
-                <LinkButton variant="secondary" href="/creator">Creator fees</LinkButton>
+                <LinkButton variant="secondary" href="/creators#claim">Creator fees</LinkButton>
               </div>
             </>
           )}

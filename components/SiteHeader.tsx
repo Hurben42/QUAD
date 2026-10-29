@@ -5,10 +5,10 @@ import { MobileMenu } from './MobileMenu';
 import { JupiterMark } from './JupiterMark';
 
 /** Paths start at "/" so they work from every page; on the landing they scroll in place. */
-export const NAV = [['/launch', 'Launch'], ['/#rules', 'The four rules'], ['/#creators', 'Creators'], ['/docs', 'Docs']] as const;
+export const NAV = [['/launch', 'Launch'], ['/#rules', 'The four rules'], ['/creators', 'Creators'], ['/docs', 'Docs']] as const;
 export const GET_HYPE = 'https://jup.ag';
 /** Extra entries in the mobile menu. */
-const MORE = [['/creator', 'Creator fees']] as const;
+const MORE = [] as const;
 
 /** The site header from the landing mockup: nav + Get HYPE + wallet; on mobile, Launch + menu. */
 export function SiteHeader({ className = '', style }: { className?: string; style?: React.CSSProperties }) {
