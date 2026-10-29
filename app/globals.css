@@ -579,10 +579,10 @@ section[id],footer[id]{scroll-margin-top:24px}
 .cc-glow{animation:cc-glow 6s ease-in-out infinite alternate;transform-box:view-box;transform-origin:50% 40%}
 @keyframes cc-glow{to{transform:scale(1.25) translateY(-20px);opacity:.6}}
 .cr-card{width:100%;max-width:340px;filter:drop-shadow(0 30px 50px color-mix(in srgb, var(--surface-0) 80%, transparent));transition:transform .3s cubic-bezier(.16,.8,.24,1)}
-.cr-card:hover{transform:translateY(-6px) rotate(-1deg)}
+.cr-card:hover{transform:translateY(-6px) rotate(2deg)}
 .cr-card-stage{position:relative;display:grid;place-items:center;min-height:600px}
 .cr-card-stage > .cr-card{grid-area:1 / 1;animation:cc-float 6s ease-in-out infinite alternate}
-@keyframes cc-float{from{transform:translateY(-6px) rotate(-3deg)}to{transform:translateY(8px) rotate(-1deg)}}
+@keyframes cc-float{from{transform:translateY(-6px) rotate(5deg)}to{transform:translateY(8px) rotate(3deg)}}
 .cr-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px}
 .cr-card-item{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
 .cr-card-item .cr-card{max-width:none}
