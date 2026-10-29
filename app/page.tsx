@@ -59,6 +59,7 @@ export default function Page() {
               </summary>
               <nav aria-label="Primary">
                 {NAV.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
+                <a href="/creator">Creator fees</a>
                 <a href={GET_HYPE} target="_blank" rel="noopener">Get HYPE</a>
                 <WalletButton style={{ marginTop: 8 }} />
               </nav>
@@ -158,7 +159,7 @@ export default function Page() {
           </div>
           <nav className="hide-m" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }} aria-label="Footer">
             {[
-              ['Product', [['#launch', 'Launch'], ['#curve', 'On the curve'], [GET_HYPE, 'Get HYPE']]],
+              ['Product', [['#launch', 'Launch'], ['#curve', 'On the curve'], ['/creator', 'Creator fees'], [GET_HYPE, 'Get HYPE']]],
               ['Read', [['#docs', 'Docs'], ['#rules', 'The four rules'], ['#docs', 'Pool config']]],
               ['Follow', [['https://x.com', 'X'], ['https://github.com', 'GitHub']]],
             ].map(([title, links]) => (
@@ -169,7 +170,7 @@ export default function Page() {
             ))}
           </nav>
           <nav className="show-m" style={{ gap: 20, flexWrap: 'wrap' }} aria-label="Footer">
-            {[['#launch', 'Launch'], ['#curve', 'On the curve'], ['#docs', 'Docs'], ['https://x.com', 'X']].map(([href, label]) => <a key={label} href={href} style={{ font: '600 14px/1 var(--font-sans)' }}>{label}</a>)}
+            {[['#launch', 'Launch'], ['#curve', 'On the curve'], ['/creator', 'Creator fees'], ['#docs', 'Docs'], ['https://x.com', 'X']].map(([href, label]) => <a key={label} href={href} style={{ font: '600 14px/1 var(--font-sans)' }}>{label}</a>)}
           </nav>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}><span className="label">© 2026 QUAD<span className="show-m-i"> · Four eras · Priced in HYPE</span></span><span className="label hide-m">Four eras · Priced in HYPE</span></div>
