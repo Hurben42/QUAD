@@ -717,28 +717,29 @@ section[id],footer[id]{scroll-margin-top:24px}
 .gh-head{display:flex;flex-direction:column;gap:16px}
 .gh-head h2{margin:0;font:800 56px/1 var(--font-sans);letter-spacing:-0.035em}
 .gh-tag{color:var(--on-era-1)}
-.gh-mark{justify-self:center;align-self:center;width:150px;animation:gh-rise 6s ease-in-out infinite alternate}
+.gh-center{justify-self:center;align-self:center;display:flex;flex-direction:column;align-items:center;gap:18px}
+.gh-mark{width:150px;animation:gh-rise 6s ease-in-out infinite alternate}
 .gh-mark svg{display:block;width:100%;height:auto;filter:drop-shadow(0 18px 30px color-mix(in srgb, var(--surface-0) 60%, transparent))}
-@keyframes gh-rise{from{transform:translateY(14px) rotate(-4deg)}to{transform:translateY(-10px) rotate(3deg)}}
-.gh-bottom{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:16px;align-items:stretch}
-.gh-bottom .gh-mint{align-self:end}
-.gh-way-go{margin-top:auto !important}
-.gh-way{display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:var(--radius-md);background:var(--surface-1);color:var(--text);box-shadow:0 24px 50px -24px #00000099;transition:transform .2s ease}
-.gh-way:hover{transform:translateY(-4px)}
-.gh-way:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
-.gh-way-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px}
-.gh-way-icon{display:grid;place-items:center;width:44px;height:44px;border-radius:var(--radius-sm);background:var(--on-era-4)}
-.gh-way-title{font:800 24px/1.05 var(--font-sans);letter-spacing:-0.02em}
-.gh-way-text{font:500 13px/19px var(--font-sans);color:var(--text-muted)}
-.gh-way-go{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:12px;border-top:1px solid var(--line)}
-.gh-way-go .num{font-size:13px}
-.gh-arrow{transition:transform .2s ease}
-.gh-way:hover .gh-arrow{transform:translate(3px,-3px)}
-.gh-mint{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 16px;border-radius:var(--radius-md);background:color-mix(in srgb, var(--surface-0) 70%, transparent);border:1px solid color-mix(in srgb, var(--on-era-1) 18%, transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);max-width:320px}
-.gh-mint .label{color:var(--on-era-1)}
-.gh-mint code{max-width:280px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--on-era-1)}
-.gh-mint button{height:30px;padding:0 16px;border-radius:var(--radius-pill);border:0;background:var(--on-era-1);color:var(--on-era-4);font:600 12px/1 var(--font-mono);cursor:pointer}
-.gh-mint button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+@keyframes gh-rise{from{transform:translateY(10px) rotate(-4deg)}to{transform:translateY(-8px) rotate(3deg)}}
+.gh-ca{display:inline-flex;align-items:center;gap:10px;height:34px;padding:0 12px 0 4px;border-radius:var(--radius-pill);border:1px solid color-mix(in srgb, var(--on-era-1) 30%, transparent);background:color-mix(in srgb, var(--surface-0) 70%, transparent);color:var(--on-era-1);cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:border-color .15s ease}
+.gh-ca:hover{border-color:var(--on-era-1)}
+.gh-ca:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.gh-ca-k{display:grid;place-items:center;height:26px;padding:0 10px;border-radius:var(--radius-pill);background:var(--on-era-1);color:var(--on-era-4);font:700 11px/1 var(--font-mono);letter-spacing:.1em}
+.gh-ca .num{font-size:13px}
+
+/* the two ways in, along the foot of the poster: no cards, an editorial row over the horizon */
+.gh-routes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid color-mix(in srgb, var(--on-era-1) 28%, transparent);margin:0 -36px -36px;padding:0 36px}
+.gh-route{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px;align-items:center;padding:26px 28px 30px 0;color:var(--on-era-1)}
+.gh-route + .gh-route{padding:26px 0 30px 28px;border-left:1px solid color-mix(in srgb, var(--on-era-1) 28%, transparent)}
+.gh-route-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:var(--radius-md);background:var(--on-era-4);flex:none}
+.gh-route-body{display:flex;flex-direction:column;gap:6px;min-width:0}
+.gh-route-body .label{color:color-mix(in srgb, var(--on-era-1) 75%, transparent)}
+.gh-route-title{font:800 30px/1 var(--font-sans);letter-spacing:-0.025em}
+.gh-route-text{font:500 14px/20px var(--font-sans);color:color-mix(in srgb, var(--on-era-1) 82%, transparent)}
+.gh-route-go{display:grid;place-items:center;width:48px;height:48px;border-radius:var(--radius-pill);background:var(--on-era-1);color:var(--on-era-4);font:600 18px/1 var(--font-mono);transition:transform .25s cubic-bezier(.16,.8,.24,1)}
+.gh-route:hover .gh-route-go{transform:rotate(45deg) scale(1.08)}
+.gh-route:hover .gh-route-title{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+.gh-route:focus-visible{outline:2px solid var(--focus);outline-offset:-4px;border-radius:var(--radius-md)}
 .mm-hype{text-align:center;padding:8px;font:600 14px/20px var(--font-sans);color:var(--text-muted);text-decoration:underline;text-underline-offset:3px}
 @media (max-width:900px){
   .gh{padding:22px 16px 16px;min-height:0;gap:20px}
@@ -746,14 +747,18 @@ section[id],footer[id]{scroll-margin-top:24px}
   .gh-head h2{font-size:36px}
   .gh-mark{width:110px;margin:12px 0}
   .gh-sun{height:62%}
-  .gh-bottom{grid-template-columns:minmax(0,1fr)}
-  .gh-mint{max-width:none;order:3}
+  .gh-routes{grid-template-columns:minmax(0,1fr);margin:0 -16px -16px;padding:0 16px}
+  .gh-route,.gh-route + .gh-route{padding:20px 0;border-left:0}
+  .gh-route + .gh-route{border-top:1px solid color-mix(in srgb, var(--on-era-1) 28%, transparent)}
+  .gh-route-title{font-size:24px}
+  .gh-route-icon{width:44px;height:44px}
+  .gh-route-go{width:40px;height:40px}
 }
-@media (prefers-reduced-motion:reduce){.gh-sun,.gh-mark{animation:none}.gh-way{transition:none}.gh-way:hover{transform:none}}
+@media (prefers-reduced-motion:reduce){.gh-sun,.gh-mark{animation:none}.gh-route-go{transition:none}.gh-route:hover .gh-route-go{transform:none}}
 
 /* ---- header: fixed glass bar once the page scrolls, 10px from the edges, 10px padding */
 @keyframes q-head-in{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
-.site-head.is-stuck{position:fixed;z-index:80;top:10px;left:10px;right:10px;width:auto;max-width:760px;margin:0 auto;gap:12px;padding:10px;border-radius:var(--radius-lg);color:var(--text);background:color-mix(in srgb, var(--surface-1) 74%, transparent);border:1px solid color-mix(in srgb, var(--surface-1) 90%, transparent);box-shadow:var(--card);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);animation:q-head-in .35s cubic-bezier(.16,.8,.24,1) both}
+.site-head.is-stuck{position:fixed;z-index:80;top:10px;left:10px;right:10px;width:auto;max-width:760px;margin:0 auto;gap:12px;padding:10px;border-radius:var(--radius-lg);color:var(--text);background:color-mix(in srgb, var(--surface-0) 78%, transparent);border:1px solid var(--line);box-shadow:var(--card);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);animation:q-head-in .35s cubic-bezier(.16,.8,.24,1) both}
 .site-head.is-stuck .q-lockup{padding-left:6px}
 .site-head.is-stuck .hero-nav a{padding:8px 10px;font-size:13px}
 .site-head.is-stuck .q-btn{height:36px !important;padding:0 14px;font-size:13px}

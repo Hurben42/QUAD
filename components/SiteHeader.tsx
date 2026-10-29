@@ -34,8 +34,7 @@ export function SiteHeader({ className = '', style }: { className?: string; styl
   return (
     <>
       {stuck && <div className="site-head-spacer" style={{ height }} aria-hidden="true" />}
-      {/* once fixed it turns to frosted white, so its tokens switch to the light theme to stay readable */}
-      <header ref={ref} className={`hero-head container site-head ${stuck ? 'is-stuck' : ''} ${className}`} style={style} data-theme={stuck ? 'light' : undefined}>
+      <header ref={ref} className={`hero-head container site-head ${stuck ? 'is-stuck' : ''} ${className}`} style={style}>
         <Lockup size="sm" />
         <nav className="hero-nav hide-m" style={{ display: 'flex', gap: 4 }} aria-label="Primary">
           {NAV.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
