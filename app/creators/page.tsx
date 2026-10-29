@@ -51,7 +51,6 @@ export default function CreatorsPage() {
         </div>
 
         <div className="cr-card-stage rise" style={d(3)}>
-          <div className="cr-card cr-card--back" aria-hidden="true"><CreatorCard symbol="VOLT" pool="9vQe3Lm7pTn2Kx8RfW4yUaZc1HbD6sJgNo5EiVrXwq" era={3} progress={0.68} claimable="0.4210" sample /></div>
           <div className="cr-card"><CreatorCard symbol="SDOG" pool="7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU" era={2} progress={0.42} claimable="0.8125" earned="3.4125" sample /></div>
         </div>
       </section>

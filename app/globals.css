@@ -559,7 +559,6 @@ section[id],footer[id]{scroll-margin-top:24px}
   .cr-stats dd{font-size:18px;line-height:24px;white-space:nowrap}
   .cr-card-stage .cr-card{max-width:300px}
   .cr-card-stage{min-height:0;padding:12px 0 24px}
-  .cr-card--back{display:none}
   .cr-sec{padding:0 16px 72px;gap:24px}
   .cr-head h2{font-size:32px}
   .cr-steps{grid-template-columns:minmax(0,1fr)}
@@ -583,7 +582,6 @@ section[id],footer[id]{scroll-margin-top:24px}
 .cr-card:hover{transform:translateY(-6px) rotate(-1deg)}
 .cr-card-stage{position:relative;display:grid;place-items:center;min-height:600px}
 .cr-card-stage > .cr-card{grid-area:1 / 1;animation:cc-float 6s ease-in-out infinite alternate}
-.cr-card-stage > .cr-card--back{transform:translate(64px,-28px) rotate(8deg) scale(.9);opacity:.85;animation:none;filter:none}
 @keyframes cc-float{from{transform:translateY(-6px) rotate(-3deg)}to{transform:translateY(8px) rotate(-1deg)}}
 .cr-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px}
 .cr-card-item{display:flex;flex-direction:column;gap:12px;align-items:flex-start}

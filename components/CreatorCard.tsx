@@ -38,7 +38,7 @@ function framePath(x: number, y: number, w: number, h: number, r: number) {
 
 export function CreatorCard({ symbol, pool, era, progress, claimable, earned, sample }: CreatorCardProps) {
   const id = `cc${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
-  const ink = `url(#${id}-ink)`;
+  const ink = `url(#${id}-txt)`; // not -ink: ArtScene uses that id for its halftone
   const ticker = `$${symbol}`;
   const run = `QUAD • ${ticker}/HYPE • CREATOR ${pct(CREATOR_FEE)} OF EVERY TRADE • PAID IN HYPE • POOL ${short(pool)} • ERA ${era} OF 4 • `;
   const pills = [`Pool: ${short(pool)}`, `Era: ${era} / 4 · ${Math.round(progress * 100)}%`, ...(earned ? [`Earned: ${earned} HYPE`] : []), `Claimable: ${claimable} HYPE`];
@@ -63,7 +63,7 @@ export function CreatorCard({ symbol, pool, era, progress, claimable, earned, sa
           <stop offset="1" stopColor="var(--era-4)" />
         </linearGradient>
         {/* text on brand-vertical: white over the blue half, ink over the ember half (BRAND.md) */}
-        <linearGradient id={`${id}-ink`} x1="0" y1="0" x2="0" y2={H} gradientUnits="userSpaceOnUse">
+        <linearGradient id={`${id}-txt`} x1="0" y1="0" x2="0" y2={H} gradientUnits="userSpaceOnUse">
           <stop offset=".5" stopColor="var(--on-era-1)" />
           <stop offset=".62" stopColor="var(--on-era-4)" />
         </linearGradient>
