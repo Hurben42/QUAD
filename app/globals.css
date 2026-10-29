@@ -843,3 +843,29 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
   .tk--xl .tk-name{font-size:22px}
 }
 @media (prefers-reduced-motion:reduce){.tk{transition:none}.tk:hover{transform:none}}
+
+/* ---- connected wallet: era-wheel avatar, live dot, address, menu */
+.wb{position:relative;display:inline-flex}
+.wb-pill{display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 12px 0 5px;border-radius:var(--radius-pill);border:1px solid var(--line);background:linear-gradient(var(--surface-1),var(--surface-1)) padding-box,var(--era-sweep) border-box;border-color:transparent;color:var(--text);cursor:pointer;transition:box-shadow .2s ease,transform .15s ease;width:100%;justify-content:center}
+.wb-pill:hover{box-shadow:var(--glow-brand);transform:translateY(-1px)}
+.wb-pill:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wb-avatar{position:relative;flex:none;width:30px;height:30px;border-radius:var(--radius-pill);background:conic-gradient(from var(--a,0deg), var(--era-1), var(--era-2), var(--era-3), var(--era-4), var(--era-1))}
+.wb-avatar::after{content:"";position:absolute;inset:8px;border-radius:var(--radius-pill);background:var(--surface-1)}
+.wb-avatar i{position:absolute;right:-1px;bottom:-1px;z-index:1;width:9px;height:9px;border-radius:var(--radius-pill);background:var(--success);box-shadow:0 0 0 2px var(--surface-1)}
+.wb-addr{font-size:13px}
+.wb-chev{color:var(--text-muted);transition:transform .2s ease}
+.wb-pill[aria-expanded="true"] .wb-chev{transform:rotate(180deg)}
+.wb-menu{position:absolute;right:0;top:calc(100% + 8px);z-index:95;min-width:220px;padding:6px;border-radius:var(--radius-md);background:var(--surface-1);border:1px solid var(--line);box-shadow:var(--card);display:flex;flex-direction:column;animation:q-head-in .18s ease-out both}
+.wb-menu-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.wb-menu-head .num{font-size:12px}
+.wb-menu button,.wb-menu a{display:block;width:100%;text-align:left;padding:10px;border:0;border-radius:var(--radius-sm);background:none;color:var(--text);font:600 14px/20px var(--font-sans);cursor:pointer}
+.wb-menu button:hover,.wb-menu a:hover{background:var(--surface-2)}
+.wb-menu .wb-danger{color:var(--danger)}
+.site-head.is-stuck .wb-pill{height:36px}
+.site-head.is-stuck .wb-avatar{width:26px;height:26px}
+.site-head.is-stuck .wb-avatar::after{inset:7px}
+.mm-foot .wb{display:flex}
+.mm-foot .wb-menu{top:auto;bottom:calc(100% + 8px);left:0;right:0}
+@media (prefers-reduced-motion:reduce){.wb-pill,.wb-chev{transition:none}.wb-menu{animation:none}}
+/* the header (and its wallet menu) above the page content that follows it; the fixed state keeps z-index 80 */
+.site-head:not(.is-stuck){z-index:30}
