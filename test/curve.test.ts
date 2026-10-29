@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { baseOutForQuote, buildQuadCurve, coins, price, verifyCurve, ERAS, BASE_DECIMALS, TOTAL_COINS } from '../lib/curve';
+import { baseOutForQuote, buildQuadCurve, coins, price, priceAtProgress, verifyCurve, ERAS, BASE_DECIMALS, TOTAL_COINS, Q64 } from '../lib/curve';
 
 const SUPPLY = TOTAL_COINS * 10n ** BigInt(BASE_DECIMALS); // 1B coins, 6 decimals
 const Q = 50n * 10n ** 8n; // 50 HYPE at 8 decimals
@@ -75,5 +75,17 @@ describe('display', () => {
     expect(price(0.000123)).toBe('0.0₃123');
     expect(price(0.0123)).toBe('0.0123');
     expect(price(2.5)).toBe('2.5');
+  });
+});
+
+describe('priceAtProgress', () => {
+  const c = buildQuadCurve({ totalSupply: SUPPLY, migrationQuote: Q });
+  const sq = (x: bigint) => (Number(x) / Number(Q64)) ** 2;
+  it('starts at the start price and ends at the era 4 price', () => {
+    expect(priceAtProgress(c, 0) / sq(c.sqrtStartPrice)).toBeCloseTo(1, 9);
+    expect(priceAtProgress(c, 1) / sq(c.points[3].sqrtPrice)).toBeCloseTo(1, 9);
+  });
+  it('doubles from one era boundary to the next', () => {
+    for (let i = 1; i < ERAS; i++) expect(priceAtProgress(c, i / ERAS) / priceAtProgress(c, (i - 1) / ERAS)).toBeCloseTo(2, 6);
   });
 });

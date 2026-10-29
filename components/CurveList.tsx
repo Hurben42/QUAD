@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { EraSteps } from './EraSteps';
+import { SampleCoins } from './SampleCoins';
 import { CoinCard, CoinRow, CoinTableHeader, type CoinView } from './CoinRow';
 import { QUOTE_MINT } from '@/lib/dbc';
 import { price as fmtPrice } from '@/lib/curve';
@@ -41,7 +42,7 @@ function toView(c: ApiCoin, api: Api): CoinView {
 /** "On the curve": the featured coin closest to graduation, then the table. Live from /api/pools. */
 export function CurveList() {
   const [coins, setCoins] = useState<CoinView[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -65,14 +66,8 @@ export function CurveList() {
     };
   }, [load]);
 
-  if (!coins) return <p className="label">{error ? 'Could not reach the curve. Retrying.' : 'Loading the curve…'}</p>;
-  if (coins.length === 0)
-    return (
-      <div style={{ padding: '48px 40px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
-        <span style={{ font: '700 18px/24px var(--font-sans)' }}>No coin on the curve yet.</span>
-        <a className="q-btn q-btn--primary" href="/launch">Launch the first one <span className="num">→</span></a>
-      </div>
-    );
+  // Until real coins are live (or while the curve cannot be reached), show labelled samples.
+  if (!coins || coins.length === 0) return <SampleCoins />;
 
   const [featured, ...rest] = coins;
   return (

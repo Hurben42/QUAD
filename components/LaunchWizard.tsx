@@ -255,23 +255,27 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
         </div>
       </form>
 
-      {/* live preview of the coin */}
-      <aside className="glass lp-card lp-preview rise" style={{ ['--d' as string]: 5 }} aria-label="Preview">
-        <div className="lp-card-tags"><span className="label">Preview</span><span className="q-era q-era--1">Era 1</span></div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span className="num lp-avatar">{initials(draft)}</span>
-          <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-            <span className="lp-coin-name">{draft.name.trim() || 'Your coin'}</span>
-            <span className="num" style={{ fontSize: 13, color: 'var(--text-muted)' }}>${draft.ticker || 'TICKER'}</span>
-          </span>
+      {/* live preview of the coin, as a token card */}
+      <aside className="tk lp-preview rise" style={{ ['--d' as string]: 5, ['--era' as string]: 'var(--era-1)', ['--on' as string]: 'var(--on-era-1)' }} aria-label="Preview">
+        <div className="tk-art grain">
+          <span className="label tk-art-tag">Preview · live</span>
+          <span className="tk-initials num">{initials(draft)}</span>
+          <span className="tk-pct num">{view ? `${(view.progress * 100).toFixed(1)}%` : '0%'}</span>
         </div>
-        {draft.description.trim() && <p className="lp-note lp-desc">{draft.description.trim()}</p>}
-        <EraSteps progress={view?.progress ?? 0} height={88} />
-        <dl className="lp-stats">
-          <div><dt className="label">Supply</dt><dd className="num">{coins(TOTAL_COINS, true)}</dd></div>
-          <div><dt className="label">Start price</dt><dd className="num">{view ? price(view.startPrice) : '—'}</dd></div>
-          <div><dt className="label">Graduates</dt><dd className="num">{view ? `${view.threshold} HYPE` : '—'}</dd></div>
-        </dl>
+        <div className="tk-body">
+          <div className="tk-head">
+            <span className="tk-name">{draft.name.trim() || 'Your coin'} <span className="num">${draft.ticker || 'TICKER'}</span></span>
+            <span className="q-era q-era--1">Era 1</span>
+          </div>
+          {draft.description.trim() && <p className="lp-note lp-desc">{draft.description.trim()}</p>}
+          <EraSteps progress={view?.progress ?? 0} height={44} labels={false} />
+          <dl className="tk-stats">
+            <div><dt className="label">Supply</dt><dd className="num">{coins(TOTAL_COINS, true)}</dd></div>
+            <div><dt className="label">Start price</dt><dd className="num">{view ? price(view.startPrice) : '—'}</dd></div>
+            <div><dt className="label">Graduates</dt><dd className="num">{view ? `${view.threshold} HYPE` : '—'}</dd></div>
+          </dl>
+          <div className="tk-foot"><span className="label">{view && view.buyCoins > 0 ? `First buy ≈ ${fmt(view.buyCoins)} coins` : 'Updates as you type'}</span><span className="label tk-sample">Not live</span></div>
+        </div>
       </aside>
     </div>
   );

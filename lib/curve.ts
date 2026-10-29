@@ -258,3 +258,18 @@ export function exampleCurve(thresholdHype = DEFAULT_THRESHOLD_HYPE, quoteDecima
     graduationCap: endPrice * Number(TOTAL_COINS),
   };
 }
+
+/**
+ * Spot price (quote lamports per base lamport) once `progress` (0 → 1) of the threshold is raised.
+ * On a constant-product segment quote in = L·Δs / 2^128, so the sqrt price moves linearly with the
+ * quote raised inside each era.
+ */
+export function priceAtProgress(curve: Pick<QuadCurve, 'sqrtStartPrice' | 'points'>, progress: number): number {
+  const p = Math.max(0, Math.min(1, progress));
+  const i = Math.min(ERAS - 1, Math.floor(p * ERAS));
+  const f = p * ERAS - i;
+  const lower = Number(i === 0 ? curve.sqrtStartPrice : curve.points[i - 1].sqrtPrice);
+  const upper = Number(curve.points[i].sqrtPrice);
+  const s = (lower + f * (upper - lower)) / 2 ** 64;
+  return s * s;
+}
