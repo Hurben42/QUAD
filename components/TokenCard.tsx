@@ -33,7 +33,7 @@ export function TokenCard({ c, size = 'sm' }: { c: TokenCardView; size?: TokenCa
           <span className="tk-name">{c.name} <span className="num">${c.ticker}</span></span>
           <span className={`q-era q-era--${c.era}`}>Era {c.era}</span>
         </div>
-        <EraSteps progress={c.progress} height={size === 'xl' ? 64 : size === 'sm' ? 26 : 36} labels={false} />
+        <EraSteps progress={c.progress} height={size === 'xl' ? 52 : size === 'sm' ? 20 : 28} labels={false} />
         <dl className="tk-stats">
           <div><dt className="label">Price</dt><dd className="num">{c.price}</dd></div>
           <div><dt className="label">Raised</dt><dd className="num">{c.raised}</dd></div>

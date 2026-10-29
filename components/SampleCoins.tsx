@@ -11,9 +11,6 @@ const SAMPLES: [name: string, ticker: string, progress: number, sub: string, siz
   ['Quadrant', 'QDRT', 0.41, 'Launched 2 h ago', 'wide'],
   ['Halfstep', 'HALF', 0.55, 'Launched 1 h ago', 'sm'],
   ['Pixelfund', 'PX', 0.18, 'Launched 9 min ago', 'sm'],
-  ['Bluefin', 'FIN', 0.29, 'Launched 27 min ago', 'wide'],
-  ['Emberline', 'EMBR', 0.07, 'Launched 2 min ago', 'sm'],
-  ['Nightowl', 'OWL', 0.12, 'Launched 5 min ago', 'sm'],
 ];
 const QUOTE_DECIMALS = 8; // illustration unit only: prices per coin do not depend on it
 
@@ -45,8 +42,11 @@ export function SampleCoins() {
   return (
     <div className="tk-wrap">
       <p className="tk-note"><span className="label">Preview</span>Sample coins until the first launch. Prices follow the real curve; names and progress are made up.</p>
-      <div className="tk-grid">
-        {coins.map((c) => <TokenCard key={c.ticker} c={c} size={c.size} />)}
+      {/* the last row sinks into the page: clipped halfway and faded into the body colour */}
+      <div className="tk-ground">
+        <div className="tk-grid">
+          {coins.map((c) => <TokenCard key={c.ticker} c={c} size={c.size} />)}
+        </div>
       </div>
     </div>
   );

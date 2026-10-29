@@ -792,14 +792,14 @@ section[id],footer[id]{scroll-margin-top:24px}
 .tk-wrap{display:flex;flex-direction:column;gap:20px}
 .tk-note{margin:0;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font:500 14px/20px var(--font-sans);color:var(--text-muted)}
 .tk-note .label{padding:5px 10px;border-radius:var(--radius-pill);border:1px solid var(--line-strong);color:var(--text)}
-.tk-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:310px;grid-auto-flow:dense;gap:16px}
+.tk-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:248px;grid-auto-flow:dense;gap:16px}
 .tk{position:relative;display:flex;flex-direction:column;overflow:hidden;border-radius:var(--radius-lg);background:var(--surface-1);border:1px solid var(--line);color:var(--text);transition:transform .25s cubic-bezier(.16,.8,.24,1),border-color .2s ease}
 a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
-.tk-art{position:relative;height:150px;overflow:hidden;background:radial-gradient(circle, color-mix(in srgb, var(--on) 26%, transparent) 1.3px, transparent 1.6px) 0 0/9px 9px, radial-gradient(120% 90% at 100% 100%, color-mix(in srgb, var(--on-era-4) 35%, transparent), transparent 60%), var(--era)}
+.tk-art{position:relative;height:120px;overflow:hidden;background:radial-gradient(circle, color-mix(in srgb, var(--on) 26%, transparent) 1.3px, transparent 1.6px) 0 0/9px 9px, radial-gradient(120% 90% at 100% 100%, color-mix(in srgb, var(--on-era-4) 35%, transparent), transparent 60%), var(--era)}
 .tk-art::before{content:"";position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;border:1.5px solid color-mix(in srgb, var(--on) 40%, transparent);box-shadow:0 0 0 22px color-mix(in srgb, var(--on) 8%, transparent)}
 .tk-initials{position:absolute;left:20px;bottom:12px;font-size:64px;line-height:1;letter-spacing:-0.05em;color:var(--on)}
 .tk-pct{position:absolute;right:16px;bottom:16px;padding:5px 10px;border-radius:var(--radius-pill);background:color-mix(in srgb, var(--on-era-4) 75%, transparent);color:var(--on-era-1);font-size:12px}
-.tk-body{display:flex;flex-direction:column;gap:16px;padding:18px 20px 20px;flex:1}
+.tk-body{display:flex;flex-direction:column;gap:13px;padding:16px 20px 18px;flex:1}
 .tk-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .tk-name{font:800 20px/1.1 var(--font-sans);letter-spacing:-0.02em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tk-name .num{font-size:13px;color:var(--text-muted);letter-spacing:0}
@@ -809,32 +809,37 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
 .tk-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
 .tk-foot .num{font-size:13px}
 .tk-sample{padding:3px 8px;border-radius:var(--radius-pill);background:var(--surface-2);color:var(--text)}
+/* the last bento row comes out of the ground: the grid is clipped halfway through it and faded to the body colour */
+.tk-ground{position:relative;overflow:hidden;max-height:calc(3 * 248px + 2 * 16px - 124px)}
+.tk-ground::after{content:"";position:absolute;inset:auto 0 0 0;height:190px;background:linear-gradient(180deg, transparent 0%, var(--surface-0) 78%);pointer-events:none;z-index:1}
 /* bento: xl 2×2, tall 1×2, wide 2×1 with the art beside the body, sm 1×1 */
 .tk-art{flex:none}
 .tk--xl{grid-column:span 2;grid-row:span 2}
 .tk--xl .tk-art,.tk--tall .tk-art{flex:1;height:auto}
 .tk--xl .tk-body,.tk--tall .tk-body{flex:none}
-.tk--xl .tk-initials{font-size:132px}
+.tk--xl .tk-initials{font-size:106px}
 .tk--xl .tk-name{font-size:30px}
 .tk--tall{grid-row:span 2}
-.tk--tall .tk-initials{font-size:96px}
+.tk--tall .tk-initials{font-size:77px}
 .tk--wide{grid-column:span 2;flex-direction:row}
 .tk--wide .tk-art{width:42%;height:auto}
-.tk--wide .tk-initials{font-size:84px}
-.tk--sm .tk-art{height:104px}
-.tk--sm .tk-initials{font-size:48px;bottom:10px;left:16px}
-.tk--sm .tk-art::before{width:110px;height:110px}
-.tk--sm .tk-body{gap:12px;padding:14px 16px 16px}
+.tk--wide .tk-initials{font-size:67px}
+.tk--sm .tk-art{height:78px}
+.tk--sm .tk-initials{font-size:40px;bottom:8px;left:16px}
+.tk--sm .tk-art::before{width:90px;height:90px}
+.tk--sm .tk-pct{bottom:10px;right:12px}
+.tk--sm .tk-body{gap:9px;padding:12px 16px 14px}
+.tk--sm .tk-stats{padding-top:9px}
 .tk--sm .tk-name{font-size:17px}
 .tk--sm .tk-stats,.tk--tall .tk-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
 .tk--sm .tk-stats div:nth-child(2),.tk--tall .tk-stats div:nth-child(2){display:none}
-@media (max-width:1100px){.tk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:1100px){.tk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tk-ground{max-height:none}.tk-ground::after{height:200px}}
 @media (max-width:900px){
   .tk-grid{grid-template-columns:minmax(0,1fr);grid-auto-rows:auto;gap:14px}
   .tk--xl,.tk--tall,.tk--wide{grid-column:auto;grid-row:auto}
   .tk--wide{flex-direction:column}
-  .tk--wide .tk-art,.tk--xl .tk-art,.tk--tall .tk-art{width:auto;flex:none;height:160px}
-  .tk--xl .tk-initials,.tk--tall .tk-initials,.tk--wide .tk-initials{font-size:72px}
+  .tk--wide .tk-art,.tk--xl .tk-art,.tk--tall .tk-art{width:auto;flex:none;height:128px}
+  .tk--xl .tk-initials,.tk--tall .tk-initials,.tk--wide .tk-initials{font-size:58px}
   .tk--xl .tk-name{font-size:22px}
 }
 @media (prefers-reduced-motion:reduce){.tk{transition:none}.tk:hover{transform:none}}
