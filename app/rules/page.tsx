@@ -1,6 +1,7 @@
 import { SiteHeader } from '@/components/SiteHeader';
 import { Stripes } from '@/components/Stripes';
 import { Reveal } from '@/components/Reveal';
+import { QuadCoins } from '@/components/QuadCoins';
 import { PIXELS } from '@/components/RulePosters';
 import { LinkButton } from '@/components/Button';
 import {
@@ -71,6 +72,7 @@ export default function RulesPage() {
         <div className="rp-visual rp-mint">
           <Stripes />
           <div className="rp-mint-fade" />
+          <QuadCoins />
           <div className="rp-visual-tags"><span className="label on-art">Rule 01</span><span className="label on-art">Supply</span></div>
           <div className="rp-mint-count">
             <span className="num">{coins(TOTAL_COINS)}</span>

@@ -637,6 +637,13 @@ section[id],footer[id]{scroll-margin-top:24px}
 .reveal.in .rp-mint .stripes i{animation:rp-stripe 1.1s cubic-bezier(.16,.8,.24,1) both}
 .rp-mint .stripes i:nth-child(odd){animation-delay:.08s !important}.rp-mint .stripes i:nth-child(3n){animation-delay:.16s !important}
 @keyframes rp-stripe{from{transform:translateY(-100%)}to{transform:none}}
+.rp-coins{position:absolute;inset:0;width:100%;height:100%}
+.rp-coins-ring{transform-box:view-box;transform-origin:300px 220px;animation:rp-ring 48s linear infinite}
+@keyframes rp-ring{to{transform:rotate(360deg)}}
+.rp-coin{transform-box:fill-box;transform-origin:center;opacity:0}
+.reveal.in .rp-coin{animation:rp-coin-in .7s cubic-bezier(.3,1.4,.5,1) both,rp-coin-tip 3.2s ease-in-out infinite alternate;animation-delay:calc(.3s + var(--d,0) * 80ms),calc(1.2s + var(--d,0) * 320ms)}
+@keyframes rp-coin-in{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:none}}
+@keyframes rp-coin-tip{from{opacity:1;transform:scaleX(1)}to{opacity:1;transform:scaleX(.62)}}
 
 /* 02: three pills converging on the HYPE badge */
 .rp-quote{display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:96px 32px 48px;background:radial-gradient(70% 70% at 75% 50%, color-mix(in srgb, var(--era-2) 30%, transparent), transparent 70%), var(--surface-0)}
@@ -697,7 +704,7 @@ section[id],footer[id]{scroll-margin-top:24px}
   .rp-end{padding:0 16px 80px}
   .rp-end h2{font-size:38px}
 }
-@media (prefers-reduced-motion:reduce){.rp-glow .stripes,.rp-rays line,.reveal.in .rp-mint .stripes i,.reveal.in .rp-quote-lines path,.reveal.in .rp-quote-badge,.reveal.in .rp-steps > div,.reveal.in .rp-cursor,.reveal.in .rp-px b,.rp-live i{animation:none}.rp-quote-lines path{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.rp-coin{opacity:1}.rp-glow .stripes,.rp-rays line,.reveal.in .rp-mint .stripes i,.rp-coins-ring,.reveal.in .rp-coin,.reveal.in .rp-quote-lines path,.reveal.in .rp-quote-badge,.reveal.in .rp-steps > div,.reveal.in .rp-cursor,.reveal.in .rp-px b,.rp-live i{animation:none}.rp-quote-lines path{stroke-dashoffset:0}}
 
 /* ---- landing: Get HYPE */
 .gh{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:48px;align-items:center;scroll-margin-top:96px}
