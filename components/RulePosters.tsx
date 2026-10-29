@@ -77,7 +77,7 @@ export function RulePosters() {
           {PIXELS.map((v, i) => <b key={i} className={v === 1 ? 'wash-white' : undefined} style={v > 1 ? { background: `var(--era-${v})` } : undefined} />)}
         </div>
         <div className="poster-body">
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start', height: 28, padding: '0 12px', borderRadius: 'var(--radius-pill)', font: '600 12px/1 var(--font-mono)', background: 'var(--brand)', color: 'var(--on-brand)' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start', height: 28, padding: '0 12px', borderRadius: 'var(--radius-pill)', font: '600 12px/1 var(--font-mono)', background: 'var(--surface-2)', border: '1px solid var(--line)', color: 'var(--text-muted)' }}>
             <i style={{ width: 8, height: 8, borderRadius: 'var(--radius-pill)', background: 'var(--success)' }} />Curve live
           </span>
           <h3>Creators earn HYPE,<br className="hide-m" /> on every trade.</h3>

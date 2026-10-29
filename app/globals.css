@@ -204,3 +204,27 @@ a{color:inherit;text-decoration:none}
   .creators-cta p{font-size:24px;max-width:none}
   .footer{padding:56px 20px 32px !important;gap:16px !important}
 }
+
+/* ---- hero motion: the horizon rises like a sunrise, the rays draw from the vanishing point,
+   the copy and the launch card rise in order (--d). Off for prefers-reduced-motion. */
+@keyframes q-sunrise{from{opacity:0;transform:translateY(38%) scaleY(.75)}to{opacity:.9;transform:none}}
+@keyframes q-breathe{from{transform:none}to{transform:scale(1.05)}}
+@keyframes q-ray{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes q-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.hero .horizon{transform-origin:50% 100%;animation:q-sunrise 1.6s cubic-bezier(.16,.8,.24,1) both,q-breathe 9s ease-in-out 1.6s infinite alternate}
+.hero .rays line{stroke-dasharray:1;animation:q-ray 1.1s cubic-bezier(.4,0,.2,1) both;animation-delay:calc(.35s + var(--d,0) * 70ms)}
+.hero .rays .ray-h{animation-duration:1.4s}
+.rise{animation:q-rise .8s cubic-bezier(.16,.8,.24,1) both;animation-delay:calc(.25s + var(--d,0) * 90ms)}
+@keyframes q-bounce{
+  0%{opacity:0;transform:translateY(72px) scale(.96)}
+  45%{opacity:1;transform:translateY(-16px) scale(1.012)}
+  65%{transform:translateY(7px) scale(.997)}
+  80%{transform:translateY(-3px)}
+  92%{transform:translateY(1px)}
+  100%{opacity:1;transform:none}
+}
+/* the launch card lands with a bounce, just after the headline */
+.rise-late{animation:q-bounce 1.15s cubic-bezier(.3,.7,.4,1) both;animation-delay:.7s}
+@media (prefers-reduced-motion:reduce){
+  .hero .horizon,.hero .rays line,.rise,.rise-late{animation:none}
+}

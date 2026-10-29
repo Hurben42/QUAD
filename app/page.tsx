@@ -23,11 +23,14 @@ const STEPS = [
   { w: 1, h: '100%', label: '', x: '8×' },
 ];
 
+/** Entrance order for the hero's staggered animations (see .rise / .rays in globals.css). */
+const stagger = (n: number) => ({ ['--d' as string]: n }) as React.CSSProperties;
+
 function Rays({ viewW, viewH, cx, xs, ys, className, opacity }: { viewW: number; viewH: number; cx: number; xs: number[]; ys: number[]; className: string; opacity: number }) {
   return (
     <svg className={`rays hero-bg ${className}`} aria-hidden="true" viewBox={`0 0 ${viewW} ${viewH}`} preserveAspectRatio="none" style={{ opacity }}>
-      {xs.map((x) => <line key={x} x1={cx} y1={viewH} x2={x} y2="0" />)}
-      {ys.map((y) => <line key={y} x1="0" y1={y} x2={viewW} y2={y} />)}
+      {xs.map((x, i) => <line key={x} x1={cx} y1={viewH} x2={x} y2="0" pathLength={1} style={stagger(i)} />)}
+      {ys.map((y, i) => <line key={y} className="ray-h" x1="0" y1={y} x2={viewW} y2={y} pathLength={1} style={stagger(xs.length + i)} />)}
     </svg>
   );
 }
@@ -42,7 +45,7 @@ export default function Page() {
         <Rays className="hide-m" viewW={1400} viewH={840} cx={700} xs={[-200, 0, 200, 400, 600, 800, 1000, 1200, 1400, 1600]} ys={[722, 596, 479]} opacity={0.55} />
         <Rays className="show-m" viewW={390} viewH={600} cx={195} xs={[-120, 30, 140, 250, 360, 510]} ys={[480, 340]} opacity={0.5} />
 
-        <header className="hero-head container">
+        <header className="hero-head container rise" style={stagger(0)}>
           <Lockup size="sm" />
           <nav className="hero-nav hide-m" style={{ display: 'flex', gap: 4 }} aria-label="Primary">
             {NAV.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
@@ -69,19 +72,19 @@ export default function Page() {
 
         <div className="hero-grid container">
           <div className="hero-copy">
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span className="label">01 / Launchpad<span className="hide-m"> · Solana</span></span><span className="label">Quoted in HYPE</span></div>
-            <h1 className="hero-h1">Four eras.<br />Priced in HYPE.</h1>
-            <p className="hero-lede">
+            <div className="rise" style={{ ...stagger(1), display: 'flex', justifyContent: 'space-between' }}><span className="label">01 / Launchpad<span className="hide-m"> · Solana</span></span><span className="label">Quoted in HYPE</span></div>
+            <h1 className="hero-h1"><span className="rise" style={{ ...stagger(2), display: 'block' }}>Four eras.</span><span className="rise" style={{ ...stagger(3), display: 'block' }}>Priced in HYPE.</span></h1>
+            <p className="hero-lede rise" style={stagger(4)}>
               {coins(TOTAL_COINS)} coins, minted once.<span className="hide-m"> Traded against HYPE on a curve that climbs in four eras:</span> <span className="hide-m">each</span><span className="show-m-i">Each</span> era sells half as many coins as the last, for the same HYPE. <span className="hide-m">The creator earns</span><span className="show-m-i">Creators earn</span> {pct(CREATOR_FEE)} of every trade, in HYPE.
             </p>
-            <div className="hero-ctas"><LinkButton href="#launch">Launch coin <span className="num">→</span></LinkButton><LinkButton variant="secondary" href="#rules">See the eras</LinkButton></div>
-            <dl className="hero-stats">
+            <div className="hero-ctas rise" style={stagger(5)}><LinkButton href="#launch">Launch coin <span className="num">→</span></LinkButton><LinkButton variant="secondary" href="#rules">See the eras</LinkButton></div>
+            <dl className="hero-stats rise" style={stagger(6)}>
               {stats.map(([k, km, v]) => (
                 <div key={k}><dt className="label"><span className="hide-m">{k}</span><span className="show-m">{km}</span></dt><dd className="num">{v}</dd></div>
               ))}
             </dl>
           </div>
-          <div className="hero-form"><LaunchForm /></div>
+          <div className="hero-form rise rise-late" style={stagger(3)}><LaunchForm /></div>
         </div>
       </section>
 
