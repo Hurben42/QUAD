@@ -6,6 +6,7 @@ import { Lockup } from './Lockup';
 import { LinkButton } from './Button';
 import { Stripes } from './Stripes';
 import { WalletButton } from './WalletButton';
+import { JupiterMark } from './JupiterMark';
 
 type Link = readonly [href: string, label: string];
 
@@ -73,7 +74,7 @@ export function MobileMenu({ links, getHype }: { links: readonly Link[]; getHype
             </nav>
             <div className="mm-foot">
               <WalletButton style={{ width: '100%', height: 52 }} />
-              <LinkButton variant="secondary" href={getHype} target="_blank" rel="noopener" style={{ width: '100%', height: 52 }}>Get HYPE <span className="num">↗</span></LinkButton>
+              <LinkButton variant="secondary" href={getHype} target="_blank" rel="noopener" title="Swap for HYPE on Jupiter" style={{ width: '100%', height: 52 }}><JupiterMark size={20} />Get HYPE <span className="num">↗</span></LinkButton>
               <span className="label mm-note">Paired to HYPE · not affiliated with Hyperliquid</span>
             </div>
           </div>,

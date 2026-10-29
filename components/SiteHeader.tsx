@@ -2,6 +2,7 @@ import { Lockup } from './Lockup';
 import { LinkButton } from './Button';
 import { WalletButton } from './WalletButton';
 import { MobileMenu } from './MobileMenu';
+import { JupiterMark } from './JupiterMark';
 
 /** Paths start at "/" so they work from every page; on the landing they scroll in place. */
 export const NAV = [['/launch', 'Launch'], ['/#rules', 'The four rules'], ['/#creators', 'Creators'], ['/docs', 'Docs']] as const;
@@ -18,7 +19,7 @@ export function SiteHeader({ className = '', style }: { className?: string; styl
         {NAV.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
       </nav>
       <div className="hide-m" style={{ display: 'flex', gap: 12 }}>
-        <LinkButton variant="secondary" href={GET_HYPE} target="_blank" rel="noopener" style={{ height: 40 }}>Get HYPE</LinkButton>
+        <LinkButton variant="secondary" href={GET_HYPE} target="_blank" rel="noopener" title="Swap for HYPE on Jupiter" style={{ height: 40, paddingLeft: 16 }}><JupiterMark />Get HYPE</LinkButton>
         <WalletButton style={{ height: 40 }} />
       </div>
       <div className="show-m" style={{ gap: 8, alignItems: 'center' }}>
