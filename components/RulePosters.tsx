@@ -1,3 +1,4 @@
+import { STRIPES, STRIPES_M, Stripes } from './Stripes';
 import { BASE_FEE, CREATOR_FEE, DEFAULT_THRESHOLD_HYPE, TOTAL_COINS, coins, pct } from '@/lib/curve';
 
 /**
@@ -5,23 +6,11 @@ import { BASE_FEE, CREATOR_FEE, DEFAULT_THRESHOLD_HYPE, TOTAL_COINS, coins, pct 
  * after design/website/landing-desktop.html and landing-mobile.html.
  */
 
-// [width %, background-position %] of each stripe; mobile drops two and widens the rest
-const STRIPES: [number, number][] = [[10, 0], [14, 20], [8, 55], [18, 90], [6, 35], [12, 70], [10, 10], [14, 100], [8, 45]];
-const STRIPES_M: [number, number][] = [[12, 0], [16, 25], [8, 55], [20, 90], [10, 40], [14, 70], [20, 100]];
-
 // 5×5 pixel mark of poster C: 0 empty, 1 white wash, 2–4 era colour
 const PIXELS = [1, 0, 4, 0, 0, 0, 3, 4, 1, 0, 1, 3, 1, 2, 0, 0, 0, 2, 1, 4, 0, 1, 0, 0, 1];
 
 // The sample coin drawn in poster B: an illustration, not live data
 const SAMPLE_PROGRESS = 0.62;
-
-function Stripes({ set, className }: { set: [number, number][]; className: string }) {
-  return (
-    <div className={`stripes ${className}`} aria-hidden="true" style={{ position: 'absolute', inset: 0 }}>
-      {set.map(([w, p], i) => <i key={i} style={{ width: `${w}%`, backgroundPosition: `0 ${p}%` }} />)}
-    </div>
-  );
-}
 
 export function RulePosters() {
   const sampleRaised = (SAMPLE_PROGRESS * DEFAULT_THRESHOLD_HYPE).toFixed(1);
