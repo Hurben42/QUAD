@@ -14,13 +14,16 @@ export type TokenCardView = {
   sample?: boolean;
 };
 
+/** Bento sizes: xl 2×2, tall 1×2, wide 2×1 (art beside the body), sm 1×1. */
+export type TokenCardSize = 'xl' | 'tall' | 'wide' | 'sm';
+
 const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
 /** A coin on the curve as a small QUAD poster: era-coloured halftone art, the steps, the numbers in mono. */
-export function TokenCard({ c, featured }: { c: TokenCardView; featured?: boolean }) {
+export function TokenCard({ c, size = 'sm' }: { c: TokenCardView; size?: TokenCardSize }) {
   const Tag = c.href ? 'a' : 'article';
   return (
-    <Tag className={`tk ${featured ? 'tk--featured' : ''}`} style={{ ['--era' as string]: `var(--era-${c.era})`, ['--on' as string]: `var(--on-era-${c.era})` }} {...(c.href ? { href: c.href, target: '_blank', rel: 'noopener' } : {})}>
+    <Tag className={`tk tk--${size}`} style={{ ['--era' as string]: `var(--era-${c.era})`, ['--on' as string]: `var(--on-era-${c.era})` }} {...(c.href ? { href: c.href, target: '_blank', rel: 'noopener' } : {})}>
       <div className="tk-art grain" aria-hidden="true">
         <span className="tk-initials num">{initials(c.name)}</span>
         <span className="tk-pct num">{Math.round(c.progress * 100)}%</span>
@@ -30,7 +33,7 @@ export function TokenCard({ c, featured }: { c: TokenCardView; featured?: boolea
           <span className="tk-name">{c.name} <span className="num">${c.ticker}</span></span>
           <span className={`q-era q-era--${c.era}`}>Era {c.era}</span>
         </div>
-        <EraSteps progress={c.progress} height={featured ? 64 : 36} labels={false} />
+        <EraSteps progress={c.progress} height={size === 'xl' ? 64 : size === 'sm' ? 26 : 36} labels={false} />
         <dl className="tk-stats">
           <div><dt className="label">Price</dt><dd className="num">{c.price}</dd></div>
           <div><dt className="label">Raised</dt><dd className="num">{c.raised}</dd></div>
