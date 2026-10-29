@@ -1,20 +1,11 @@
 import { Lockup, QuadMark } from '@/components/Lockup';
 import { LinkButton } from '@/components/Button';
 import { EraSteps } from '@/components/EraSteps';
-import { CoinRow, CoinTableHeader, type CoinView } from '@/components/CoinRow';
+import { CurveList } from '@/components/CurveList';
+import { WalletButton } from '@/components/WalletButton';
 import { LaunchForm } from '@/components/LaunchForm';
 
-/**
- * The landing, section by section, after design/website/landing-desktop.html.
- * Sample coins below are placeholders until /api/pools returns real pools.
- */
-const SAMPLE: CoinView[] = [
-  { pool: 'sun', name: 'Sunrise', ticker: '$SUN', sub: 'Launched 6 h ago · 1,204 holders', era: 4, progress: 0.96, price: '0.02960 HYPE', raised: '19.2 / 20 HYPE', initials: 'SR' },
-  { pool: 'volt', name: 'Voltcat', ticker: '$VOLT', sub: 'Launched 41 min ago · 390 holders', era: 3, progress: 0.84, price: '0.01180 HYPE', raised: '84.0 / 100 HYPE', initials: 'VC' },
-  { pool: 'hdog', name: 'Hypedog', ticker: '$HDOG', sub: 'Launched 14 min ago · 212 holders', era: 2, progress: 0.62, price: '0.00412 HYPE', raised: '31.0 / 50 HYPE', initials: 'HD' },
-  { pool: 'px', name: 'Pixelfund', ticker: '$PX', sub: 'Launched 2 h ago · 48 holders', era: 1, progress: 0.18, price: '0.00096 HYPE', raised: '9.1 / 50 HYPE', initials: 'PX' },
-];
-
+/** The landing, section by section, after design/website/landing-desktop.html. */
 function Rays({ h = 840 }: { h?: number }) {
   return (
     <svg className="rays" aria-hidden="true" viewBox={`0 0 1400 ${h}`} preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.55 }}>
@@ -25,7 +16,6 @@ function Rays({ h = 840 }: { h?: number }) {
 }
 
 export default function Page() {
-  const [featured, ...rest] = SAMPLE;
   return (
     <main>
       {/* HERO — full bleed, the nav sits on it */}
@@ -41,8 +31,7 @@ export default function Page() {
           </nav>
           <div style={{ display: 'flex', gap: 12 }}>
             <LinkButton variant="secondary" href="https://jup.ag" target="_blank" rel="noopener" style={{ height: 40 }}>Get HYPE</LinkButton>
-            {/* TODO: replace with WalletMultiButton styled as .q-btn--primary */}
-            <LinkButton href="#launch" style={{ height: 40 }}>Connect wallet</LinkButton>
+            <WalletButton style={{ height: 40 }} />
           </div>
         </header>
         <div className="container" style={{ position: 'relative', padding: '48px 56px 72px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 48, alignItems: 'start' }}>
@@ -88,17 +77,7 @@ export default function Page() {
       {/* ON THE CURVE */}
       <section id="curve" className="container" style={{ padding: '96px 40px 0', display: 'flex', flexDirection: 'column', gap: 32 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}><span className="label">04 / On the curve</span><h2 style={{ margin: 0, font: '800 48px/1 var(--font-sans)', letterSpacing: '-0.03em' }}>Coins on their steps right now.</h2></div>
-        <a className="grain" href={`/coin/${featured.pool}`} style={{ position: 'relative', overflow: 'hidden', display: 'grid', gridTemplateColumns: 'minmax(0,5fr) minmax(0,4fr) minmax(0,3fr)', gap: 40, alignItems: 'center', padding: '32px 40px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--line)', minHeight: 260 }}>
-          <div aria-hidden="true" style={{ position: 'absolute', right: '-10%', bottom: '-60%', width: '70%', height: '160%', background: 'var(--era-horizon)', opacity: 0.8 }} />
-          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <span className="label">Next to graduate</span>
-            <span style={{ font: '800 32px/1 var(--font-sans)', letterSpacing: '-0.03em' }}>{featured.name} <span className="num" style={{ fontSize: 14, color: 'var(--text-muted)' }}>{featured.ticker}</span></span>
-            <span className={`q-era q-era--${featured.era}`} style={{ alignSelf: 'flex-start' }}>Era {featured.era}</span>
-          </div>
-          <div style={{ position: 'relative' }}><EraSteps progress={featured.progress} /></div>
-          <div style={{ position: 'relative', textAlign: 'right' }}><span className="num" style={{ fontSize: 64, lineHeight: 1, letterSpacing: '-0.04em' }}>{Math.round(featured.progress * 100)}%</span><div className="label">To graduation</div></div>
-        </a>
-        <div><CoinTableHeader />{rest.map((c, i) => <CoinRow key={c.pool} c={c} index={i + 1} />)}</div>
+        <CurveList />
       </section>
 
       {/* CREATORS */}

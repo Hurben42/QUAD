@@ -1,6 +1,6 @@
 import { EraSteps } from './EraSteps';
 
-export type CoinView = { pool: string; name: string; ticker: string; sub: string; era: 1 | 2 | 3 | 4; progress: number; price: string; raised: string; initials: string };
+export type CoinView = { pool: string; href: string; name: string; ticker: string; sub: string; era: 1 | 2 | 3 | 4; progress: number; price: string; raised: string; initials: string };
 
 const grid = '40px 6px 44px minmax(0,1fr) 110px minmax(140px,200px) 160px 32px';
 
@@ -14,7 +14,7 @@ export function CoinTableHeader() {
 
 export function CoinRow({ c, index }: { c: CoinView; index: number }) {
   return (
-    <a href={`/coin/${c.pool}`} style={{ display: 'grid', gridTemplateColumns: grid, gap: 16, alignItems: 'center', padding: '18px 16px', borderBottom: '1px solid var(--line)' }}>
+    <a href={c.href} target="_blank" rel="noopener" style={{ display: 'grid', gridTemplateColumns: grid, gap: 16, alignItems: 'center', padding: '18px 16px', borderBottom: '1px solid var(--line)' }}>
       <span className="num" style={{ fontSize: 13, color: 'var(--text-muted)' }}>{String(index + 1).padStart(2, '0')}</span>
       <span style={{ width: 6, height: 44, borderRadius: 3, background: `var(--era-${c.era})` }} />
       <span className="num" style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', display: 'grid', placeItems: 'center', fontSize: 15, background: 'var(--surface-2)' }}>{c.initials}</span>

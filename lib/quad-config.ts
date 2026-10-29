@@ -19,20 +19,22 @@ import {
   TokenType,
   type CreateConfigParams,
 } from '@meteora-ag/dynamic-bonding-curve-sdk';
-import { buildQuadCurve, type QuadCurve } from './curve';
+import {
+  ANTI_SNIPER_FEE,
+  ANTI_SNIPER_PERIODS,
+  BASE_DECIMALS,
+  BASE_FEE,
+  CREATOR_TRADING_FEE_PERCENTAGE,
+  DEFAULT_THRESHOLD_HYPE,
+  TOTAL_COINS,
+  buildQuadCurve,
+  type QuadCurve,
+} from './curve';
 
-// ---- QUAD constants (the four rules) ----------------------------------------
-export const TOTAL_COINS = 21_000_000n;
-export const BASE_DECIMALS = 6; // 6–9 allowed by DBC
-export const DEFAULT_THRESHOLD_HYPE = 50; // HYPE to graduate; the creator can pick a deeper curve later via per-coin configs
-export const FEE_DENOMINATOR = 1_000_000_000; // DBC fee numerators are over 1e9
-export const BASE_FEE = 0.03125; // 3.125% per trade
-export const ANTI_SNIPER_FEE = 0.5; // 50% on the first slots
-export const ANTI_SNIPER_PERIODS = 10; // slots (activationType 0) over which the fee decays to BASE_FEE
-export const CREATOR_TRADING_FEE_PERCENTAGE = 100; // of the 80% left after protocol: 100 → creator 2.5%, platform 0. Use 50 for a 1.25% / 1.25% split.
+// Rule values come from lib/curve.ts; only SDK-specific encodings live here.
+const FEE_DENOMINATOR = 1_000_000_000; // DBC fee numerators are over 1e9
 export const MIGRATION_OPTION = MigrationOption.MET_DAMM_V2;
 export const MIGRATION_FEE_OPTION = MigrationFeeOption.FixedBps200; // post-graduation pool fee tier: 0=0.25% 1=0.3% 2=1% 3=2% 4=4% 5=6%
-// ------------------------------------------------------------------------------
 
 export type QuadConfigInput = {
   payer: PublicKey;

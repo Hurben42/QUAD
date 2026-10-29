@@ -179,3 +179,20 @@ export function eraOf(progress: number): 1 | 2 | 3 | 4 {
 
 /** Share of the curve's coins per era, for the stepped bar (widths 8/4/2/1). */
 export const ERA_WIDTHS = [8, 4, 2, 1] as const;
+
+// ---- The four rules: one source for the config script and the UI copy ---------
+export const TOTAL_COINS = 21_000_000n;
+export const BASE_DECIMALS = 6; // 6–9 allowed by DBC
+export const DEFAULT_THRESHOLD_HYPE = 50; // HYPE to graduate; other depths need their own config key
+export const BASE_FEE = 0.03125; // 3.125% per trade, the fee scheduler's floor
+export const ANTI_SNIPER_FEE = 0.5; // 50% on the first slots
+export const ANTI_SNIPER_PERIODS = 10; // slots over which the fee decays to BASE_FEE
+export const PROTOCOL_FEE_SHARE = 0.2; // Meteora's cut of every trade fee (DBC PROTOCOL_FEE_PERCENT)
+export const CREATOR_TRADING_FEE_PERCENTAGE = 100; // of what is left after protocol: 100 → creator 2.5%, platform 0
+/** The creator's cut of each trade: 3.125% × 80% × 100% = 2.5%. */
+export const CREATOR_FEE = BASE_FEE * (1 - PROTOCOL_FEE_SHARE) * (CREATOR_TRADING_FEE_PERCENTAGE / 100);
+
+/** 0.03125 → "3.125%", 0.5 → "50%". */
+export const pct = (x: number) => `${Number((x * 100).toFixed(3))}%`;
+/** 21_000_000n → "21,000,000"; compact: "21M". */
+export const coins = (n: bigint, compact = false) => (compact ? `${Number(n) / 1e6}M` : n.toLocaleString('en-US'));
