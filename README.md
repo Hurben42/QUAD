@@ -9,7 +9,7 @@ pnpm test                          # curve math + config checked against the DBC
 pnpm mint:devnet                   # devnet: 8-decimal test HYPE, prints NEXT_PUBLIC_QUOTE_MINT (TEST_WALLET=<pubkey> to fund your wallet)
 pnpm config:devnet                 # creates the DBC partner config, prints NEXT_PUBLIC_DBC_CONFIG
 pnpm config:verify                 # reads the config back from chain and compares it with lib/curve.ts
-pnpm dev                           # landing + launch form on http://localhost:3000, creator fees on /creator
+pnpm dev                           # http://localhost:3000 — landing, /launch (wizard), /creator (fees), /docs
 pnpm launch:devnet                 # devnet: launch a coin with the payer key (needs pnpm dev for /api/metadata)
 ```
 
