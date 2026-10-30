@@ -19,6 +19,8 @@ import { useQuadConfig, type QuadConfigView } from '@/lib/useQuadConfig';
 import { useQuoteBalance } from '@/lib/useQuoteBalance';
 import { explorerTx, fromUnits, isAmount, toUnits, tradeUrl, useLaunch, type LaunchPhase } from '@/lib/useLaunch';
 import { Button, LinkButton } from './Button';
+import { imageToDataUrl } from '@/lib/image';
+import { normalizeLink, type LinkKind } from '@/lib/links';
 import { EraSteps } from './EraSteps';
 
 /** The four steps of a launch are the four eras: each one takes the coin a step further. */
@@ -28,12 +30,18 @@ const TICKER_MAX = 10;
 const DESCRIPTION_MAX = 280;
 const BUY_PRESETS = ['1', '5', '10'];
 const PHASES: [LaunchPhase, string, string][] = [
-  ['upload', 'Upload metadata', 'Name, ticker and description, stored on Irys.'],
+  ['upload', 'Upload metadata', 'Name, ticker, description, image and links, stored on Irys.'],
   ['sign', 'Sign in your wallet', 'One signature: the pool, the mint and your first buy.'],
   ['confirm', 'Confirm on Solana', 'The coin exists once the transaction lands.'],
 ];
 
-type Draft = { name: string; ticker: string; description: string; firstBuy: string };
+type Draft = { name: string; ticker: string; description: string; firstBuy: string; image: string; imageName: string; website: string; twitter: string; telegram: string };
+const EMPTY: Draft = { name: '', ticker: '', description: '', firstBuy: '', image: '', imageName: '', website: '', twitter: '', telegram: '' };
+const LINKS: [LinkKind, string, string][] = [
+  ['website', 'Website', 'hypedog.xyz'],
+  ['twitter', 'X', '@hypedog'],
+  ['telegram', 'Telegram', 't.me/hypedog'],
+];
 
 const initials = (d: Draft) => (d.name.trim().split(/\s+/).map((w) => w[0]).join('') || d.ticker).replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase() || 'Q';
 const short = (s: string) => `${s.slice(0, 4)}…${s.slice(-4)}`;
@@ -73,7 +81,8 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
   const { launch, phase, result, reset } = useLaunch();
   const [step, setStep] = useState(0);
   const [visited, setVisited] = useState(0);
-  const [draft, setDraft] = useState<Draft>({ name: '', ticker: '', description: '', firstBuy: '' });
+  const [draft, setDraft] = useState<Draft>(EMPTY);
+  const [imageError, setImageError] = useState<string | null>(null);
   const view = useCurveView(config, draft.firstBuy);
 
   const stage = phase || (result && !result.ok) ? 'launching' : result?.ok ? 'done' : 'edit';
@@ -84,10 +93,30 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
     setDraft((d) => ({ ...d, [k]: v }));
   };
 
+  async function pickImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const image = await imageToDataUrl(file);
+      setDraft((d) => ({ ...d, image, imageName: file.name }));
+      setImageError(null);
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : String(err));
+    }
+  }
+  const linkErrors = LINKS.map(([kind]) => {
+    try {
+      normalizeLink(kind, draft[kind]);
+      return null;
+    } catch (err) {
+      return err instanceof Error ? err.message : String(err);
+    }
+  });
+
   const buyLamports = config && isAmount(draft.firstBuy) && draft.firstBuy ? toUnits(draft.firstBuy, config.quoteDecimals) : 0n;
   const overBalance = balance !== null && buyLamports > balance;
   const valid = [
-    draft.name.trim().length > 0 && new TextEncoder().encode(draft.name.trim()).length <= NAME_MAX && draft.ticker.length > 0,
+    draft.name.trim().length > 0 && new TextEncoder().encode(draft.name.trim()).length <= NAME_MAX && draft.ticker.length > 0 && linkErrors.every((e) => !e),
     true,
     isAmount(draft.firstBuy) && !overBalance,
     true,
@@ -100,11 +129,21 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
   const next = () => (step < 3 ? valid[step] && go(step + 1) : submit());
   async function submit() {
     if (!publicKey) return setVisible(true);
-    await launch({ name: draft.name.trim(), ticker: draft.ticker, firstBuy: draft.firstBuy, description: draft.description.trim() || undefined });
+    await launch({
+      name: draft.name.trim(),
+      ticker: draft.ticker,
+      firstBuy: draft.firstBuy,
+      description: draft.description.trim() || undefined,
+      image: draft.image || undefined,
+      website: draft.website.trim() || undefined,
+      twitter: draft.twitter.trim() || undefined,
+      telegram: draft.telegram.trim() || undefined,
+    });
   }
   function again() {
     reset();
-    setDraft({ name: '', ticker: '', description: '', firstBuy: '' });
+    setDraft(EMPTY);
+    setImageError(null);
     setStep(0);
     setVisited(0);
   }
@@ -130,7 +169,6 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
         <div className="wz-body" key={`${stage}-${step}`}>
           {stage === 'edit' && step === 0 && (
             <>
-              <Heading title="Name your coin." sub="Written once at launch: the metadata is immutable, nobody can rename it after." />
               <div className="launch-pair">
                 <div className="field"><label htmlFor="wz-name">Name</label><input id="wz-name" value={draft.name} onChange={set('name')} placeholder="Hypedog" maxLength={NAME_MAX} autoFocus autoComplete="off" /></div>
                 <div className="field"><label htmlFor="wz-ticker">Ticker</label><input id="wz-ticker" value={draft.ticker} onChange={set('ticker')} placeholder="HDOG" maxLength={TICKER_MAX} autoComplete="off" /></div>
@@ -138,6 +176,25 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
               <div className="field">
                 <div className="wz-row"><label htmlFor="wz-desc">Description · optional</label><span className="hint">{draft.description.length}/{DESCRIPTION_MAX}</span></div>
                 <textarea id="wz-desc" value={draft.description} onChange={set('description')} placeholder="One line on what this coin is." maxLength={DESCRIPTION_MAX} rows={3} />
+              </div>
+              <div className="field">
+                <div className="wz-row"><label htmlFor="wz-image">Image · optional</label><span className="hint">Square, resized to 512 px</span></div>
+                <label className="wz-file" htmlFor="wz-image">
+                  {draft.image ? <img src={draft.image} alt="" /> : <span className="wz-file-empty num">+</span>}
+                  <span className="wz-file-name">{draft.imageName || 'Choose a PNG, JPG or WebP'}</span>
+                  <span className="num wz-file-cta">{draft.image ? 'Change' : 'Browse'}</span>
+                  <input id="wz-image" type="file" accept="image/*" onChange={pickImage} />
+                </label>
+                {imageError && <span className="hint wz-field-error">{imageError}</span>}
+              </div>
+              <div className="wz-links">
+                {LINKS.map(([kind, label, placeholder], i) => (
+                  <div className="field" key={kind}>
+                    <label htmlFor={`wz-${kind}`}>{label} · optional</label>
+                    <input id={`wz-${kind}`} value={draft[kind]} onChange={set(kind)} placeholder={placeholder} aria-invalid={!!linkErrors[i]} autoComplete="off" />
+                    {linkErrors[i] && <span className="hint wz-field-error">{linkErrors[i]}</span>}
+                  </div>
+                ))}
               </div>
             </>
           )}
@@ -187,6 +244,8 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
               <Heading title="Ready to launch." sub="One signature does it all. Check it once more." />
               <dl className="lp-rows">
                 <div><dt>Coin</dt><dd className="num">{draft.name.trim()} · ${draft.ticker}</dd></div>
+                <div><dt>Image</dt><dd className="num">{draft.image ? draft.imageName : 'None'}</dd></div>
+                <div><dt>Links</dt><dd className="num">{LINKS.filter(([k]) => draft[k].trim()).map(([, l]) => l).join(' · ') || 'None'}</dd></div>
                 <div><dt>Supply</dt><dd className="num">{coins(TOTAL_COINS)}</dd></div>
                 <div><dt>Graduates at</dt><dd className="num">{view ? `${view.threshold} HYPE` : '—'}</dd></div>
                 <div><dt>Your first buy</dt><dd className="num">{Number(draft.firstBuy) > 0 ? `${draft.firstBuy} HYPE${view ? ` → ≈ ${fmt(view.buyCoins)} coins` : ''}` : 'None'}</dd></div>
@@ -259,7 +318,7 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
       <aside className="tk lp-preview rise" style={{ ['--d' as string]: 5, ['--era' as string]: 'var(--era-1)', ['--on' as string]: 'var(--on-era-1)' }} aria-label="Preview">
         <div className="tk-art grain">
           <span className="label tk-art-tag">Preview · live</span>
-          <span className="tk-initials num">{initials(draft)}</span>
+          {draft.image ? <span className="tk-photo"><img src={draft.image} alt="" /></span> : <span className="tk-initials num">{initials(draft)}</span>}
           <span className="tk-pct num">{view ? `${(view.progress * 100).toFixed(1)}%` : '0%'}</span>
         </div>
         <div className="tk-body">

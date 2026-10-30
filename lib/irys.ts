@@ -22,11 +22,24 @@ function build() {
   return process.env.NEXT_PUBLIC_CLUSTER === 'devnet' ? b.withRpc(process.env.NEXT_PUBLIC_RPC_URL ?? 'https://api.devnet.solana.com').devnet() : b;
 }
 
-export type CoinMetadata = { name: string; symbol: string; description: string; image?: string };
+/** Metaplex off-chain metadata, plus the links the launch form collects (what Jupiter and DexScreener read). */
+export type CoinMetadata = {
+  name: string;
+  symbol: string;
+  description: string;
+  image?: string;
+  external_url?: string;
+  extensions?: { website?: string; twitter?: string; telegram?: string };
+  properties?: { files: { uri: string; type: string }[]; category: 'image' };
+};
 
-export async function uploadMetadata(meta: CoinMetadata): Promise<string> {
+async function upload(data: string | Buffer, contentType: string): Promise<string> {
   uploader ??= build();
   const irys = await uploader;
-  const receipt = await irys.upload(JSON.stringify(meta), { tags: [{ name: 'Content-Type', value: 'application/json' }] });
+  const receipt = await irys.upload(data, { tags: [{ name: 'Content-Type', value: contentType }] });
   return `https://gateway.irys.xyz/${receipt.id}`;
 }
+
+export const uploadMetadata = (meta: CoinMetadata) => upload(JSON.stringify(meta), 'application/json');
+/** The coin's image (PNG, JPEG or WebP under 100 KiB, resized by the browser). */
+export const uploadImage = (data: Buffer, contentType: string) => upload(data, contentType);

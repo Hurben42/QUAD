@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { normalizeLink } from '../lib/links';
 import { baseOutForQuote, buildQuadCurve, coins, price, priceAtProgress, verifyCurve, ERAS, BASE_DECIMALS, TOTAL_COINS, Q64, trackPosition } from '../lib/curve';
 
 const SUPPLY = TOTAL_COINS * 10n ** BigInt(BASE_DECIMALS); // 1B coins, 6 decimals
@@ -98,5 +99,16 @@ describe('trackPosition', () => {
     expect(trackPosition(0.75)).toBeCloseTo(14 / 15, 12);
     expect(trackPosition(1)).toBeCloseTo(1, 12);
     expect(trackPosition(0.125)).toBeCloseTo(4 / 15, 12); // half of era 1 = half of its segment
+  });
+});
+
+describe('normalizeLink', () => {
+  it('turns handles and bare hosts into https links', () => {
+    expect(normalizeLink('twitter', '@hypedog')).toBe('https://x.com/hypedog');
+    expect(normalizeLink('telegram', 'hypedog')).toBe('https://t.me/hypedog');
+    expect(normalizeLink('website', 'hypedog.xyz')).toBe('https://hypedog.xyz/');
+    expect(normalizeLink('website', 'https://x.com/hypedog')).toBe('https://x.com/hypedog');
+    expect(normalizeLink('website', '  ')).toBeUndefined();
+    expect(() => normalizeLink('website', 'javascript:alert(1)')).toThrow();
   });
 });

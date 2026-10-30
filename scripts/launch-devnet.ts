@@ -3,7 +3,7 @@
  * signed by the payer keypair instead of a browser wallet.
  *
  *   pnpm dev                                    # in another terminal: serves /api/metadata (Irys)
- *   NAME=Testdog SYMBOL=TDOG FIRST_BUY=1 pnpm launch:devnet
+ *   NAME=Testdog SYMBOL=TDOG FIRST_BUY=1 IMAGE=./keys/dog.png WEBSITE=testdog.xyz TWITTER=@testdog pnpm launch:devnet
  */
 import './env';
 import fs from 'node:fs';
@@ -22,7 +22,12 @@ async function main() {
   const quote = await readQuoteMint(connection, QUOTE_MINT);
 
   const app = process.env.APP_URL ?? 'http://localhost:3000';
-  const res = await fetch(`${app}/api/metadata`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name, symbol }) });
+  const image = process.env.IMAGE ? `data:image/${process.env.IMAGE.endsWith('.png') ? 'png' : process.env.IMAGE.endsWith('.webp') ? 'webp' : 'jpeg'};base64,${fs.readFileSync(process.env.IMAGE).toString('base64')}` : undefined;
+  const res = await fetch(`${app}/api/metadata`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name, symbol, description: process.env.DESCRIPTION, image, website: process.env.WEBSITE, twitter: process.env.TWITTER, telegram: process.env.TELEGRAM }),
+  });
   const body = await res.json();
   if (!res.ok) throw new Error(`metadata: ${body.error}`);
   console.log(`metadata ${body.uri}`);

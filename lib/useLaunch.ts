@@ -12,7 +12,8 @@ export const toUnits = (amount: string, decimals: number) => {
 export const fromUnits = (x: bigint, decimals: number) => Number(x) / 10 ** decimals;
 export const isAmount = (s: string) => s === '' || /^\d*\.?\d*$/.test(s.trim());
 
-export type LaunchInput = { name: string; ticker: string; firstBuy: string; description?: string };
+/** `image` is a data URL from lib/image.ts; links as typed, normalized by the server. */
+export type LaunchInput = { name: string; ticker: string; firstBuy: string; description?: string; image?: string; website?: string; twitter?: string; telegram?: string };
 export type LaunchPhase = 'upload' | 'sign' | 'confirm';
 export type LaunchResult = { ok: true; pool: string; baseMint: string; sig: string } | { ok: false; message: string; phase: LaunchPhase };
 
@@ -40,7 +41,7 @@ export function useLaunch() {
         if (!publicKey) throw new Error('Connect a wallet first.');
         if (!config) throw new Error('The QUAD config is not loaded yet.');
         step('upload');
-        const res = await fetch('/api/metadata', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: input.name, symbol: input.ticker, description: input.description }) });
+        const res = await fetch('/api/metadata', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: input.name, symbol: input.ticker, description: input.description, image: input.image, website: input.website, twitter: input.twitter, telegram: input.telegram }) });
         const body = await res.json();
         if (!res.ok) throw new Error(body.error ?? 'metadata upload failed');
 
