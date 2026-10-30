@@ -108,17 +108,17 @@ export function CoinPage({ pool }: { pool: string }) {
             <div className="coin-id-text">
               <h1 className="coin-name">{name}</h1>
               <p className="cr-lede">{meta?.description || `${name} trades against HYPE on the four-era curve. ${pct(CREATOR_FEE)} of every trade goes to its creator, in HYPE.`}</p>
-              {links.length > 0 && (
-                <ul className="coin-links">
-                  {links.map(([kind, href]) => <li key={kind}><a className="num" href={href} target="_blank" rel="noopener">{prettyLink(kind, href)} <span aria-hidden="true">↗</span></a></li>)}
-                </ul>
-              )}
             </div>
           </div>
           <div className="cr-ctas rise" style={d(4)}>
             <LinkButton href={tradeUrl(coin.baseMint)} target="_blank" rel="noopener">Trade on Jupiter <span className="num">↗</span></LinkButton>
             <LinkButton variant="secondary" href={explorerAddress(coin.baseMint)} target="_blank" rel="noopener">Explorer <span className="num">↗</span></LinkButton>
           </div>
+          {links.length > 0 && (
+            <ul className="coin-links rise" style={d(5)}>
+              {links.map(([kind, href]) => <li key={kind}><a className="num" href={href} target="_blank" rel="noopener">{prettyLink(kind, href)} <span aria-hidden="true">↗</span></a></li>)}
+            </ul>
+          )}
           <div className="coin-ca rise" style={d(5)}><CopyMint address={coin.baseMint} label="contract address" /></div>
           <dl className="cr-stats rise" style={d(6)}>
             <div><dt className="label">Price</dt><dd className="num">{card.price.replace(/ HYPE$/, '')}<small>HYPE</small></dd></div>
