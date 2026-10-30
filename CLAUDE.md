@@ -42,8 +42,8 @@ Tout cela tourne sur le **Dynamic Bonding Curve (DBC) de Meteora** : aucun progr
 ## Ce qui est fait
 
 - Design system complet (tokens, composants, logo, icône app) et maquettes HTML desktop + mobile.
-- Front complet : landing, `/launch` (wizard en 4 eras), `/rules`, `/docs`, `/creators`, `/creator`, `/coin/[pool]`, modal wallet QUAD, header fixe, menu mobile.
-- Section « On the curve » de la landing : les vrais coins en bento pyramide (le plus proche de la graduation en 2×2 en haut, puis tall, puis petits ; carrousel sur mobile), chaque carte dans la couleur de son era, lien vers `/coin/[pool]`. L'image du coin s'affiche en photo d'identité dans l'encart de la carte.
+- Front complet : landing, `/launch` (wizard en 4 eras), `/rules`, `/docs`, `/creators`, `/creator`, `/coins`, `/coin/[pool]`, modal wallet QUAD, header fixe, menu mobile.
+- Section « On the curve » de la landing : onglets All / Era 1–4 / Graduated (compte par onglet, couleur de l'era), les coins en lignes avec leurs steps (cartes sur mobile), les plus proches de la graduation en premier, 6 lignes puis « See all » vers `/coins` (même liste, complète). Chaque ligne mène à `/coin/[pool]`. L'image d'un coin s'affiche en photo d'identité dans l'encart des token cards (page coin, aperçu du wizard).
 - Lancement : image (redimensionnée côté navigateur en 512 px sous 100 Ko, donc gratuite sur Irys), description, site, X et Telegram, tous optionnels, écrits dans le JSON Metaplex (`image`, `external_url`, `extensions`, `properties.files`) que Jupiter et DexScreener lisent. `scripts/launch-devnet.ts` accepte `IMAGE=`, `DESCRIPTION=`, `WEBSITE=`, `TWITTER=`, `TELEGRAM=`.
 - Math de la curve alignée sur le programme DBC (arrondis par segment, migration DAMM v2), `pnpm test` : 26 tests, dont les helpers du SDK 1.5.13 comme oracle.
 - Backend câblé : `scripts/create-config.ts`, upload des métadonnées sur Irys via `/api/metadata`, lancement d'un pool avec first buy en une signature (`lib/dbc.ts#buildLaunchTx`), liste des pools via `/api/pools` (cache 5 s), claim des fees créateur et retrait du surplus sur `/creator`.
@@ -71,8 +71,7 @@ Le faucet RPC devnet est fermé : du SOL s'obtient sur https://faucet.solana.com
 3. **Config mainnet.** `pnpm config:mainnet` avec le vrai mint HYPE, puis un lancement test avec un seuil minuscule. Décimales et token program de HYPE sont lus on-chain, jamais codés en dur.
 4. **Fees plateforme.** Un cron qui appelle `claimPartnerTradingFee` pour le `feeClaimer`. Pas encore dans le code.
 5. **Métadonnées de pool.** `createPoolMetadata` (site, logo) après chaque lancement. Pas encore dans le code.
-6. **Carte gradué.** Un coin migré reste dans « On the curve » en ERA 4 à 100 % ; prévoir un état « Graduated » distinct (filtre ou section) quand il y aura du volume.
-7. **Propreté.** `outputFileTracingRoot` dans `next.config.ts` (Next détecte un `package-lock.json` dans le home) et `align-items: end` → `flex-end` dans `app/globals.css` (avertissement autoprefixer).
+6. **Propreté.** `outputFileTracingRoot` dans `next.config.ts` (Next détecte un `package-lock.json` dans le home) et `align-items: end` → `flex-end` dans `app/globals.css` (avertissement autoprefixer).
 
 ## Conventions
 
