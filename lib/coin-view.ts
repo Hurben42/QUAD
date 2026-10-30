@@ -80,7 +80,7 @@ export function toTokenCard(c: ApiCoin, api: ApiMeta): TokenCardView {
     raised: `${fmt(hype(c.quoteRaised, api.quoteDecimals))} / ${fmt(hype(c.quoteThreshold, api.quoteDecimals))}`,
     cap: `${cap(p * Number(TOTAL_COINS))} HYPE`,
     sub: c.migrated ? 'Graduated' : ago(c.createdAt),
-    href: `/coin/${c.pool}`,
+    href: `/token/${c.pool}`,
     uri: c.uri,
   };
 }
@@ -90,7 +90,7 @@ export function toCoinRow(c: ApiCoin, api: ApiMeta): CoinView {
   const symbol = symbolOf(c);
   return {
     pool: c.pool,
-    href: `/coin/${c.pool}`,
+    href: `/token/${c.pool}`,
     name: c.name || symbol,
     ticker: `$${symbol}`,
     sub: c.migrated ? 'Graduated' : ago(c.createdAt),

@@ -10,7 +10,7 @@ const REFRESH_MS = 10_000;
 /**
  * "On the curve", live from /api/pools: tabs by era (All, Era 1–4, Graduated), the coins of the
  * tab as rows, closest to graduation first. With `limit`, the home shows that many and a
- * See all button to `seeAllHref` (/coins, the full list).
+ * See all button to `seeAllHref` (/tokens, the full list).
  */
 export function CurveList({ limit, seeAllHref }: { limit?: number; seeAllHref?: string } = {}) {
   const [api, setApi] = useState<(ApiMeta & { coins: ApiCoin[] }) | null>(null);
@@ -69,7 +69,7 @@ export function CurveList({ limit, seeAllHref }: { limit?: number; seeAllHref?: 
         </>
       )}
       {seeAllHref && all.length > shown.length && (
-        <div className="era-foot"><LinkButton variant="secondary" href={seeAllHref}>See all {api.coins.length} coins <span className="num">→</span></LinkButton></div>
+        <div className="era-foot"><LinkButton variant="secondary" href={seeAllHref}>See all {api.coins.length} tokens <span className="num">→</span></LinkButton></div>
       )}
     </div>
   );

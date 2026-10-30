@@ -100,7 +100,7 @@ export default function Page() {
       {/* ON THE CURVE */}
       <section id="curve" className="sec" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
         <div className="sec-head" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}><span className="label">0<span className="hide-m">4</span><span className="show-m-i">3</span> / On the curve</span><h2 className="sec-title">Coins on their steps right now.</h2></div>
-        <CurveList limit={6} seeAllHref="/coins" />
+        <CurveList limit={6} seeAllHref="/tokens" />
       </section>
 
       {/* GET HYPE */}
@@ -140,7 +140,7 @@ export default function Page() {
           </div>
           <nav className="hide-m" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }} aria-label="Footer">
             {[
-              ['Product', [['/launch', 'Launch'], ['/coins', 'All coins'], ['/creators#claim', 'Creator fees'], ['#get-hype', 'Get HYPE']]],
+              ['Product', [['/launch', 'Launch'], ['/tokens', 'All tokens'], ['/creators#claim', 'Creator fees'], ['#get-hype', 'Get HYPE']]],
               ['Read', [['/docs', 'Docs'], ['/rules', 'The 4 rules'], ['/docs#config', 'Pool config']]],
               ['Follow', [['https://x.com', 'X'], ['https://github.com', 'GitHub']]],
             ].map(([title, links]) => (
@@ -151,7 +151,7 @@ export default function Page() {
             ))}
           </nav>
           <nav className="show-m" style={{ gap: 20, flexWrap: 'wrap' }} aria-label="Footer">
-            {[['/launch', 'Launch'], ['/coins', 'All coins'], ['/creators#claim', 'Creator fees'], ['/docs', 'Docs'], ['https://x.com', 'X']].map(([href, label]) => <a key={label} href={href} style={{ font: '600 14px/1 var(--font-sans)' }}>{label}</a>)}
+            {[['/launch', 'Launch'], ['/tokens', 'All tokens'], ['/creators#claim', 'Creator fees'], ['/docs', 'Docs'], ['https://x.com', 'X']].map(([href, label]) => <a key={label} href={href} style={{ font: '600 14px/1 var(--font-sans)' }}>{label}</a>)}
           </nav>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}><span className="label">© 2026 QUAD<span className="show-m-i"> · Four eras · Priced in HYPE</span></span><span className="label hide-m">Four eras · Priced in HYPE</span></div>
