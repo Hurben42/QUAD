@@ -994,11 +994,7 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
   .coin-hero .cr-ctas .q-btn{height:44px;padding:0 16px}
   .coin-hero .cr-stats{grid-template-columns:repeat(2,minmax(0,1fr));max-width:none}
   .wz-links{grid-template-columns:minmax(0,1fr)}
-  .coin-stage{padding-top:0}
-  .coin-stage .cr-card{max-width:none;height:auto;display:block}
-  .coin-stage .tk--wide{flex-direction:column}
-  .coin-stage .tk--wide .tk-art{width:auto;height:128px}
-  .coin-stage .tk--wide .tk-initials{font-size:58px}
+  .coin-stage{display:none}
   .coin-curve{grid-template-columns:minmax(0,1fr);gap:24px;padding:20px}
   .coin-curve-meta{text-align:left}
   .coin-curve-meta .num-lg{font-size:44px}
