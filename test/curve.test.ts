@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeLink } from '../lib/links';
+import { normalizeLink, prettyLink } from '../lib/links';
 import { baseOutForQuote, buildQuadCurve, coins, price, priceAtProgress, verifyCurve, ERAS, BASE_DECIMALS, TOTAL_COINS, Q64, trackPosition } from '../lib/curve';
 
 const SUPPLY = TOTAL_COINS * 10n ** BigInt(BASE_DECIMALS); // 1B coins, 6 decimals
@@ -110,5 +110,15 @@ describe('normalizeLink', () => {
     expect(normalizeLink('website', 'https://x.com/hypedog')).toBe('https://x.com/hypedog');
     expect(normalizeLink('website', '  ')).toBeUndefined();
     expect(() => normalizeLink('website', 'javascript:alert(1)')).toThrow();
+  });
+});
+
+describe('prettyLink', () => {
+  it('reads links the short way', () => {
+    expect(prettyLink('twitter', 'https://x.com/sunriseapp')).toBe('x.com/@sunriseapp');
+    expect(prettyLink('twitter', 'https://twitter.com/sunriseapp/')).toBe('x.com/@sunriseapp');
+    expect(prettyLink('telegram', 'https://t.me/sunriseapp')).toBe('t.me/sunriseapp');
+    expect(prettyLink('website', 'https://www.sunrise.xyz/')).toBe('sunrise.xyz');
+    expect(prettyLink('website', 'https://sunrise.xyz/docs?v=2')).toBe('sunrise.xyz/docs?v=2');
   });
 });

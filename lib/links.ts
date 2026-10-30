@@ -25,3 +25,17 @@ export function normalizeLink(kind: LinkKind, value: string): string | undefined
 }
 
 export const label = (kind: LinkKind) => ({ website: 'Website', twitter: 'X', telegram: 'Telegram' })[kind];
+
+/** https://x.com/hypedog → x.com/@hypedog, https://t.me/hypedog → t.me/hypedog, https://hypedog.xyz/ → hypedog.xyz */
+export function prettyLink(kind: LinkKind, url: string): string {
+  let u: URL;
+  try {
+    u = new URL(url);
+  } catch {
+    return url;
+  }
+  const host = u.host.replace(/^www\./, '');
+  const path = u.pathname.replace(/\/+$/, '');
+  if (kind === 'twitter' && /^(x|twitter)\.com$/.test(host) && /^\/[A-Za-z0-9_]+$/.test(path)) return `x.com/@${path.slice(1)}`;
+  return `${host}${path}${u.search}`;
+}
