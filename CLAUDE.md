@@ -45,6 +45,7 @@ Tout cela tourne sur le **Dynamic Bonding Curve (DBC) de Meteora** : aucun progr
 - Math de la curve alignée sur le programme DBC (arrondis par segment, migration DAMM v2), `pnpm test` : 26 tests, dont les helpers du SDK 1.5.13 comme oracle.
 - Backend câblé : `scripts/create-config.ts`, upload des métadonnées sur Irys via `/api/metadata`, lancement d'un pool avec first buy en une signature (`lib/dbc.ts#buildLaunchTx`), liste des pools via `/api/pools` (cache 5 s), claim des fees créateur et retrait du surplus sur `/creator`.
 - **Validé sur devnet le 30 octobre 2026**, de bout en bout : mint HYPE de test, config DBC relue par `pnpm config:verify` (13 valeurs identiques au lamport près à `lib/curve.ts`), lancement d'un coin avec first buy de 1 HYPE, affiché sur la landing. Le buy du créateur paie la fee normale de 3,125 %, pas les 50 % anti-sniper.
+- **Cycle de vie complet joué sur devnet** avec le payeur comme créateur (même builders que `/creator`, signés en script) : achats à travers les 4 eras (la curve vend exactement `swapBaseAmount`), claim des fees créateur avant et après migration (2,5 % de chaque trade arrive en HYPE), franchissement du seuil en remplissage partiel (`swap2`, `SwapMode.PartialFill`), migration DAMM v2 via `migration.migrateToDammV2` (dammConfig = `DAMM_V2_MIGRATION_FEE_ADDRESS[migrationFeeOption]`), retrait du surplus. Pool DAMM v2 : `FPAUnS5zew19ekzHWVhFntg8vTAj4NBLi67wxv7ZK4a4`. Un buy exact-in qui dépasse la capacité restante de la curve échoue dans le SDK (`Insufficient Liquidity`) : l'UI de swap devra passer en partial fill près du seuil.
 
 Adresses devnet (dans `.env.local`, jamais dans le repo ; `keys/payer.json` est la clé payeur) :
 
@@ -59,7 +60,7 @@ Le faucet RPC devnet est fermé : du SOL s'obtient sur https://faucet.solana.com
 
 ## Ce qu'il reste à faire — par ordre
 
-1. **Tester `/creator` sur devnet** avec un wallet navigateur : lancement depuis `/launch`, quelques trades, claim des fees, retrait du surplus après graduation (seuil 50 HYPE de test).
+1. **Tester l'UI avec un wallet navigateur** sur devnet : lancement depuis `/launch`, claim et surplus depuis `/creator` (la logique on-chain est validée, reste le parcours wallet-adapter). Qui déclenche la migration DAMM v2 en prod : le keeper Meteora ou un cron QUAD, à confirmer.
 2. **RPC privé.** Le RPC public mainnet renvoie 403 depuis le navigateur : `NEXT_PUBLIC_RPC_URL` doit pointer sur Helius ou équivalent avant tout passage mainnet.
 3. **Config mainnet.** `pnpm config:mainnet` avec le vrai mint HYPE, puis un lancement test avec un seuil minuscule. Décimales et token program de HYPE sont lus on-chain, jamais codés en dur.
 4. **Fees plateforme.** Un cron qui appelle `claimPartnerTradingFee` pour le `feeClaimer`. Pas encore dans le code.
