@@ -1,19 +1,19 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { SampleCoins } from './SampleCoins';
-import { TokenCard } from './TokenCard';
+import { LinkButton } from './Button';
 import { CoinCard, CoinRow, CoinTableHeader } from './CoinRow';
-import { CURVE_TABS, bentoSize, fetchCoinMetadata, inTab, tabLabel, toCoinRow, toTokenCard, type ApiCoin, type ApiMeta, type CurveTab, type PoolsApi } from '@/lib/coin-view';
+import { CURVE_TABS, inTab, tabLabel, toCoinRow, type ApiCoin, type ApiMeta, type CurveTab, type PoolsApi } from '@/lib/coin-view';
 
 const REFRESH_MS = 10_000;
 
 /**
- * "On the curve", live from /api/pools. Tabs by era: All shows every coin as a pyramid bento
- * (closest to graduation first and largest); an era, or Graduated, lists its coins in rows.
+ * "On the curve", live from /api/pools: tabs by era (All, Era 1–4, Graduated), the coins of the
+ * tab as rows, closest to graduation first. With `limit`, the home shows that many and a
+ * See all button to `seeAllHref` (/coins, the full list).
  */
-export function CurveList() {
+export function CurveList({ limit, seeAllHref }: { limit?: number; seeAllHref?: string } = {}) {
   const [api, setApi] = useState<(ApiMeta & { coins: ApiCoin[] }) | null>(null);
-  const [images, setImages] = useState<Record<string, string>>({}); // metadata uri → image
   const [tab, setTab] = useState<CurveTab>('all');
   const [, setError] = useState<string | null>(null);
 
@@ -22,13 +22,7 @@ export function CurveList() {
       const res = await fetch('/api/pools', { cache: 'no-store' });
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? res.statusText);
-      const next = body as PoolsApi;
-      setApi(next);
-      for (const c of next.coins) {
-        if (!c.uri) continue;
-        setImages((m) => (c.uri in m ? m : { ...m, [c.uri]: '' }));
-        fetchCoinMetadata(c.uri).then((meta) => meta?.image && setImages((m) => ({ ...m, [c.uri]: meta.image! })));
-      }
+      setApi(body as PoolsApi);
       setError(null);
     } catch (e) {
       setError(String(e));
@@ -48,7 +42,8 @@ export function CurveList() {
   // Until real coins are live (or while the curve cannot be reached), show labelled samples.
   if (!api || api.coins.length === 0) return <SampleCoins />;
 
-  const shown = api.coins.filter((c) => inTab(c, tab));
+  const all = api.coins.filter((c) => inTab(c, tab));
+  const shown = limit ? all.slice(0, limit) : all;
   const era = typeof tab === 'number' ? tab : tab === 'graduated' ? 4 : null;
 
   return (
@@ -65,17 +60,16 @@ export function CurveList() {
         })}
       </div>
 
-      {tab === 'all' ? (
-        <div className={`tk-grid ${shown.length === 1 ? 'tk-grid--one' : ''}`}>
-          {shown.map((c, i) => <TokenCard key={c.pool} c={{ ...toTokenCard(c, api), image: images[c.uri] || undefined }} size={bentoSize(i, shown.length)} cta="View →" />)}
-        </div>
-      ) : shown.length === 0 ? (
-        <p className="era-empty"><span className={`q-era q-era--${era}`}>{tabLabel(tab)}</span>{tab === 'graduated' ? 'No coin has graduated yet.' : `No coin is in era ${tab} right now.`}</p>
+      {shown.length === 0 ? (
+        <p className="era-empty"><span className={`q-era q-era--${era ?? 1}`}>{tabLabel(tab)}</span>{tab === 'graduated' ? 'No coin has graduated yet.' : `No coin is in era ${tab} right now.`}</p>
       ) : (
         <>
           <div className="show-m" style={{ flexDirection: 'column', gap: 12 }}>{shown.map((c) => <CoinCard key={c.pool} c={toCoinRow(c, api)} />)}</div>
           <div className="hide-m era-rows"><CoinTableHeader />{shown.map((c, i) => <CoinRow key={c.pool} c={toCoinRow(c, api)} index={i} />)}</div>
         </>
+      )}
+      {seeAllHref && all.length > shown.length && (
+        <div className="era-foot"><LinkButton variant="secondary" href={seeAllHref}>See all {api.coins.length} coins <span className="num">→</span></LinkButton></div>
       )}
     </div>
   );

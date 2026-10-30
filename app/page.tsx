@@ -100,7 +100,7 @@ export default function Page() {
       {/* ON THE CURVE */}
       <section id="curve" className="sec" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
         <div className="sec-head" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}><span className="label">0<span className="hide-m">4</span><span className="show-m-i">3</span> / On the curve</span><h2 className="sec-title">Coins on their steps right now.</h2></div>
-        <CurveList />
+        <CurveList limit={6} seeAllHref="/coins" />
       </section>
 
       {/* GET HYPE */}

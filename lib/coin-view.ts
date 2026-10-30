@@ -1,5 +1,5 @@
 /** What /api/pools returns, and how the UI reads it. */
-import type { TokenCardSize, TokenCardView } from '@/components/TokenCard';
+import type { TokenCardView } from '@/components/TokenCard';
 import type { CoinView } from '@/components/CoinRow';
 import { TOTAL_COINS, price as fmtPrice } from './curve';
 
@@ -107,15 +107,3 @@ export type CurveTab = 'all' | 1 | 2 | 3 | 4 | 'graduated';
 export const CURVE_TABS: CurveTab[] = ['all', 1, 2, 3, 4, 'graduated'];
 export const inTab = (c: ApiCoin, tab: CurveTab) => (tab === 'all' ? true : tab === 'graduated' ? c.migrated : !c.migrated && c.era === tab);
 export const tabLabel = (tab: CurveTab) => (tab === 'all' ? 'All' : tab === 'graduated' ? 'Graduated' : `Era ${tab}`);
-
-/**
- * The bento as a pyramid: the coin closest to graduation is the 2×2 card at the top, the next one
- * is tall beside it, two small ones fill the first rows, a wide one opens the third, the rest are small.
- */
-const PYRAMID: TokenCardSize[] = ['xl', 'tall', 'sm', 'sm', 'wide', 'sm', 'sm'];
-export function bentoSize(rank: number, count: number): TokenCardSize {
-  if (count === 1) return 'wide';
-  if (count === 2) return 'wide';
-  if (count === 3) return rank === 0 ? 'xl' : 'tall';
-  return PYRAMID[rank] ?? 'sm';
-}
