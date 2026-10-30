@@ -23,9 +23,10 @@ Tout cela tourne sur le **Dynamic Bonding Curve (DBC) de Meteora** : aucun progr
 
 - `scripts/create-config.ts` — crée la clé de config DBC (quote HYPE, 4 eras, fees, supply fixe, migration DAMM v2). À lancer une fois par environnement.
 - `lib/curve.ts` — la math des 4 eras (prix, liquidités, vérification). Pure, testée dans `test/curve.test.ts`.
-- `lib/dbc.ts` — helpers client : créer un pool (+ first buy), lister les pools de la config, progression, fees.
+- `lib/dbc.ts` — helpers client : créer un pool (+ first buy), lister les pools de la config, progression, fees. `lib/pools-cache.ts` en est le cache serveur (5 s) partagé par `/api/pools`, `/api/pools/[pool]` et les métadonnées de page.
+- `lib/coin-view.ts` — ce que l'API renvoie et comment l'UI le lit : token card, tailles du bento (`bentoSize`), JSON de métadonnées (`fetchCoinMetadata`). `lib/image.ts` redimensionne l'image choisie (512 px, < 95 Ko) ; `lib/links.ts` normalise site / X / Telegram ; `lib/explorer.ts` fabrique les liens Explorer sur le bon cluster.
 - `lib/hype.ts` — constantes HYPE (mint, décimales lues on-chain, token program).
-- `app/` — la landing (`page.tsx`) et le formulaire de lancement. `design/website/*.html` est la maquette de référence pixel par pixel : reproduire ces sections, pas en inventer.
+- `app/` — la landing (`page.tsx`), le formulaire de lancement et `coin/[pool]` (la page d'un coin : carte, position sur les 4 eras, liens, données on-chain). `design/website/*.html` est la maquette de référence pixel par pixel : reproduire ces sections, pas en inventer.
 - `components/` — Lockup, Button, EraSteps, CoinRow, LaunchForm.
 - `design/design-system/` — `tokens.json` (couleurs dark/light, type, espaces, rayons), `bundle.css` (classes `.q-*`), `BRAND.md` (règles d'usage). `app/globals.css` en est la compilation : s'y référer, ne pas inventer de couleurs.
 - `public/brand/` — le logo QUAD (dégradé / encre / blanc), l'icône app, le mark Hyperliquid officiel (`hyperliquid-blob-green.svg`, issu du brand kit officiel ; ne jamais le recolorer ni le déformer), le grain.
@@ -41,7 +42,9 @@ Tout cela tourne sur le **Dynamic Bonding Curve (DBC) de Meteora** : aucun progr
 ## Ce qui est fait
 
 - Design system complet (tokens, composants, logo, icône app) et maquettes HTML desktop + mobile.
-- Front complet : landing, `/launch` (wizard en 4 eras), `/rules`, `/docs`, `/creators`, `/creator`, modal wallet QUAD, header fixe, menu mobile.
+- Front complet : landing, `/launch` (wizard en 4 eras), `/rules`, `/docs`, `/creators`, `/creator`, `/coin/[pool]`, modal wallet QUAD, header fixe, menu mobile.
+- Section « On the curve » de la landing : les vrais coins en bento pyramide (le plus proche de la graduation en 2×2 en haut, puis tall, puis petits ; carrousel sur mobile), chaque carte dans la couleur de son era, lien vers `/coin/[pool]`. L'image du coin s'affiche en photo d'identité dans l'encart de la carte.
+- Lancement : image (redimensionnée côté navigateur en 512 px sous 100 Ko, donc gratuite sur Irys), description, site, X et Telegram, tous optionnels, écrits dans le JSON Metaplex (`image`, `external_url`, `extensions`, `properties.files`) que Jupiter et DexScreener lisent. `scripts/launch-devnet.ts` accepte `IMAGE=`, `DESCRIPTION=`, `WEBSITE=`, `TWITTER=`, `TELEGRAM=`.
 - Math de la curve alignée sur le programme DBC (arrondis par segment, migration DAMM v2), `pnpm test` : 26 tests, dont les helpers du SDK 1.5.13 comme oracle.
 - Backend câblé : `scripts/create-config.ts`, upload des métadonnées sur Irys via `/api/metadata`, lancement d'un pool avec first buy en une signature (`lib/dbc.ts#buildLaunchTx`), liste des pools via `/api/pools` (cache 5 s), claim des fees créateur et retrait du surplus sur `/creator`.
 - **Validé sur devnet le 30 octobre 2026**, de bout en bout : mint HYPE de test, config DBC relue par `pnpm config:verify` (13 valeurs identiques au lamport près à `lib/curve.ts`), lancement d'un coin avec first buy de 1 HYPE, affiché sur la landing. Le buy du créateur paie la fee normale de 3,125 %, pas les 50 % anti-sniper.
@@ -54,7 +57,10 @@ Adresses devnet (dans `.env.local`, jamais dans le repo ; `keys/payer.json` est 
 | Payeur / fee claimer | `9r9VGrEmq5GtzC4TUeNFJN6Yx2WjiFzJGoiiGduQ5BCs` |
 | Mint HYPE de test (8 déc.) | `H6SoYYTPSY85GJdz181NBG3uKnvThzMuK6dcbLhGzXfD` |
 | Config DBC (seuil 50 HYPE) | `BakZ7m6Hv6LP6PCkcGqBcYqMm9VHLngWyw3Ewh4mAXH4` |
-| Premier pool (Hypedog, $HDOG) | `4WganbYtA7Vqpr9EbQ1L6JxX5MnftS8NQfg3GDnzDgef` |
+| Premier pool (Hypedog, $HDOG, gradué) | `4WganbYtA7Vqpr9EbQ1L6JxX5MnftS8NQfg3GDnzDgef` |
+| Pool avec image et liens (Photodog, $PDOG) | `bmmSHzj7TVCGnrkC5yVfdFTUJNTNLVVVmKkvqDvWX1a` |
+
+Huit coins de test sont sur la curve devnet (Hypedog gradué, puis Sunrise, Voltcat, Coralreef, Quadrant, Photodog, Halfstep, Pixelfund à des progressions décroissantes). Le RPC public devnet limite fort (429) : une lecture complète prend 3 à 10 s, d'où le cache et les caches par pool (métadonnées, date de création) dans `lib/dbc.ts`.
 
 Le faucet RPC devnet est fermé : du SOL s'obtient sur https://faucet.solana.com (connexion GitHub). Pour un lancement depuis l'UI, `TEST_WALLET=<pubkey> REUSE_MINT=1 pnpm mint:devnet` envoie 1 000 HYPE de test au wallet navigateur.
 
@@ -65,7 +71,8 @@ Le faucet RPC devnet est fermé : du SOL s'obtient sur https://faucet.solana.com
 3. **Config mainnet.** `pnpm config:mainnet` avec le vrai mint HYPE, puis un lancement test avec un seuil minuscule. Décimales et token program de HYPE sont lus on-chain, jamais codés en dur.
 4. **Fees plateforme.** Un cron qui appelle `claimPartnerTradingFee` pour le `feeClaimer`. Pas encore dans le code.
 5. **Métadonnées de pool.** `createPoolMetadata` (site, logo) après chaque lancement. Pas encore dans le code.
-6. **Propreté.** `outputFileTracingRoot` dans `next.config.ts` (Next détecte un `package-lock.json` dans le home) et `align-items: end` → `flex-end` dans `app/globals.css` (avertissement autoprefixer).
+6. **Carte gradué.** Un coin migré reste dans « On the curve » en ERA 4 à 100 % ; prévoir un état « Graduated » distinct (filtre ou section) quand il y aura du volume.
+7. **Propreté.** `outputFileTracingRoot` dans `next.config.ts` (Next détecte un `package-lock.json` dans le home) et `align-items: end` → `flex-end` dans `app/globals.css` (avertissement autoprefixer).
 
 ## Conventions
 
