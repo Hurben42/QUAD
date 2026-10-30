@@ -6,7 +6,7 @@ import { WalletButton } from './WalletButton';
 import { MobileMenu } from './MobileMenu';
 
 /** Paths start at "/" so they work from every page. Launch is a button, not a nav entry. */
-export const NAV = [['/rules', 'The 4 rules'], ['/creators', 'Creators'], ['/docs', 'Docs']] as const;
+export const NAV = [['/coins', 'Coins'], ['/rules', 'The 4 rules'], ['/creators', 'Creators'], ['/docs', 'Docs']] as const;
 export const GET_HYPE = 'https://jup.ag';
 /** Past this many pixels of scroll the header detaches into a fixed glass bar. */
 const STICK_AFTER = 24;
