@@ -1,5 +1,6 @@
 /** What /api/pools returns, and how the UI reads it. */
 import type { TokenCardSize, TokenCardView } from '@/components/TokenCard';
+import type { CoinView } from '@/components/CoinRow';
 import { TOTAL_COINS, price as fmtPrice } from './curve';
 
 export type ApiCoin = {
@@ -83,6 +84,29 @@ export function toTokenCard(c: ApiCoin, api: ApiMeta): TokenCardView {
     uri: c.uri,
   };
 }
+
+/** A coin as a row of an era list. */
+export function toCoinRow(c: ApiCoin, api: ApiMeta): CoinView {
+  const symbol = symbolOf(c);
+  return {
+    pool: c.pool,
+    href: `/coin/${c.pool}`,
+    name: c.name || symbol,
+    ticker: `$${symbol}`,
+    sub: c.migrated ? 'Graduated' : ago(c.createdAt),
+    era: c.era,
+    progress: c.progress,
+    price: `${fmtPrice(pricePerCoin(c, api))} HYPE`,
+    raised: `${fmt(hype(c.quoteRaised, api.quoteDecimals))} / ${fmt(hype(c.quoteThreshold, api.quoteDecimals))} HYPE`,
+    initials: initialsOf(c),
+  };
+}
+
+/** The tabs of the curve: every coin, one era, or the graduated ones. */
+export type CurveTab = 'all' | 1 | 2 | 3 | 4 | 'graduated';
+export const CURVE_TABS: CurveTab[] = ['all', 1, 2, 3, 4, 'graduated'];
+export const inTab = (c: ApiCoin, tab: CurveTab) => (tab === 'all' ? true : tab === 'graduated' ? c.migrated : !c.migrated && c.era === tab);
+export const tabLabel = (tab: CurveTab) => (tab === 'all' ? 'All' : tab === 'graduated' ? 'Graduated' : `Era ${tab}`);
 
 /**
  * The bento as a pyramid: the coin closest to graduation is the 2×2 card at the top, the next one

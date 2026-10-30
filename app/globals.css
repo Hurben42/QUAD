@@ -794,6 +794,17 @@ section[id],footer[id]{scroll-margin-top:24px}
 .tk-note .label{padding:5px 10px;border-radius:var(--radius-pill);border:1px solid var(--line-strong);color:var(--text)}
 .tk-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:248px;grid-auto-flow:dense;gap:16px}
 .tk-grid--one{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* era tabs over the curve */
+.era-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.era-tab{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:var(--radius-pill);border:1px solid var(--line);background:transparent;color:var(--text-muted);font:600 12px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:border-color .15s ease,background .15s ease,color .15s ease}
+.era-tab .num{font-size:12px;color:var(--text)}
+.era-tab:hover{border-color:var(--line-strong);color:var(--text)}
+.era-tab[aria-selected="true"]{background:var(--era,var(--text));border-color:transparent;color:var(--on,var(--surface-0))}
+.era-tab[aria-selected="true"] .num{color:inherit}
+.era-tab:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.era-rows{border-radius:var(--radius-lg);border:1px solid var(--line);background:var(--surface-1);padding:16px 8px 0}
+.era-rows > a:last-child{border-bottom:0}
+.era-empty{margin:0;display:flex;align-items:center;gap:12px;padding:32px 24px;border-radius:var(--radius-lg);border:1px dashed var(--line-strong);font:500 15px/20px var(--font-sans);color:var(--text-muted)}
 .tk{position:relative;display:flex;flex-direction:column;overflow:hidden;border-radius:var(--radius-lg);background:var(--surface-1);border:1px solid var(--line);color:var(--text);transition:transform .25s cubic-bezier(.16,.8,.24,1),border-color .2s ease}
 a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
 .tk-art{position:relative;height:120px;overflow:hidden;background:radial-gradient(circle, color-mix(in srgb, var(--on) 26%, transparent) 1.3px, transparent 1.6px) 0 0/9px 9px, radial-gradient(120% 90% at 100% 100%, color-mix(in srgb, var(--on-era-4) 35%, transparent), transparent 60%), var(--era)}
@@ -839,6 +850,9 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
   /* mobile: one row of cards, scrolled sideways only, snapping card by card, edge to edge */
   .tk-ground{overflow:visible;max-height:none}
   .tk-ground::after{display:none}
+  .era-tabs{flex-wrap:nowrap;overflow-x:auto;margin:0 calc(50% - 50vw);padding:0 16px 4px;scrollbar-width:none}
+  .era-tabs::-webkit-scrollbar{display:none}
+  .era-tab{flex:none}
   .tk-grid{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding:0 16px;margin:0 calc(50% - 50vw);padding:4px 16px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .tk-grid::-webkit-scrollbar{display:none}
   .tk-grid > .tk{flex:0 0 78%;scroll-snap-align:start}
