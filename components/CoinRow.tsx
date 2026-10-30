@@ -15,7 +15,7 @@ export function CoinTableHeader() {
 
 export function CoinRow({ c, index }: { c: CoinView; index: number }) {
   return (
-    <a href={c.href} target="_blank" rel="noopener" style={{ display: 'grid', gridTemplateColumns: grid, gap: 16, alignItems: 'center', padding: '18px 16px', borderBottom: '1px solid var(--line)' }}>
+    <a href={c.href} style={{ display: 'grid', gridTemplateColumns: grid, gap: 16, alignItems: 'center', padding: '18px 16px', borderBottom: '1px solid var(--line)' }}>
       <span className="num" style={{ fontSize: 13, color: 'var(--text-muted)' }}>{String(index + 1).padStart(2, '0')}</span>
       <span style={{ width: 6, height: 44, borderRadius: 3, background: `var(--era-${c.era})` }} />
       <span className="num" style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', display: 'grid', placeItems: 'center', fontSize: 15, background: 'var(--surface-2)' }}>{c.initials}</span>
@@ -35,7 +35,7 @@ export function CoinRow({ c, index }: { c: CoinView; index: number }) {
 export function CoinCard({ c }: { c: CoinView }) {
   const pos = trackPosition(c.progress);
   return (
-    <a className="coin-card" href={c.href} target="_blank" rel="noopener">
+    <a className="coin-card" href={c.href}>
       <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <span className="num" style={{ width: 40, height: 40, borderRadius: 'var(--radius-sm)', display: 'grid', placeItems: 'center', fontSize: 14, background: `var(--era-${c.era})`, color: `var(--on-era-${c.era})`, flex: 'none' }}>{c.initials}</span>
         <span style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1, minWidth: 0 }}>

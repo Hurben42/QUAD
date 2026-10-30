@@ -12,6 +12,10 @@ export type TokenCardView = {
   sub: string;
   href?: string;
   sample?: boolean;
+  /** logo from the coin's metadata; initials when absent */
+  image?: string;
+  /** the metadata JSON the image comes from */
+  uri?: string;
 };
 
 /** Bento sizes: xl 2×2, tall 1×2, wide 2×1 (art beside the body), sm 1×1. */
@@ -20,12 +24,13 @@ export type TokenCardSize = 'xl' | 'tall' | 'wide' | 'sm';
 const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
 /** A coin on the curve as a small QUAD poster: era-coloured halftone art, the steps, the numbers in mono. */
-export function TokenCard({ c, size = 'sm' }: { c: TokenCardView; size?: TokenCardSize }) {
+export function TokenCard({ c, size = 'sm', cta = 'Trade ↗' }: { c: TokenCardView; size?: TokenCardSize; cta?: string }) {
   const Tag = c.href ? 'a' : 'article';
+  const external = c.href?.startsWith('http');
   return (
-    <Tag className={`tk tk--${size}`} style={{ ['--era' as string]: `var(--era-${c.era})`, ['--on' as string]: `var(--on-era-${c.era})` }} {...(c.href ? { href: c.href, target: '_blank', rel: 'noopener' } : {})}>
+    <Tag className={`tk tk--${size}`} style={{ ['--era' as string]: `var(--era-${c.era})`, ['--on' as string]: `var(--on-era-${c.era})` }} {...(c.href ? { href: c.href, ...(external ? { target: '_blank', rel: 'noopener' } : {}) } : {})}>
       <div className="tk-art grain" aria-hidden="true">
-        <span className="tk-initials num">{initials(c.name)}</span>
+        {c.image ? <span className="tk-photo"><img src={c.image} alt="" /></span> : <span className="tk-initials num">{initials(c.name)}</span>}
         <span className="tk-pct num">{Math.round(c.progress * 100)}%</span>
       </div>
       <div className="tk-body">
@@ -39,7 +44,7 @@ export function TokenCard({ c, size = 'sm' }: { c: TokenCardView; size?: TokenCa
           <div><dt className="label">Raised</dt><dd className="num">{c.raised}</dd></div>
           <div><dt className="label">Mkt cap</dt><dd className="num">{c.cap}</dd></div>
         </dl>
-        <div className="tk-foot"><span className="label">{c.sub}</span>{c.sample ? <span className="label tk-sample">Sample</span> : <span className="num">Trade ↗</span>}</div>
+        <div className="tk-foot"><span className="label">{c.sub}</span>{c.sample ? <span className="label tk-sample">Sample</span> : <span className="num">{cta}</span>}</div>
       </div>
     </Tag>
   );

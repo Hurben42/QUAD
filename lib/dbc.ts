@@ -4,7 +4,7 @@
  */
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 import BN from 'bn.js';
-import { DynamicBondingCurveClient, deriveDbcPoolAddress, deriveMintMetadata } from '@meteora-ag/dynamic-bonding-curve-sdk';
+import { DAMM_V2_MIGRATION_FEE_ADDRESS, DynamicBondingCurveClient, deriveDammV2PoolAddress, deriveDbcPoolAddress, deriveMintMetadata } from '@meteora-ag/dynamic-bonding-curve-sdk';
 import { eraOf, Q128 } from './curve';
 import { HYPE_MINT } from './hype';
 
@@ -12,6 +12,9 @@ export const DBC_CONFIG = new PublicKey(process.env.NEXT_PUBLIC_DBC_CONFIG || '1
 export const QUOTE_MINT = new PublicKey(process.env.NEXT_PUBLIC_QUOTE_MINT || HYPE_MINT);
 
 export const makeClient = (connection: Connection) => new DynamicBondingCurveClient(connection, 'confirmed');
+
+/** Jupiter swap, HYPE → the coin. Jupiter indexes DBC pools and the migrated DAMM v2 pools alike. */
+export const tradeUrl = (baseMint: string) => `https://jup.ag/swap/${QUOTE_MINT.toBase58()}-${baseMint}`;
 
 export type LaunchParams = {
   name: string;
@@ -57,6 +60,8 @@ export type CurveCoin = {
   creator: string;
   name: string;
   symbol: string;
+  /** metadata JSON (name, symbol, description, image) uploaded at launch */
+  uri: string;
   /** 0 → 1, quote raised / migration threshold */
   progress: number;
   era: 1 | 2 | 3 | 4;
@@ -65,6 +70,8 @@ export type CurveCoin = {
   /** spot price, quote lamports per base lamport (multiply by 10^(baseDecimals − quoteDecimals) for HYPE per coin) */
   spotPrice: number;
   migrated: boolean;
+  /** the DAMM v2 pool the coin trades on once migrated */
+  dammPool: string | null;
   /** unix seconds, from the pool account's first signature */
   createdAt: number | null;
 };
@@ -82,37 +89,61 @@ export function parseTokenMetadata(data: Buffer): { name: string; symbol: string
   return { name: str(), symbol: str(), uri: str() };
 }
 
+// Token metadata and the pool's creation time never change: read once per pool, keep for the process.
+const metaCache = new Map<string, { name: string; symbol: string; uri: string }>();
+const createdCache = new Map<string, number>();
+
 /** All coins launched from the QUAD config, with their progress. Cache this server-side (5 s is plenty). */
 export async function listCurveCoins(connection: Connection): Promise<CurveCoin[]> {
   const client = makeClient(connection);
   const [pools, config] = await Promise.all([client.state.getPoolsByConfig(DBC_CONFIG), client.state.getPoolConfig(DBC_CONFIG)]);
   if (!config || pools.length === 0) return [];
   const threshold = BigInt(config.migrationQuoteThreshold.toString());
+  const dammConfig = DAMM_V2_MIGRATION_FEE_ADDRESS[config.migrationFeeOption];
 
-  const metas = await connection.getMultipleAccountsInfo(pools.map((p) => deriveMintMetadata(p.account.poolState.baseMint)));
-  const created = await Promise.all(
-    pools.map((p) => connection.getSignaturesForAddress(p.publicKey, { limit: 1 }).then((s) => s[s.length - 1]?.blockTime ?? null, () => null)),
+  const missingMeta = pools.filter((p) => !metaCache.has(p.publicKey.toBase58()));
+  if (missingMeta.length > 0) {
+    const infos = await connection.getMultipleAccountsInfo(missingMeta.map((p) => deriveMintMetadata(p.account.poolState.baseMint)));
+    missingMeta.forEach((p, i) => {
+      if (infos[i]) metaCache.set(p.publicKey.toBase58(), parseTokenMetadata(infos[i]!.data));
+    });
+  }
+  await Promise.all(
+    pools
+      .filter((p) => !createdCache.has(p.publicKey.toBase58()))
+      .map((p) =>
+        connection.getSignaturesForAddress(p.publicKey, { limit: 1 }).then(
+          (s) => {
+            const t = s[s.length - 1]?.blockTime;
+            if (t) createdCache.set(p.publicKey.toBase58(), t);
+          },
+          () => undefined,
+        ),
+      ),
   );
 
   return pools
-    .map(({ publicKey, account: { poolState: account } }, i) => {
+    .map(({ publicKey, account: { poolState: account } }) => {
       const raised = BigInt(account.quoteReserve.toString());
       const progress = threshold > 0n ? Math.min(1, Number(raised) / Number(threshold)) : 0;
       const s = BigInt(account.sqrtPrice.toString());
-      const meta = metas[i] ? parseTokenMetadata(metas[i]!.data) : { name: '', symbol: '' };
+      const meta = metaCache.get(publicKey.toBase58()) ?? { name: '', symbol: '', uri: '' };
+      const migrated = account.isMigrated !== 0;
       return {
         pool: publicKey.toBase58(),
         baseMint: account.baseMint.toBase58(),
         creator: account.creator.toBase58(),
         name: meta.name,
         symbol: meta.symbol,
+        uri: meta.uri,
         progress,
         era: eraOf(progress),
         quoteRaised: raised,
         quoteThreshold: threshold,
         spotPrice: Number((s * s * 10n ** 18n) / Q128) / 1e18,
-        migrated: account.isMigrated !== 0,
-        createdAt: created[i],
+        migrated,
+        dammPool: migrated && dammConfig ? deriveDammV2PoolAddress(dammConfig, account.baseMint, QUOTE_MINT).toBase58() : null,
+        createdAt: createdCache.get(publicKey.toBase58()) ?? null,
       };
     })
     .sort((a, b) => b.progress - a.progress);
