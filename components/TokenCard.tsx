@@ -1,4 +1,5 @@
 import { EraSteps } from './EraSteps';
+import { CoinAvatar } from './CoinAvatar';
 
 export type TokenCardView = {
   name: string;
@@ -16,6 +17,8 @@ export type TokenCardView = {
   image?: string;
   /** the metadata JSON the image comes from */
   uri?: string;
+  /** without an image, draw the generated portrait instead of the initials */
+  portrait?: boolean;
 };
 
 /** Bento sizes: xl 2×2, tall 1×2, wide 2×1 (art beside the body), sm 1×1. */
@@ -30,7 +33,7 @@ export function TokenCard({ c, size = 'sm', cta = 'Trade ↗' }: { c: TokenCardV
   return (
     <Tag className={`tk tk--${size}`} style={{ ['--era' as string]: `var(--era-${c.era})`, ['--on' as string]: `var(--on-era-${c.era})` }} {...(c.href ? { href: c.href, ...(external ? { target: '_blank', rel: 'noopener' } : {}) } : {})}>
       <div className="tk-art grain" aria-hidden="true">
-        {c.image ? <span className="tk-photo"><img src={c.image} alt="" /></span> : <span className="tk-initials num">{initials(c.name)}</span>}
+        {c.image ? <span className="tk-photo"><img src={c.image} alt="" /></span> : c.portrait ? <span className="tk-photo"><CoinAvatar name={c.name} era={c.era} /></span> : <span className="tk-initials num">{initials(c.name)}</span>}
         <span className="tk-pct num">{Math.round(c.progress * 100)}%</span>
       </div>
       <div className="tk-body">

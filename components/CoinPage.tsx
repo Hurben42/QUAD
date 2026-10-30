@@ -5,12 +5,19 @@ import { LinkButton } from './Button';
 import { EraSteps } from './EraSteps';
 import { TokenCard } from './TokenCard';
 import { CopyMint } from './CopyMint';
+import { CoinAvatar } from './CoinAvatar';
 import { tradeUrl } from '@/lib/dbc';
 import { explorerAddress } from '@/lib/explorer';
 import { BASE_FEE, CREATOR_FEE, TOTAL_COINS, coins, pct } from '@/lib/curve';
 import { fetchCoinMetadata, fmt, hype, symbolOf, toTokenCard, type CoinMetadataJson, type PoolApi } from '@/lib/coin-view';
 
 const REFRESH_MS = 10_000;
+/** Devnet only: test coins launched without links get sample ones, so the page shows the full layout. */
+const SAMPLE_LINKS = process.env.NEXT_PUBLIC_CLUSTER === 'devnet';
+const sampleLinks = (symbol: string) => {
+  const s = symbol.toLowerCase();
+  return { website: `https://${s}.xyz`, twitter: `https://x.com/${s}`, telegram: `https://t.me/${s}` };
+};
 
 const d = (n: number) => ({ ['--d' as string]: n }) as React.CSSProperties;
 const short = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;
@@ -70,15 +77,21 @@ export function CoinPage({ pool }: { pool: string }) {
   const { coin } = data;
   const symbol = symbolOf(coin);
   const name = coin.name || symbol;
-  const card = { ...toTokenCard(coin, data), href: tradeUrl(coin.baseMint), image: meta?.image };
+  const card = { ...toTokenCard(coin, data), href: tradeUrl(coin.baseMint), image: meta?.image, portrait: true };
   const raised = hype(coin.quoteRaised, data.quoteDecimals);
   const threshold = hype(coin.quoteThreshold, data.quoteDecimals);
   const complete = coin.progress >= 1;
   const state = coin.migrated ? 'graduated' : complete ? 'complete' : 'curve';
+  const own = {
+    website: meta?.extensions?.website ?? meta?.external_url,
+    twitter: meta?.extensions?.twitter,
+    telegram: meta?.extensions?.telegram,
+  };
+  const social = SAMPLE_LINKS && meta && !own.website && !own.twitter && !own.telegram ? sampleLinks(symbol) : own;
   const links = [
-    ['Website', meta?.extensions?.website ?? meta?.external_url],
-    ['X', meta?.extensions?.twitter],
-    ['Telegram', meta?.extensions?.telegram],
+    ['Website', social.website],
+    ['X', social.twitter],
+    ['Telegram', social.telegram],
   ].filter((l): l is [string, string] => typeof l[1] === 'string' && /^https?:\/\//.test(l[1]));
 
   return (
@@ -91,8 +104,13 @@ export function CoinPage({ pool }: { pool: string }) {
           <span className="label rise" style={d(1)}>
             Coin · ${symbol} · {coin.migrated ? <span className="coin-status">Graduated</span> : <span className={`q-era q-era--${coin.era}`}>Era {coin.era}</span>}
           </span>
-          <h1 className="rise coin-name" style={d(2)}>{name}</h1>
-          <p className="cr-lede rise" style={d(3)}>{meta?.description || `${name} trades against HYPE on the four-era curve. ${pct(CREATOR_FEE)} of every trade goes to its creator, in HYPE.`}</p>
+          <div className="coin-id rise" style={d(2)}>
+            <div className="coin-id-photo">{meta?.image ? <img src={meta.image} alt="" /> : <CoinAvatar name={name} era={coin.era} />}</div>
+            <div className="coin-id-text">
+              <h1 className="coin-name">{name}</h1>
+              <p className="cr-lede">{meta?.description || `${name} trades against HYPE on the four-era curve. ${pct(CREATOR_FEE)} of every trade goes to its creator, in HYPE.`}</p>
+            </div>
+          </div>
           <div className="cr-ctas rise" style={d(4)}>
             <LinkButton href={tradeUrl(coin.baseMint)} target="_blank" rel="noopener">Trade on Jupiter <span className="num">↗</span></LinkButton>
             <LinkButton variant="secondary" href={explorerAddress(coin.baseMint)} target="_blank" rel="noopener">Explorer <span className="num">↗</span></LinkButton>
