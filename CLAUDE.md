@@ -1,6 +1,6 @@
 # QUAD — launchpad Solana, coins pairés à HYPE
 
-Tu reprends un projet dont le design est fini et dont le backend est à construire. Lis ce fichier en entier avant de toucher au code, puis `docs/MECHANISM.md`.
+Tu reprends un projet dont le design est fini et dont le backend tourne sur devnet (voir « Ce qui est fait »). Lis ce fichier en entier avant de toucher au code, puis `docs/MECHANISM.md`.
 
 ## Ce qu'est QUAD
 
@@ -40,18 +40,31 @@ Tout cela tourne sur le **Dynamic Bonding Curve (DBC) de Meteora** : aucun progr
 
 ## Ce qui est fait
 
-- Design system complet (tokens, composants, logo, icône app).
-- Maquettes HTML de la landing desktop + mobile et d'un visuel « Paired to HYPE ».
-- Math de la curve et script de config (à valider sur devnet, voir ci-dessous).
+- Design system complet (tokens, composants, logo, icône app) et maquettes HTML desktop + mobile.
+- Front complet : landing, `/launch` (wizard en 4 eras), `/rules`, `/docs`, `/creators`, `/creator`, modal wallet QUAD, header fixe, menu mobile.
+- Math de la curve alignée sur le programme DBC (arrondis par segment, migration DAMM v2), `pnpm test` : 26 tests, dont les helpers du SDK 1.5.13 comme oracle.
+- Backend câblé : `scripts/create-config.ts`, upload des métadonnées sur Irys via `/api/metadata`, lancement d'un pool avec first buy en une signature (`lib/dbc.ts#buildLaunchTx`), liste des pools via `/api/pools` (cache 5 s), claim des fees créateur et retrait du surplus sur `/creator`.
+- **Validé sur devnet le 30 octobre 2026**, de bout en bout : mint HYPE de test, config DBC relue par `pnpm config:verify` (13 valeurs identiques au lamport près à `lib/curve.ts`), lancement d'un coin avec first buy de 1 HYPE, affiché sur la landing. Le buy du créateur paie la fee normale de 3,125 %, pas les 50 % anti-sniper.
+
+Adresses devnet (dans `.env.local`, jamais dans le repo ; `keys/payer.json` est la clé payeur) :
+
+| Élément | Adresse |
+|---|---|
+| Payeur / fee claimer | `9r9VGrEmq5GtzC4TUeNFJN6Yx2WjiFzJGoiiGduQ5BCs` |
+| Mint HYPE de test (8 déc.) | `H6SoYYTPSY85GJdz181NBG3uKnvThzMuK6dcbLhGzXfD` |
+| Config DBC (seuil 50 HYPE) | `BakZ7m6Hv6LP6PCkcGqBcYqMm9VHLngWyw3Ewh4mAXH4` |
+| Premier pool (Hypedog, $HDOG) | `4WganbYtA7Vqpr9EbQ1L6JxX5MnftS8NQfg3GDnzDgef` |
+
+Le faucet RPC devnet est fermé : du SOL s'obtient sur https://faucet.solana.com (connexion GitHub). Pour un lancement depuis l'UI, `TEST_WALLET=<pubkey> REUSE_MINT=1 pnpm mint:devnet` envoie 1 000 HYPE de test au wallet navigateur.
 
 ## Ce qu'il reste à faire — par ordre
 
-1. **Valider la math sur devnet.** `pnpm test` doit passer. Puis `pnpm config:devnet` avec un mint quote de test (mint SPL à 8 décimales que tu crées toi-même) et vérifier que `client.state.getPoolCurveProgress` et les helpers du SDK (`getBaseTokenForSwap` / totaux de supply) redonnent exactement les montants de `lib/curve.ts`. Si le SDK expose un `buildCurve*` qui sait faire des segments explicites, le préférer à la math maison et garder `lib/curve.ts` comme oracle de test.
-2. **Config mainnet.** `pnpm config:mainnet` avec le vrai mint HYPE. Décimales et token program de HYPE sont lus on-chain, jamais codés en dur.
-3. **Front de lancement.** `LaunchForm` → `lib/dbc.ts#createPoolAndBuy` (name, symbol, uri metadata uploadée sur Arweave/Irys, seuil de graduation en HYPE, wallet qui reçoit les fees = `poolCreator`, first buy optionnel). Signataires : payer, baseMint keypair, poolCreator.
-4. **Liste « On the curve ».** Route API `app/api/pools/route.ts` : `getPoolsByConfig(config)` + progression + prix spot ; cache 5 s. Le front lit cette route. Jupiter/DexScreener indexent les pools DBC tout seuls : lien « Trade », pas de swap UI pour l'instant.
-5. **Fees.** Page créateur : `claimCreatorTradingFee`, `creatorWithdrawSurplus` ; côté plateforme un cron qui appelle `claimPartnerTradingFee`.
-6. **Métadonnées** : `createPoolMetadata` (site, logo) après chaque lancement.
+1. **Tester `/creator` sur devnet** avec un wallet navigateur : lancement depuis `/launch`, quelques trades, claim des fees, retrait du surplus après graduation (seuil 50 HYPE de test).
+2. **RPC privé.** Le RPC public mainnet renvoie 403 depuis le navigateur : `NEXT_PUBLIC_RPC_URL` doit pointer sur Helius ou équivalent avant tout passage mainnet.
+3. **Config mainnet.** `pnpm config:mainnet` avec le vrai mint HYPE, puis un lancement test avec un seuil minuscule. Décimales et token program de HYPE sont lus on-chain, jamais codés en dur.
+4. **Fees plateforme.** Un cron qui appelle `claimPartnerTradingFee` pour le `feeClaimer`. Pas encore dans le code.
+5. **Métadonnées de pool.** `createPoolMetadata` (site, logo) après chaque lancement. Pas encore dans le code.
+6. **Propreté.** `outputFileTracingRoot` dans `next.config.ts` (Next détecte un `package-lock.json` dans le home) et `align-items: end` → `flex-end` dans `app/globals.css` (avertissement autoprefixer).
 
 ## Conventions
 
