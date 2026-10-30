@@ -1,5 +1,5 @@
 import { STRIPES, STRIPES_M, Stripes } from './Stripes';
-import { BASE_FEE, CREATOR_FEE, DEFAULT_THRESHOLD_HYPE, TOTAL_COINS, coins, pct } from '@/lib/curve';
+import { BASE_FEE, CREATOR_FEE, DEFAULT_THRESHOLD_HYPE, TOTAL_COINS, coins, eraOf, pct, trackPosition } from '@/lib/curve';
 
 /**
  * "The four rules": posters A (stripes), B (horizon + white card), C (pixels + stats),
@@ -45,10 +45,10 @@ export function RulePosters() {
             Four eras on every coin. Each one sells half as many coins as the last for the same HYPE<span className="hide-m">, so each era costs twice as much. The curve climbs smoothly, no jumps</span>.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 'var(--radius-sm)', background: 'var(--surface-0)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={{ font: '700 13px/18px var(--font-sans)' }}>Hypedog · $HDOG</span><span className="q-era q-era--2">Era 2</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={{ font: '700 13px/18px var(--font-sans)' }}>Hypedog · $HDOG</span><span className={`q-era q-era--${eraOf(SAMPLE_PROGRESS)}`}>Era {eraOf(SAMPLE_PROGRESS)}</span></div>
             <div className="track" role="progressbar" aria-valuenow={SAMPLE_PROGRESS * 100} aria-valuemin={0} aria-valuemax={100} aria-label="Distance to graduation">
               <span className="s1" /><span className="s2" /><span className="s3" /><span className="s4" />
-              <div className="fill" style={{ width: `${SAMPLE_PROGRESS * 100}%`, ['--w' as string]: '360px' }} />
+              <div className="fill" style={{ width: `${trackPosition(SAMPLE_PROGRESS) * 100}%`, ['--p' as string]: Math.max(trackPosition(SAMPLE_PROGRESS), 0.001) }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span className="num" style={{ fontSize: 12 }}>{sampleRaised} / {DEFAULT_THRESHOLD_HYPE} HYPE</span>

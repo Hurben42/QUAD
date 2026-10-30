@@ -1,4 +1,5 @@
 import { EraSteps } from './EraSteps';
+import { trackPosition } from '@/lib/curve';
 
 export type CoinView = { pool: string; href: string; name: string; ticker: string; sub: string; era: 1 | 2 | 3 | 4; progress: number; price: string; raised: string; initials: string };
 
@@ -32,6 +33,7 @@ export function CoinRow({ c, index }: { c: CoinView; index: number }) {
 
 /** Mobile list item, after design/website/landing-mobile.html. */
 export function CoinCard({ c }: { c: CoinView }) {
+  const pos = trackPosition(c.progress);
   return (
     <a className="coin-card" href={c.href} target="_blank" rel="noopener">
       <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -49,7 +51,7 @@ export function CoinCard({ c }: { c: CoinView }) {
         <span className={`q-era q-era--${c.era}`}>Era {c.era}</span>
         <span className="track" style={{ flex: 1 }} aria-hidden="true">
           <span className="s1" /><span className="s2" /><span className="s3" /><span className="s4" />
-          <span className="fill" style={{ width: `${c.progress * 100}%`, ['--w' as string]: '240px' }} />
+          <span className="fill" style={{ width: `${pos * 100}%`, ['--p' as string]: Math.max(pos, 0.001) }} />
         </span>
       </span>
     </a>

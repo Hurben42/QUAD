@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { baseOutForQuote, buildQuadCurve, coins, price, priceAtProgress, verifyCurve, ERAS, BASE_DECIMALS, TOTAL_COINS, Q64 } from '../lib/curve';
+import { baseOutForQuote, buildQuadCurve, coins, price, priceAtProgress, verifyCurve, ERAS, BASE_DECIMALS, TOTAL_COINS, Q64, trackPosition } from '../lib/curve';
 
 const SUPPLY = TOTAL_COINS * 10n ** BigInt(BASE_DECIMALS); // 1B coins, 6 decimals
 const Q = 50n * 10n ** 8n; // 50 HYPE at 8 decimals
@@ -87,5 +87,16 @@ describe('priceAtProgress', () => {
   });
   it('doubles from one era boundary to the next', () => {
     for (let i = 1; i < ERAS; i++) expect(priceAtProgress(c, i / ERAS) / priceAtProgress(c, (i - 1) / ERAS)).toBeCloseTo(2, 6);
+  });
+});
+
+describe('trackPosition', () => {
+  it('lands the end of each era on the end of its 8/4/2/1 segment', () => {
+    expect(trackPosition(0)).toBe(0);
+    expect(trackPosition(0.25)).toBeCloseTo(8 / 15, 12);
+    expect(trackPosition(0.5)).toBeCloseTo(12 / 15, 12);
+    expect(trackPosition(0.75)).toBeCloseTo(14 / 15, 12);
+    expect(trackPosition(1)).toBeCloseTo(1, 12);
+    expect(trackPosition(0.125)).toBeCloseTo(4 / 15, 12); // half of era 1 = half of its segment
   });
 });

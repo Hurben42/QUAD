@@ -180,6 +180,15 @@ export function eraOf(progress: number): 1 | 2 | 3 | 4 {
 /** Share of the curve's coins per era, for the stepped bar (widths 8/4/2/1). */
 export const ERA_WIDTHS = [8, 4, 2, 1] as const;
 
+/**
+ * Where `progress` (quote raised / threshold, a quarter per era) lands on the stepped bar whose
+ * segments are ERA_WIDTHS: the end of each era falls exactly on the end of its segment.
+ */
+export function trackPosition(progress: number): number {
+  const total = ERA_WIDTHS.reduce((a, b) => a + b, 0);
+  return ERA_WIDTHS.reduce((x, w, i) => x + Math.max(0, Math.min(1, (progress - i / ERAS) * ERAS)) * (w / total), 0);
+}
+
 // ---- The four rules: one source for the config script and the UI copy ---------
 export const TOTAL_COINS = 1_000_000_000n; // like HYPE: one billion, minted once
 export const BASE_DECIMALS = 6; // 6–9 allowed by DBC
