@@ -228,6 +228,13 @@ export function price(x: number, digits = 3): string {
 /** Rent a launch locks (mint, metadata, pool, vaults), roughly; shown as an estimate only. */
 export const RENT_ESTIMATE_SOL = 0.021;
 
+/** Anonymous launches (docs/ANONYMOUS.md): SOL a launch costs the payer, all in (pool and mint rent, the claim key's token account, fees, margin). */
+export const ANON_LAUNCH_SOL = 0.05;
+/** Anonymous launches cap the creator's first buy at this share of the graduation threshold. */
+export const ANON_FIRST_BUY_CAP_SHARE = 0.1;
+/** Margin on the SOL→HYPE rate of an anonymous first buy, for the treasury's swap. */
+export const ANON_SWAP_MARGIN = 0.02;
+
 /**
  * Base out for `quoteIn` (after fees) bought from the start of the curve, walking the segments
  * like the program does (constant product per segment: Δs = quote·2^128 / L). Rounded down.

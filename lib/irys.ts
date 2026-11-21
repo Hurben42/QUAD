@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import bs58 from 'bs58';
 import { Uploader } from '@irys/upload';
 import { Solana } from '@irys/upload-solana';
+import { decodeImage, type LaunchInput } from './launch-input';
 
 /** IRYS_PRIVATE_KEY (base58 secret key, for hosting) or the PAYER_KEYPAIR file (local dev). Never in the repo. */
 function signerSecret(): string {
@@ -43,3 +44,16 @@ async function upload(data: string | Buffer, contentType: string): Promise<strin
 export const uploadMetadata = (meta: CoinMetadata) => upload(JSON.stringify(meta), 'application/json');
 /** The coin's image (PNG, JPEG or WebP under 100 KiB, resized by the browser). */
 export const uploadImage = (data: Buffer, contentType: string) => upload(data, contentType);
+
+/** Image, then the Metaplex JSON with the links: what a launch needs as `uri`. */
+export async function uploadCoinMetadata(input: LaunchInput): Promise<{ uri: string; image: string | null }> {
+  const meta: CoinMetadata = { name: input.name, symbol: input.symbol, description: input.description || `${input.name} (${input.symbol}) — launched on QUAD, quoted in HYPE.` };
+  if (input.image) {
+    const image = decodeImage(input.image);
+    meta.image = await uploadImage(image.data, image.type);
+    meta.properties = { files: [{ uri: meta.image, type: image.type }], category: 'image' };
+  }
+  if (input.links.website) meta.external_url = input.links.website;
+  if (Object.keys(input.links).length > 0) meta.extensions = input.links;
+  return { uri: await uploadMetadata(meta), image: meta.image ?? null };
+}

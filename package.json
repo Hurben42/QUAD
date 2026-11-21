@@ -12,7 +12,8 @@
     "config:mainnet": "CLUSTER=mainnet-beta tsx scripts/create-config.ts",
     "mint:devnet": "tsx scripts/create-test-mint.ts",
     "config:verify": "tsx scripts/verify-config.ts",
-    "launch:devnet": "tsx scripts/launch-devnet.ts"
+    "launch:devnet": "tsx scripts/launch-devnet.ts",
+    "anon:worker": "tsx scripts/anon-worker.ts"
   },
   "dependencies": {
     "@irys/upload": "0.0.15",

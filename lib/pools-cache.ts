@@ -5,6 +5,7 @@
 import { Connection } from '@solana/web3.js';
 import { listCurveCoins, makeClient, DBC_CONFIG, QUOTE_MINT, type CurveCoin } from './dbc';
 import { readQuoteMint } from './hype';
+import { anonymousPools } from './anon-server';
 
 const TTL_MS = 5_000;
 
@@ -28,4 +29,10 @@ export async function loadPools(): Promise<PoolsSnapshot> {
 }
 
 /** JSON-safe coin: bigints as decimal strings. */
-export const serializeCoin = (c: CurveCoin) => ({ ...c, quoteRaised: c.quoteRaised.toString(), quoteThreshold: c.quoteThreshold.toString() });
+export const serializeCoin = (c: CurveCoin, anon: Set<string> = anonymousPools()) => ({
+  ...c,
+  quoteRaised: c.quoteRaised.toString(),
+  quoteThreshold: c.quoteThreshold.toString(),
+  /** launched through the anonymous desk (docs/ANONYMOUS.md) */
+  anonymous: anon.has(c.pool),
+});

@@ -18,6 +18,8 @@ export type ApiCoin = {
   migrated: boolean;
   dammPool: string | null;
   createdAt: number | null;
+  /** launched through the anonymous desk */
+  anonymous?: boolean;
 };
 export type ApiMeta = { quoteDecimals: number; baseDecimals: number | null };
 export type PoolsApi = ApiMeta & { coins: ApiCoin[] };

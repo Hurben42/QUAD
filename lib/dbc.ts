@@ -4,7 +4,7 @@
  */
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 import BN from 'bn.js';
-import { DAMM_V2_MIGRATION_FEE_ADDRESS, DynamicBondingCurveClient, deriveDammV2PoolAddress, deriveDbcPoolAddress, deriveMintMetadata } from '@meteora-ag/dynamic-bonding-curve-sdk';
+import { DAMM_V2_MIGRATION_FEE_ADDRESS, DynamicBondingCurveClient, createDbcProgram, deriveDammV1MigrationMetadataAddress, deriveDammV2PoolAddress, deriveDbcPoolAddress, deriveMintMetadata } from '@meteora-ag/dynamic-bonding-curve-sdk';
 import { eraOf, Q128 } from './curve';
 import { HYPE_MINT } from './hype';
 
@@ -52,6 +52,49 @@ export async function buildLaunchTx(connection: Connection, p: LaunchParams): Pr
   });
   const pool = deriveDbcPoolAddress(QUOTE_MINT, baseMint.publicKey, DBC_CONFIG);
   return { tx, baseMint, pool };
+}
+
+/** Legacy transactions carry at most 1232 bytes on the wire. */
+const PACKET = 1232;
+function fits(tx: Transaction, signers: number) {
+  const probe = new Transaction({ feePayer: tx.feePayer, blockhash: PublicKey.default.toBase58(), lastValidBlockHeight: 0 }).add(...tx.instructions);
+  try {
+    return probe.serializeMessage().length + 1 + 64 * signers <= PACKET;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Anonymous launch (docs/ANONYMOUS.md): a burner key creates the pool and makes the first buy, the
+ * coins go to the claim key, and the creator role moves to the claim key. One transaction when it
+ * fits, two otherwise (create + buy, then the transfer); the burner and the mint keypair sign.
+ */
+export async function buildAnonLaunchTxs(
+  connection: Connection,
+  p: { name: string; symbol: string; uri: string; burner: PublicKey; claimKey: PublicKey; firstBuyQuoteLamports: bigint },
+): Promise<{ txs: Transaction[]; baseMint: Keypair; pool: PublicKey }> {
+  const client = makeClient(connection);
+  const baseMint = Keypair.generate();
+  const create = await client.creator.createPoolWithFirstBuy({
+    createPoolParam: { name: p.name, symbol: p.symbol.toUpperCase(), uri: p.uri, payer: p.burner, poolCreator: p.burner, config: DBC_CONFIG, baseMint: baseMint.publicKey },
+    firstBuyParam:
+      p.firstBuyQuoteLamports > 0n
+        ? { buyer: p.burner, receiver: p.claimKey, buyAmount: new BN(p.firstBuyQuoteLamports.toString()), minimumAmountOut: new BN(1), referralTokenAccount: null }
+        : undefined,
+  });
+  const pool = deriveDbcPoolAddress(QUOTE_MINT, baseMint.publicKey, DBC_CONFIG);
+  // the SDK's transferPoolCreator reads the pool first; it does not exist yet, so build the instruction directly
+  const { program } = createDbcProgram(connection, 'confirmed');
+  const transfer = await program.methods
+    .transferPoolCreator()
+    .accountsPartial({ virtualPool: pool, config: DBC_CONFIG, creator: p.burner, newCreator: p.claimKey })
+    .remainingAccounts([{ pubkey: deriveDammV1MigrationMetadataAddress(pool), isSigner: false, isWritable: false }])
+    .instruction();
+  const one = new Transaction({ feePayer: p.burner }).add(...create.instructions, transfer);
+  if (fits(one, 2)) return { txs: [one], baseMint, pool };
+  create.feePayer = p.burner;
+  return { txs: [create, new Transaction({ feePayer: p.burner }).add(transfer)], baseMint, pool };
 }
 
 export type CurveCoin = {
