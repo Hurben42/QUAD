@@ -8,7 +8,7 @@ import { CopyMint } from './CopyMint';
 import { CoinAvatar } from './CoinAvatar';
 import { tradeUrl } from '@/lib/dbc';
 import { explorerAddress } from '@/lib/explorer';
-import { BASE_FEE, CREATOR_FEE, TOTAL_COINS, coins, pct } from '@/lib/curve';
+import { ANON_FIRST_BUY_CAP_SHARE, BASE_FEE, CREATOR_FEE, TOTAL_COINS, coins, pct } from '@/lib/curve';
 import { fetchCoinMetadata, fmt, hype, symbolOf, toTokenCard, type CoinMetadataJson, type PoolApi } from '@/lib/coin-view';
 import { prettyLink, type LinkKind } from '@/lib/links';
 
@@ -102,6 +102,7 @@ export function CoinPage({ pool }: { pool: string }) {
         <div className="cr-copy">
           <span className="label rise" style={d(1)}>
             Coin · ${symbol} · {coin.migrated ? <span className="coin-status">Graduated</span> : <span className={`q-era q-era--${coin.era}`}>Era {coin.era}</span>}
+            {coin.anonymous && <> <span className="anon-badge">Anonymous launch</span></>}
           </span>
           <div className="coin-id rise" style={d(2)}>
             <div className="coin-id-photo">{meta?.image ? <img src={meta.image} alt="" /> : <CoinAvatar name={name} era={coin.era} />}</div>
@@ -153,10 +154,15 @@ export function CoinPage({ pool }: { pool: string }) {
 
       <section className="cr-sec" id="onchain">
         <div className="cr-head"><span className="label">02 / On-chain</span><h2>Written into the pool.</h2></div>
+        {coin.anonymous && (
+          <p className="anon-note">
+            <strong>Launched anonymously.</strong> No wallet signed this launch: a one-time key created the coin and handed the creator role to a key only the creator&apos;s secret controls. Nobody knows who holds it, so there is no reputation at stake: the creator&apos;s first buy was capped at {pct(ANON_FIRST_BUY_CAP_SHARE)} of the graduation threshold, and it can be sold at any time. <a href="/claim" className="wz-link">Creator? Claim with your secret</a>
+          </p>
+        )}
         <dl className="doc-kv coin-kv">
           <div><dt>Mint</dt><dd className="num"><a href={explorerAddress(coin.baseMint)} target="_blank" rel="noopener">{coin.baseMint}</a></dd></div>
           <div><dt>Pool</dt><dd className="num"><a href={explorerAddress(coin.pool)} target="_blank" rel="noopener">{coin.pool}</a></dd></div>
-          <div><dt>Creator</dt><dd className="num"><a href={explorerAddress(coin.creator)} target="_blank" rel="noopener">{coin.creator}</a> <span className="hide-m">· earns {pct(CREATOR_FEE)} of every trade, in HYPE</span></dd></div>
+          <div><dt>{coin.anonymous ? 'Claim key' : 'Creator'}</dt><dd className="num"><a href={explorerAddress(coin.creator)} target="_blank" rel="noopener">{coin.creator}</a> <span className="hide-m">· {coin.anonymous ? 'anonymous creator, ' : ''}earns {pct(CREATOR_FEE)} of every trade, in HYPE</span></dd></div>
           <div><dt>Launched</dt><dd className="num">{when(coin.createdAt)}</dd></div>
           <div><dt>Supply</dt><dd className="num">{coins(TOTAL_COINS)} · minted once · no mint or freeze authority</dd></div>
           <div><dt>Fee per trade</dt><dd className="num">{pct(BASE_FEE)} · {pct(CREATOR_FEE)} to the creator</dd></div>

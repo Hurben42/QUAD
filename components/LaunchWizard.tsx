@@ -20,6 +20,9 @@ import { useQuoteBalance } from '@/lib/useQuoteBalance';
 import { explorerTx, fromUnits, isAmount, toUnits, tradeUrl, useLaunch, type LaunchPhase } from '@/lib/useLaunch';
 import { Button, LinkButton } from './Button';
 import { imageToDataUrl } from '@/lib/image';
+import { useAnonQuote } from '@/lib/useAnonQuote';
+import { AnonLaunch, pendingAnonOrder } from './AnonLaunch';
+import { delayText } from '@/lib/anon';
 import { normalizeLink, type LinkKind } from '@/lib/links';
 import { EraSteps } from './EraSteps';
 
@@ -84,9 +87,19 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
   const [draft, setDraft] = useState<Draft>(EMPTY);
   const [imageError, setImageError] = useState<string | null>(null);
   const view = useCurveView(config, draft.firstBuy);
+  // anonymous launches (docs/ANONYMOUS.md): no wallet signs, a claim secret is the creator
+  const [mode, setMode] = useState<'wallet' | 'anonymous'>('wallet');
+  const [anonRun, setAnonRun] = useState(false);
+  const [resume, setResume] = useState<string | null>(null);
+  const { quote: anonQuote, error: anonError } = useAnonQuote(mode === 'anonymous');
+  const anon = mode === 'anonymous';
+  useEffect(() => {
+    const pending = pendingAnonOrder();
+    if (pending) (setMode('anonymous'), setResume(pending), setAnonRun(true));
+  }, []);
 
   const stage = phase || (result && !result.ok) ? 'launching' : result?.ok ? 'done' : 'edit';
-  useEffect(() => onSun?.(stage === 'done' ? 5 : stage === 'launching' ? 4.5 : step + 1), [onSun, stage, step]);
+  useEffect(() => onSun?.(stage === 'done' ? 5 : stage === 'launching' || anonRun ? 4.5 : step + 1), [onSun, stage, step, anonRun]);
 
   const set = (k: keyof Draft) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const v = k === 'ticker' ? e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '') : e.target.value;
@@ -114,12 +127,13 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
   });
 
   const buyLamports = config && isAmount(draft.firstBuy) && draft.firstBuy ? toUnits(draft.firstBuy, config.quoteDecimals) : 0n;
-  const overBalance = balance !== null && buyLamports > balance;
+  const overBalance = !anon && balance !== null && buyLamports > balance;
+  const overCap = anon && !!anonQuote && Number(draft.firstBuy || 0) > anonQuote.firstBuyCapHype;
   const valid = [
     draft.name.trim().length > 0 && new TextEncoder().encode(draft.name.trim()).length <= NAME_MAX && draft.ticker.length > 0 && linkErrors.every((e) => !e),
     true,
-    isAmount(draft.firstBuy) && !overBalance,
-    true,
+    isAmount(draft.firstBuy) && !overBalance && !overCap,
+    !anon || !!anonQuote,
   ];
 
   const go = (to: number) => {
@@ -128,6 +142,7 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
   };
   const next = () => (step < 3 ? valid[step] && go(step + 1) : submit());
   async function submit() {
+    if (anon) return setAnonRun(true);
     if (!publicKey) return setVisible(true);
     await launch({
       name: draft.name.trim(),
@@ -144,6 +159,8 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
     reset();
     setDraft(EMPTY);
     setImageError(null);
+    setAnonRun(false);
+    setResume(null);
     setStep(0);
     setVisited(0);
   }
@@ -151,13 +168,23 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
   return (
     <div className="lp-grid">
       <form className="glass wz rise" style={{ ['--d' as string]: 4 }} onSubmit={(e) => (e.preventDefault(), stage === 'edit' && next())} aria-label="Launch a coin">
+        {stage === 'edit' && !anonRun && (
+          <div className="wz-mode" role="radiogroup" aria-label="Launch from">
+            <span className="label">Launch from</span>
+            {(['wallet', 'anonymous'] as const).map((m) => (
+              <button key={m} type="button" role="radio" aria-checked={mode === m} className={mode === m ? 'on' : ''} onClick={() => setMode(m)}>
+                {m === 'wallet' ? 'Your wallet' : 'Anonymous'}
+              </button>
+            ))}
+          </div>
+        )}
         {/* the stepper: one era per step */}
         <ol className="wz-steps">
           {STEPS.map((label, i) => {
-            const state = stage !== 'edit' || i < step ? 'done' : i === step ? 'on' : 'off';
+            const state = stage !== 'edit' || anonRun || i < step ? 'done' : i === step ? 'on' : 'off';
             return (
               <li key={label}>
-                <button type="button" className={`wz-step wz-step--${state}`} style={{ ['--era' as string]: `var(--era-${i + 1})` }} disabled={stage !== 'edit' || i > visited} onClick={() => go(i)} aria-current={i === step && stage === 'edit' ? 'step' : undefined}>
+                <button type="button" className={`wz-step wz-step--${state}`} style={{ ['--era' as string]: `var(--era-${i + 1})` }} disabled={stage !== 'edit' || anonRun || i > visited} onClick={() => go(i)} aria-current={i === step && stage === 'edit' ? 'step' : undefined}>
                   <span className="wz-bar" />
                   <span><span className="label">Era {i + 1}</span><span className="wz-step-name">{label}</span></span>
                 </button>
@@ -166,6 +193,16 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
           })}
         </ol>
 
+        {anonRun ? (
+          <AnonLaunch
+            draft={resume ? null : { ...draft, firstBuy: draft.firstBuy }}
+            quote={anonQuote}
+            resume={resume}
+            onBack={() => setAnonRun(false)}
+            onAgain={again}
+          />
+        ) : (
+        <>
         <div className="wz-body" key={`${stage}-${step}`}>
           {stage === 'edit' && step === 0 && (
             <>
@@ -221,15 +258,23 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
 
           {stage === 'edit' && step === 2 && (
             <>
-              <Heading title={`Buy first, at ${pct(BASE_FEE)}.`} sub={`Your buy goes in the launch transaction, before anyone else can trade, and skips the ${pct(ANTI_SNIPER_FEE)} anti-sniper fee.`} />
+              <Heading
+                title={`Buy first, at ${pct(BASE_FEE)}.`}
+                sub={
+                  anon
+                    ? `Paid in SOL with the launch${anonQuote ? `, at ${anonQuote.hypePerSol} HYPE per SOL` : ''}. Up to ${anonQuote ? anonQuote.firstBuyCapHype : '—'} HYPE on an anonymous launch, and it goes to your claim secret.`
+                    : `Your buy goes in the launch transaction, before anyone else can trade, and skips the ${pct(ANTI_SNIPER_FEE)} anti-sniper fee.`
+                }
+              />
               <div className="field">
-                <div className="wz-row"><label htmlFor="wz-buy">Amount · optional</label>{balance !== null && config && <button type="button" className="wz-link" onClick={() => setDraft((d) => ({ ...d, firstBuy: String(fromUnits(balance, config.quoteDecimals)) }))}>Balance {fmt(fromUnits(balance, config.quoteDecimals))} HYPE</button>}</div>
+                <div className="wz-row"><label htmlFor="wz-buy">Amount · optional</label>{!anon && balance !== null && config && <button type="button" className="wz-link" onClick={() => setDraft((d) => ({ ...d, firstBuy: String(fromUnits(balance, config.quoteDecimals)) }))}>Balance {fmt(fromUnits(balance, config.quoteDecimals))} HYPE</button>}</div>
                 <div className="wz-amount"><input id="wz-buy" inputMode="decimal" value={draft.firstBuy} onChange={set('firstBuy')} placeholder="0.00" aria-invalid={!valid[2]} autoFocus autoComplete="off" /><span className="num">HYPE</span></div>
                 <div className="wz-chips">
                   <button type="button" className={draft.firstBuy === '' ? 'on' : ''} onClick={() => setDraft((d) => ({ ...d, firstBuy: '' }))}>None</button>
                   {BUY_PRESETS.map((v) => <button type="button" key={v} className={draft.firstBuy === v ? 'on' : ''} onClick={() => setDraft((d) => ({ ...d, firstBuy: v }))}>{v} HYPE</button>)}
                 </div>
                 {overBalance && <span className="hint" style={{ color: 'var(--danger)' }}>More than your wallet holds.</span>}
+                {overCap && <span className="hint" style={{ color: 'var(--danger)' }}>Anonymous launches cap the first buy at {anonQuote?.firstBuyCapHype} HYPE.</span>}
               </div>
               <dl className="lp-rows">
                 <div><dt>You get</dt><dd className="num">{view && view.buyCoins > 0 ? `≈ ${Math.round(view.buyCoins).toLocaleString('en-US')} coins` : '—'}</dd></div>
@@ -241,7 +286,7 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
 
           {stage === 'edit' && step === 3 && (
             <>
-              <Heading title="Ready to launch." sub="One signature does it all. Check it once more." />
+              <Heading title="Ready to launch." sub={anon ? 'No wallet signs this launch. Check it once more, then save your claim secret and pay.' : 'One signature does it all. Check it once more.'} />
               <dl className="lp-rows">
                 <div><dt>Coin</dt><dd className="num">{draft.name.trim()} · ${draft.ticker}</dd></div>
                 <div><dt>Image</dt><dd className="num">{draft.image ? draft.imageName : 'None'}</dd></div>
@@ -250,9 +295,21 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
                 <div><dt>Graduates at</dt><dd className="num">{view ? `${view.threshold} HYPE` : '—'}</dd></div>
                 <div><dt>Your first buy</dt><dd className="num">{Number(draft.firstBuy) > 0 ? `${draft.firstBuy} HYPE${view ? ` → ≈ ${fmt(view.buyCoins)} coins` : ''}` : 'None'}</dd></div>
                 <div><dt>You earn</dt><dd className="num">{pct(CREATOR_FEE)} of every trade, in HYPE</dd></div>
-                <div><dt>Launch cost</dt><dd className="num">{view && view.launchFee > 0 ? `${view.launchFee} SOL + ` : ''}≈ {RENT_ESTIMATE_SOL} SOL rent</dd></div>
+                {anon ? (
+                  <>
+                    <div><dt>Creator</dt><dd className="num">Your claim secret · no wallet</dd></div>
+                    <div><dt>You pay</dt><dd className="num">{anonQuote ? `${(anonQuote.launchSol + (Number(draft.firstBuy) || 0) / anonQuote.hypePerSol * 1.02).toFixed(4)} SOL, privately` : '—'}</dd></div>
+                    <div><dt>Launches</dt><dd className="num">{anonQuote ? `At random, ${delayText(anonQuote.delayMinS, anonQuote.delayMaxS)} after payment` : '—'}</dd></div>
+                  </>
+                ) : (
+                  <div><dt>Launch cost</dt><dd className="num">{view && view.launchFee > 0 ? `${view.launchFee} SOL + ` : ''}≈ {RENT_ESTIMATE_SOL} SOL rent</dd></div>
+                )}
               </dl>
-              <p className="lp-note">Mint authority is revoked in the same transaction. The coin never gets a freeze authority. Fees go to {publicKey ? <span className="num">{short(publicKey.toBase58())}</span> : 'the wallet you connect'}.</p>
+              {anon ? (
+                <p className="lp-note">A one-time key funded by QUAD creates the coin, buys for you and hands the creator role to your claim secret. Buyers see an anonymous launch.{anonError && <span className="num wz-error"> {anonError}</span>}</p>
+              ) : (
+                <p className="lp-note">Mint authority is revoked in the same transaction. The coin never gets a freeze authority. Fees go to {publicKey ? <span className="num">{short(publicKey.toBase58())}</span> : 'the wallet you connect'}.</p>
+              )}
             </>
           )}
 
@@ -298,8 +355,8 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
           {stage === 'edit' && (
             <>
               <Button type="button" variant="ghost" onClick={() => go(step - 1)} disabled={step === 0} style={{ visibility: step === 0 ? 'hidden' : undefined }}>← Back</Button>
-              <Button type="submit" disabled={!valid[step] || (step === 3 && !!publicKey && !config)}>
-                {step < 3 ? <>Continue <span className="num">→</span></> : publicKey ? <>Launch coin <span className="num">→</span></> : 'Connect wallet to launch'}
+              <Button type="submit" disabled={!valid[step] || (step === 3 && !anon && !!publicKey && !config)}>
+                {step < 3 ? <>Continue <span className="num">→</span></> : anon ? <>Continue anonymously <span className="num">→</span></> : publicKey ? <>Launch coin <span className="num">→</span></> : 'Connect wallet to launch'}
               </Button>
             </>
           )}
@@ -312,6 +369,8 @@ export function LaunchWizard({ onSun }: { onSun?: (level: number) => void }) {
           {stage === 'launching' && !result && <span className="label" style={{ marginLeft: 'auto' }}>Do not close this tab</span>}
           {stage === 'done' && <Button type="button" variant="secondary" onClick={again} style={{ marginLeft: 'auto' }}>Launch another</Button>}
         </div>
+        </>
+        )}
       </form>
 
       {/* live preview of the coin, as a token card */}

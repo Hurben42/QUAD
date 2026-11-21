@@ -101,6 +101,7 @@ export function toCoinRow(c: ApiCoin, api: ApiMeta): CoinView {
     price: `${fmtPrice(pricePerCoin(c, api))} HYPE`,
     raised: `${fmt(hype(c.quoteRaised, api.quoteDecimals))} / ${fmt(hype(c.quoteThreshold, api.quoteDecimals))} HYPE`,
     initials: initialsOf(c),
+    anonymous: !!c.anonymous,
   };
 }
 

@@ -140,7 +140,7 @@ export default function Page() {
           </div>
           <nav className="hide-m" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }} aria-label="Footer">
             {[
-              ['Product', [['/launch', 'Launch'], ['/tokens', 'All tokens'], ['/creators#claim', 'Creator fees'], ['#get-hype', 'Get HYPE']]],
+              ['Product', [['/launch', 'Launch'], ['/tokens', 'All tokens'], ['/creators#claim', 'Creator fees'], ['/claim', 'Anonymous claim'], ['#get-hype', 'Get HYPE']]],
               ['Read', [['/docs', 'Docs'], ['/rules', 'The 4 rules'], ['/docs#config', 'Pool config']]],
               ['Follow', [['https://x.com', 'X'], ['https://github.com', 'GitHub']]],
             ].map(([title, links]) => (

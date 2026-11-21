@@ -34,6 +34,12 @@ export function quoteLamports(firstBuyHype: number, hypePerSol: number, poolCrea
   return launch + buy;
 }
 
+/** The launch delay as a range: "5–20 s", "5–30 min". */
+export function delayText(minS: number, maxS: number): string {
+  if (maxS < 120) return `${minS}–${maxS} s`;
+  return `${Math.max(1, Math.round(minS / 60))}–${Math.round(maxS / 60)} min`;
+}
+
 export type AnonStatus = 'awaiting_payment' | 'paid' | 'launching' | 'launched' | 'failed' | 'expired';
 
 /** An order as /api/anon/orders shows it: never the deposit key, never the secret. */

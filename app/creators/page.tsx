@@ -109,7 +109,7 @@ export default function CreatorsPage() {
 
       {/* 04 CLAIM */}
       <section className="cr-sec" id="claim">
-        <div className="cr-head"><span className="label">04 / Claim</span><h2>Your coins.</h2><p>Connect the wallet you launched with. Once a curve completes, the HYPE raised above the threshold can also be withdrawn, once.</p></div>
+        <div className="cr-head"><span className="label">04 / Claim</span><h2>Your coins.</h2><p>Connect the wallet you launched with. Once a curve completes, the HYPE raised above the threshold can also be withdrawn, once. Launched anonymously? <a href="/claim" className="wz-link">Claim with your secret</a>.</p></div>
         <div className="cr-claim"><CreatorDashboard /></div>
       </section>
 

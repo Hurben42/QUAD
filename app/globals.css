@@ -977,6 +977,36 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
 .wz-file input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
 .wz-field-error{color:var(--danger)}
 .wz-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+/* anonymous launch */
+.wz-mode{display:flex;align-items:center;gap:6px;padding:14px 24px 0}
+.wz-mode .label{margin-right:6px}
+.wz-mode button{height:30px;padding:0 12px;border-radius:var(--radius-pill);border:1px solid var(--line);background:transparent;color:var(--text-muted);font:600 12px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.wz-mode button.on{background:var(--text);border-color:transparent;color:var(--surface-0)}
+.wz-mode button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.anon-secret{padding:16px;border-radius:var(--radius-sm);border:1px dashed var(--era-4);background:var(--surface-0);font-size:14px;line-height:22px;word-break:break-all;user-select:all}
+.anon-check{display:flex;align-items:center;gap:10px;font:600 14px/20px var(--font-sans);cursor:pointer}
+.anon-check input{width:18px;height:18px;accent-color:var(--era-4)}
+.anon-copy{display:grid;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--radius-sm);background:var(--surface-0);border:1px solid var(--line)}
+.anon-copy-v{font-size:14px;line-height:20px;word-break:break-all}
+.anon-badge{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:var(--radius-sm);border:1px solid var(--line-strong);color:var(--text);font:600 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;vertical-align:middle}
+.anon-note{margin:0;padding:16px 18px;border-radius:var(--radius-md);border:1px solid var(--line-strong);background:var(--surface-1);font:500 14px/22px var(--font-sans);color:var(--text-muted)}
+.anon-note strong{color:var(--text)}
+.claim{display:flex;flex-direction:column;gap:20px;max-width:720px}
+.claim-key{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}
+.claim-key .lp-note{grid-column:1 / -1;margin:0}
+.claim .field input{background:var(--surface-0);border-color:var(--line);color:var(--text)}
+.claim-key .q-btn{height:44px}
+.claim-list{display:flex;flex-direction:column;border-radius:var(--radius-md);border:1px solid var(--line);background:var(--surface-0)}
+.claim-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.claim-list > .lp-note{padding:16px;margin:0}
+.claim-row{display:flex;flex-direction:column;gap:12px;padding:16px;border-bottom:1px solid var(--line)}
+.claim-row:last-child{border-bottom:0}
+.claim-coin{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.claim-name{font:700 17px/22px var(--font-sans);color:var(--text);text-decoration:none}
+.claim-name .num{font-size:12px;color:var(--text-muted)}
+.claim-actions{display:flex;gap:10px;flex-wrap:wrap}
+.claim-actions .q-btn{height:40px;padding:0 14px}
+.claim-done{margin:0;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
 .lp-preview .tk-photo{width:132px;height:166px;padding:5px}
 /* the coin's image as an ID photo pinned in the art: ink-coloured frame, a slight tilt, a 3:4 portrait */
 .tk-photo{position:absolute;left:20px;bottom:14px;width:84px;height:106px;padding:4px;border-radius:6px;background:var(--on);box-shadow:0 14px 28px -10px color-mix(in srgb, var(--surface-0) 85%, transparent);transform:rotate(-3deg)}
@@ -994,6 +1024,8 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
   .coin-hero .cr-ctas .q-btn{height:44px;padding:0 16px}
   .coin-hero .cr-stats{grid-template-columns:repeat(2,minmax(0,1fr));max-width:none}
   .wz-links{grid-template-columns:minmax(0,1fr)}
+  .claim-key{grid-template-columns:minmax(0,1fr)}
+  .wz-mode{padding:12px 16px 0;flex-wrap:wrap}
   .coin-stage{display:none}
   .coin-curve{grid-template-columns:minmax(0,1fr);gap:24px;padding:20px}
   .coin-curve-meta{text-align:left}
