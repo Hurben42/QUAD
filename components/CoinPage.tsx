@@ -6,6 +6,7 @@ import { EraSteps } from './EraSteps';
 import { TokenCard } from './TokenCard';
 import { CopyMint } from './CopyMint';
 import { CoinAvatar } from './CoinAvatar';
+import { CurveSwap } from './CurveSwap';
 import { tradeUrl } from '@/lib/dbc';
 import { explorerAddress } from '@/lib/explorer';
 import { ANON_FIRST_BUY_CAP_SHARE, BASE_FEE, CREATOR_FEE, TOTAL_COINS, coins, pct } from '@/lib/curve';
@@ -112,7 +113,11 @@ export function CoinPage({ pool }: { pool: string }) {
             </div>
           </div>
           <div className="cr-ctas rise" style={d(4)}>
-            <LinkButton href={tradeUrl(coin.baseMint)} target="_blank" rel="noopener">Trade on Jupiter <span className="num">↗</span></LinkButton>
+            {coin.migrated ? (
+              <LinkButton href={tradeUrl(coin.baseMint)} target="_blank" rel="noopener">Trade on Jupiter <span className="num">↗</span></LinkButton>
+            ) : (
+              <LinkButton href="#trade">Buy ${symbol} <span className="num">↓</span></LinkButton>
+            )}
             <LinkButton variant="secondary" href={explorerAddress(coin.baseMint)} target="_blank" rel="noopener">Explorer <span className="num">↗</span></LinkButton>
           </div>
           {links.length > 0 && (
@@ -127,8 +132,13 @@ export function CoinPage({ pool }: { pool: string }) {
             <div><dt className="label">Mkt cap</dt><dd className="num">{card.cap.replace(/ HYPE$/, '')}<small>HYPE</small></dd></div>
           </dl>
         </div>
-        <div className="cr-card-stage coin-stage rise" style={d(3)}>
-          <div className="cr-card coin-card-wide"><TokenCard c={card} size="wide" /></div>
+        <div className="coin-side">
+          <div className="cr-card-stage coin-stage rise" style={d(3)}>
+            <div className="cr-card coin-card-wide"><TokenCard c={card} size="wide" /></div>
+          </div>
+          <div className="rise" style={d(4)}>
+            <CurveSwap pool={coin.pool} baseMint={coin.baseMint} symbol={symbol} migrated={coin.migrated} quoteDecimals={data.quoteDecimals} baseDecimals={data.baseDecimals ?? 6} onTraded={load} />
+          </div>
         </div>
       </section>
 

@@ -939,7 +939,7 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
 
 /* coin page */
 .coin-glow{height:720px;background:radial-gradient(60% 70% at 72% 0%, color-mix(in srgb, var(--era) 32%, transparent), transparent 70%)}
-.coin-hero{padding-bottom:80px;grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.coin-hero{padding-bottom:80px;grid-template-columns:minmax(0,7fr) minmax(0,5fr);align-items:start}
 .coin-hero .label .q-era,.coin-hero .label .coin-status{vertical-align:middle;margin-left:4px}
 .coin-name{overflow-wrap:break-word}
 .coin-id{display:flex;align-items:center;gap:28px}
@@ -955,7 +955,24 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
 .coin-ca{max-width:520px}
 .coin-hero .cr-stats dd{white-space:nowrap;display:flex;align-items:baseline;gap:6px}
 .coin-hero .cr-stats dd small{font:600 13px/18px var(--font-mono);color:var(--text-muted)}
+.coin-side{display:flex;flex-direction:column;gap:28px;align-self:start}
 .coin-stage{min-height:0;align-self:start;padding-top:24px}
+/* trade panel */
+.swap{display:flex;flex-direction:column;gap:16px;padding:22px;border-radius:var(--radius-lg);background:var(--surface-1);border:1px solid var(--line);scroll-margin-top:96px}
+.swap-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:var(--radius-md);background:var(--surface-0)}
+.swap-tabs button{height:38px;border:0;border-radius:calc(var(--radius-md) - 4px);background:transparent;color:var(--text-muted);font:700 15px/1 var(--font-sans);cursor:pointer}
+.swap-tabs button.on{background:var(--surface-2);color:var(--text)}
+.swap-tabs button:focus-visible,.swap-slip button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.swap .wz-amount input{background:var(--surface-0);border-color:var(--line);color:var(--text)}
+.swap-rows dd{font-size:13px}
+.swap-slip{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.swap-slip .label{margin-right:auto}
+.swap-slip button{height:28px;padding:0 10px;border-radius:var(--radius-pill);border:1px solid var(--line);background:transparent;color:var(--text-muted);font:600 12px/1 var(--font-mono);cursor:pointer}
+.swap-slip button.on{border-color:var(--text);color:var(--text)}
+.swap > .q-btn{height:52px}
+.swap .lp-note{margin:0}
+.swap-note{font-size:12px}
+
 .coin-stage .cr-card{max-width:460px;height:248px;display:flex}
 .coin-stage .tk{flex:1}
 .coin-curve{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:40px;align-items:end;padding:32px;border-radius:var(--radius-lg);background:var(--surface-1);border:1px solid var(--line)}

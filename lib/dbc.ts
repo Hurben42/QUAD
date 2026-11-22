@@ -3,8 +3,9 @@
  * Everything that touches a wallet returns a Transaction for the wallet adapter to sign.
  */
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
+import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import BN from 'bn.js';
-import { DAMM_V2_MIGRATION_FEE_ADDRESS, DynamicBondingCurveClient, createDbcProgram, deriveDammV1MigrationMetadataAddress, deriveDammV2PoolAddress, deriveDbcPoolAddress, deriveMintMetadata } from '@meteora-ag/dynamic-bonding-curve-sdk';
+import { DAMM_V2_MIGRATION_FEE_ADDRESS, DynamicBondingCurveClient, SwapMode, createDbcProgram, getCurrentPoint, swapQuoteExactIn, swapQuotePartialFill, deriveDammV1MigrationMetadataAddress, deriveDammV2PoolAddress, deriveDbcPoolAddress, deriveMintMetadata } from '@meteora-ag/dynamic-bonding-curve-sdk';
 import { eraOf, Q128 } from './curve';
 import { HYPE_MINT } from './hype';
 
@@ -52,6 +53,82 @@ export async function buildLaunchTx(connection: Connection, p: LaunchParams): Pr
   });
   const pool = deriveDbcPoolAddress(QUOTE_MINT, baseMint.publicKey, DBC_CONFIG);
   return { tx, baseMint, pool };
+}
+
+// ---- trading on the curve (the token page's trade panel) ------------------------------------
+
+/** A pool as the quote needs it: the SDK's account, its config, the current slot or time. */
+export type CurveState = {
+  pool: PublicKey;
+  account: NonNullable<Awaited<ReturnType<DynamicBondingCurveClient['state']['getPool']>>>;
+  config: NonNullable<Awaited<ReturnType<DynamicBondingCurveClient['state']['getPoolConfig']>>>;
+  currentPoint: BN;
+  migrated: boolean;
+};
+
+export async function readCurveState(connection: Connection, pool: PublicKey): Promise<CurveState> {
+  const client = makeClient(connection);
+  const account = await client.state.getPool(pool);
+  if (!account) throw new Error(`pool ${pool.toBase58()} not found`);
+  const config = await client.state.getPoolConfig(account.poolState.config);
+  if (!config) throw new Error('pool config not found');
+  const currentPoint = await getCurrentPoint(connection, config.activationType);
+  return { pool, account, config, currentPoint, migrated: account.poolState.isMigrated !== 0 };
+}
+
+export type CurveSide = 'buy' | 'sell';
+export type CurveQuote = {
+  /** what goes in, fee included; a buy past the end of the curve only takes what fills it */
+  amountIn: bigint;
+  /** what comes back unused: the part of a buy beyond the end of the curve */
+  amountLeft: bigint;
+  amountOut: bigint;
+  minimumOut: bigint;
+  /** trading fee, in HYPE lamports */
+  fee: bigint;
+  /** QUAD's referral cut of that fee */
+  referralFee: bigint;
+};
+
+const big = (x: { toString(): string }) => BigInt(x.toString());
+
+/**
+ * Buy (HYPE in) or sell (coins in). Buys use partial fill: near graduation, a buy larger than what
+ * is left on the curve fills it and returns the rest, where an exact-in swap would fail.
+ */
+export function quoteCurveSwap(state: CurveState, side: CurveSide, amountIn: bigint, slippageBps: number, referral: boolean): CurveQuote {
+  const quote = side === 'buy' ? swapQuotePartialFill : swapQuoteExactIn;
+  const q = quote(state.account as never, state.config, side === 'sell', new BN(amountIn.toString()), slippageBps, referral, state.currentPoint, false);
+  const left = q.amountLeft ? big(q.amountLeft) : 0n;
+  return {
+    amountIn: amountIn - left,
+    amountLeft: left,
+    amountOut: big(q.outputAmount),
+    minimumOut: big(q.minimumAmountOut ?? 0),
+    fee: big(q.tradingFee ?? 0) + big(q.protocolFee ?? 0) + big(q.referralFee ?? 0),
+    referralFee: big(q.referralFee ?? 0),
+  };
+}
+
+export async function buildCurveSwapTx(
+  connection: Connection,
+  p: { pool: PublicKey; owner: PublicKey; side: CurveSide; amountIn: bigint; minimumOut: bigint; referralTokenAccount: PublicKey | null },
+): Promise<Transaction> {
+  const base = { owner: p.owner, pool: p.pool, swapBaseForQuote: p.side === 'sell', referralTokenAccount: p.referralTokenAccount, amountIn: new BN(p.amountIn.toString()), minimumAmountOut: new BN(p.minimumOut.toString()) };
+  return makeClient(connection).pool.swap2(p.side === 'buy' ? { ...base, swapMode: SwapMode.PartialFill } : { ...base, swapMode: SwapMode.ExactIn });
+}
+
+/**
+ * QUAD's HYPE account that receives the referral cut: NEXT_PUBLIC_REFERRAL_WALLET (or the fee claimer)'s
+ * associated account. Null when it does not exist yet: trades then go through without a referral.
+ */
+export async function referralTokenAccount(connection: Connection): Promise<PublicKey | null> {
+  const wallet = process.env.NEXT_PUBLIC_REFERRAL_WALLET || process.env.NEXT_PUBLIC_FEE_CLAIMER;
+  if (!wallet) return null;
+  const mint = await connection.getAccountInfo(QUOTE_MINT);
+  if (!mint) return null;
+  const ata = getAssociatedTokenAddressSync(QUOTE_MINT, new PublicKey(wallet), true, mint.owner);
+  return (await connection.getAccountInfo(ata)) ? ata : null;
 }
 
 /** Legacy transactions carry at most 1232 bytes on the wire. */

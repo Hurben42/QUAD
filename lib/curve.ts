@@ -198,6 +198,10 @@ export const ANTI_SNIPER_FEE = 0.5; // 50% on the first slots
 export const ANTI_SNIPER_PERIODS = 10; // slots over which the fee decays to BASE_FEE
 export const PROTOCOL_FEE_SHARE = 0.2; // Meteora's cut of every trade fee (DBC PROTOCOL_FEE_PERCENT)
 export const CREATOR_TRADING_FEE_PERCENTAGE = 100; // of what is left after protocol: 100 → creator 2.5%, platform 0
+/** Meteora's referral cut of its protocol fee (DBC HOST_FEE_PERCENT): what a front end earns on the trades it routes. */
+export const HOST_FEE_SHARE = 0.2;
+/** QUAD's cut of each trade made in its own trade panel: 3.125% × 20% × 20% = 0.125%, taken from Meteora's share; traders and creators pay and earn the same. */
+export const QUAD_REFERRAL_FEE = BASE_FEE * PROTOCOL_FEE_SHARE * HOST_FEE_SHARE;
 /** The creator's cut of each trade: 3.125% × 80% × 100% = 2.5%. */
 export const CREATOR_FEE = BASE_FEE * (1 - PROTOCOL_FEE_SHARE) * (CREATOR_TRADING_FEE_PERCENTAGE / 100);
 
