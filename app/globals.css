@@ -956,7 +956,6 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
 .coin-hero .cr-stats dd{white-space:nowrap;display:flex;align-items:baseline;gap:6px}
 .coin-hero .cr-stats dd small{font:600 13px/18px var(--font-mono);color:var(--text-muted)}
 .coin-side{display:flex;flex-direction:column;gap:28px;align-self:start}
-.coin-stage{min-height:0;align-self:start;padding-top:24px}
 /* trade panel */
 .swap{display:flex;flex-direction:column;gap:16px;padding:22px;border-radius:var(--radius-lg);background:var(--surface-1);border:1px solid var(--line);scroll-margin-top:96px}
 .swap-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:var(--radius-md);background:var(--surface-0)}
@@ -973,8 +972,6 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
 .swap .lp-note{margin:0}
 .swap-note{font-size:12px}
 
-.coin-stage .cr-card{max-width:460px;height:248px;display:flex}
-.coin-stage .tk{flex:1}
 .coin-curve{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:40px;align-items:end;padding:32px;border-radius:var(--radius-lg);background:var(--surface-1);border:1px solid var(--line)}
 .coin-curve-meta{display:flex;flex-direction:column;gap:10px;text-align:right}
 .coin-curve-meta .num-lg{font-size:64px;line-height:1;letter-spacing:-0.04em}
@@ -1043,7 +1040,6 @@ a.tk:hover,.tk:hover{transform:translateY(-4px);border-color:var(--era)}
   .wz-links{grid-template-columns:minmax(0,1fr)}
   .claim-key{grid-template-columns:minmax(0,1fr)}
   .wz-mode{padding:12px 16px 0;flex-wrap:wrap}
-  .coin-stage{display:none}
   .coin-curve{grid-template-columns:minmax(0,1fr);gap:24px;padding:20px}
   .coin-curve-meta{text-align:left}
   .coin-curve-meta .num-lg{font-size:44px}

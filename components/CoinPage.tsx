@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { SiteHeader } from './SiteHeader';
 import { LinkButton } from './Button';
 import { EraSteps } from './EraSteps';
-import { TokenCard } from './TokenCard';
 import { CopyMint } from './CopyMint';
 import { CoinAvatar } from './CoinAvatar';
 import { CurveSwap } from './CurveSwap';
@@ -25,7 +24,7 @@ const d = (n: number) => ({ ['--d' as string]: n }) as React.CSSProperties;
 const short = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;
 const when = (unix: number | null) => (unix ? new Date(unix * 1000).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Just now');
 
-/** One coin of the curve: its card, where it stands on the four eras, and what is written into its pool. */
+/** One coin of the curve: its trade panel, where it stands on the four eras, and what is written into its pool. */
 export function CoinPage({ pool }: { pool: string }) {
   const [data, setData] = useState<PoolApi | null>(null);
   const [error, setError] = useState<{ status: number; message: string } | null>(null);
@@ -79,7 +78,7 @@ export function CoinPage({ pool }: { pool: string }) {
   const { coin } = data;
   const symbol = symbolOf(coin);
   const name = coin.name || symbol;
-  const card = { ...toTokenCard(coin, data), href: tradeUrl(coin.baseMint) }; // the card keeps its initial; the photo sits by the name
+  const card = toTokenCard(coin, data);
   const raised = hype(coin.quoteRaised, data.quoteDecimals);
   const threshold = hype(coin.quoteThreshold, data.quoteDecimals);
   const complete = coin.progress >= 1;
@@ -133,10 +132,7 @@ export function CoinPage({ pool }: { pool: string }) {
           </dl>
         </div>
         <div className="coin-side">
-          <div className="cr-card-stage coin-stage rise" style={d(3)}>
-            <div className="cr-card coin-card-wide"><TokenCard c={card} size="wide" /></div>
-          </div>
-          <div className="rise" style={d(4)}>
+          <div className="rise" style={d(3)}>
             <CurveSwap pool={coin.pool} baseMint={coin.baseMint} symbol={symbol} migrated={coin.migrated} quoteDecimals={data.quoteDecimals} baseDecimals={data.baseDecimals ?? 6} onTraded={load} />
           </div>
         </div>
