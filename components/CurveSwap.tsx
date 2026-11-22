@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
-import { getAssociatedTokenAddressSync } from '@solana/spl-token';
+import { tokenBalance } from '@/lib/wallet-balance';
 import { Button } from './Button';
 import { QUOTE_MINT, buildCurveSwapTx, quoteCurveSwap, readCurveState, referralTokenAccount, type CurveQuote, type CurveSide, type CurveState } from '@/lib/dbc';
 import { BASE_FEE, CREATOR_FEE, QUAD_REFERRAL_FEE, pct } from '@/lib/curve';
@@ -18,13 +18,6 @@ const SELL_PRESETS = [25, 50, 100];
 const units = (x: bigint, d: number) => Number(x) / 10 ** d;
 const show = (x: number) => (x >= 1e6 ? `${(x / 1e6).toFixed(2)}M` : x >= 1e3 ? `${(x / 1e3).toFixed(1)}K` : x >= 1 ? x.toFixed(2) : x.toPrecision(3));
 const short = (s: string) => `${s.slice(0, 4)}…${s.slice(-4)}`;
-
-async function tokenBalance(connection: ReturnType<typeof useConnection>['connection'], mint: PublicKey, owner: PublicKey) {
-  const info = await connection.getAccountInfo(mint);
-  if (!info) return 0n;
-  const ata = getAssociatedTokenAddressSync(mint, owner, false, info.owner);
-  return connection.getTokenAccountBalance(ata).then((b) => BigInt(b.value.amount), () => 0n);
-}
 
 /**
  * The token page's trade panel: buy or sell straight on the curve with the connected wallet.

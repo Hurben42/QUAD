@@ -20,6 +20,8 @@ export type ApiCoin = {
   createdAt: number | null;
   /** launched through the anonymous desk */
   anonymous?: boolean;
+  /** price change over the last 24 h as a fraction (0.12 = +12%); null until there is a baseline */
+  change?: number | null;
 };
 export type ApiMeta = { quoteDecimals: number; baseDecimals: number | null };
 export type PoolsApi = ApiMeta & { coins: ApiCoin[] };

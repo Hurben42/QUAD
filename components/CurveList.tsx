@@ -1,6 +1,5 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { SampleCoins } from './SampleCoins';
 import { LinkButton } from './Button';
 import { CoinCard, CoinRow, CoinTableHeader } from './CoinRow';
 import { CURVE_TABS, inTab, tabLabel, toCoinRow, type ApiCoin, type ApiMeta, type CurveTab, type PoolsApi } from '@/lib/coin-view';
@@ -39,8 +38,13 @@ export function CurveList({ limit, seeAllHref }: { limit?: number; seeAllHref?: 
     };
   }, [load]);
 
-  // Until real coins are live (or while the curve cannot be reached), show labelled samples.
-  if (!api || api.coins.length === 0) return <SampleCoins />;
+  if (!api) return <p className="era-empty" role="status">Reading the curve…</p>;
+  if (api.coins.length === 0)
+    return (
+      <p className="era-empty">
+        No token launched yet. <a className="wz-link" href="/launch">Launch the first one →</a>
+      </p>
+    );
 
   const all = api.coins.filter((c) => inTab(c, tab));
   const shown = limit ? all.slice(0, limit) : all;
